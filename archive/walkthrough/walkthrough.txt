@@ -1,0 +1,24 @@
+File: L1S11_10000_1_2.mat
+Cycle count: 10000
+Load: 4.004 kips
+Boundary condition: Loaded
+Published stiffness-degradation index / regression target: 0.076005931
+Target field: coupon.straingage_data.stiffness_degradation
+Path: actuator 1 -> receiver 7; frequency 150 kHz
+Path entry: Python index 0 (MATLAB linear index 1)
+Other stored settings: amplitude=65, gain=33
+Sampling rate: 1.2e+06 Hz; sample interval: 0.833333333 microseconds
+Samples per signal: 2000; plotted time: 0 to 1665.833333 microseconds
+FFT peaks at stored rate: actuator 15000 Hz; receiver 15000 Hz
+Timing caveat: ~15 kHz observed versus nominal 150 kHz. Physical time is unverified.
+The plot uses the documented stored rate, without silently substituting 12 MHz.
+Waveform amplitude units: unknown; settings are not waveform calibration.
+Actuator signal: stored excitation-channel trace for the PZT launching Lamb waves.
+Received signal: stored receiver response after wave propagation through the coupon.
+Regression predicts the published index above from signal-derived inputs.
+It does not predict an individual waveform amplitude or cycle count.
+Raw signals are plotted without filtering, normalization, alignment or gain correction.
+Time zero is the first stored sample; separate y-axis scales are used.
+Sources: Layup1/README.pdf pp. 1-2; Documentation/Techical Report.pdf p. 8.
+Source SHA-256: f0c13d64ff11025272f0ee7898e3f376b9cc4aa5736af7693363148743f96261
+Source unchanged: SHA-256 verified.

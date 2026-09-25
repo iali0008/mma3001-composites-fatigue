@@ -1,0 +1,132 @@
+[
+  {
+    "layup": "Layup1",
+    "specimen": "L1_S11_F",
+    "counts": {
+      ".": 2,
+      "PZT-data": 146,
+      "StrainData": 81,
+      "XRay": 16
+    }
+  },
+  {
+    "layup": "Layup1",
+    "specimen": "L1_S12_F",
+    "counts": {
+      ".": 2,
+      "PZT-data": 109,
+      "StrainData": 58,
+      "XRay": 22
+    }
+  },
+  {
+    "layup": "Layup1",
+    "specimen": "L1_S18_F",
+    "counts": {
+      ".": 2,
+      "PZT-data": 180,
+      "StrainData": 66,
+      "XRay": 12
+    }
+  },
+  {
+    "layup": "Layup1",
+    "specimen": "L1_S19_F",
+    "counts": {
+      ".": 2,
+      "PZT-data": 82,
+      "StrainData": 5,
+      "XRay": 17
+    }
+  },
+  {
+    "layup": "Layup2",
+    "specimen": "L2_S11_F",
+    "counts": {
+      ".": 2,
+      "PZT-data": 128,
+      "StrainData": 70,
+      "XRays": 28
+    }
+  },
+  {
+    "layup": "Layup2",
+    "specimen": "L2_S17_F",
+    "counts": {
+      ".": 2,
+      "PZT-data": 108,
+      "StrainData": 38,
+      "Xray": 19
+    }
+  },
+  {
+    "layup": "Layup2",
+    "specimen": "L2_S18_F",
+    "counts": {
+      ".": 2,
+      "PZT-data": 110,
+      "StrainData": 30,
+      "XRay": 16
+    }
+  },
+  {
+    "layup": "Layup2",
+    "specimen": "L2_S20_F",
+    "counts": {
+      ".": 2,
+      "PZT-data": 107,
+      "StrainData": 23,
+      "Xray": 13
+    }
+  },
+  {
+    "layup": "Layup3",
+    "specimen": "L3_S11_F",
+    "counts": {
+      ".": 2,
+      "PZT-data": 122,
+      "StrainData": 18,
+      "XRays": 27
+    }
+  },
+  {
+    "layup": "Layup3",
+    "specimen": "L3_S13_F",
+    "counts": {
+      ".": 2,
+      "PZTdata": 147,
+      "StrainData": 48,
+      "XRays": 15,
+      "XRays\\L3S13 transparencies": 5
+    }
+  },
+  {
+    "layup": "Layup3",
+    "specimen": "L3_S14_F",
+    "counts": {
+      ".": 2,
+      "rawstrain": 132,
+      "StrainData": 89
+    }
+  },
+  {
+    "layup": "Layup3",
+    "specimen": "L3_S18_F",
+    "counts": {
+      ".": 2,
+      "PZT-data": 134,
+      "StrainData": 39,
+      "Xrays": 15
+    }
+  },
+  {
+    "layup": "Layup3",
+    "specimen": "L3_S20_F",
+    "counts": {
+      ".": 2,
+      "PZT-data": 123,
+      "StrainData": 36,
+      "Xrays": 48
+    }
+  }
+]

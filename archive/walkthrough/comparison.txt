@@ -1,0 +1,25 @@
+L1S11: actuator 1 -> receiver 7, nominal 150 kHz
+Common sample range: 0-1999 inclusive (2000 samples).
+Received waveform amplitude units: unknown.
+
+Acquisition comparison:
+condition: Loaded -> Loaded; SAME
+load_kips: 4.004 -> 4; DIFFERENT; delta=-0.004
+gain: 33 -> 33; SAME
+excitation_amplitude_setting: 65 -> 65; SAME
+sampling_rate_Hz: 1200000 -> 1200000; SAME
+actuator_samples: 2000 -> 2000; SAME
+receiver_samples: 2000 -> 2000; SAME
+
+Received-signal metrics:
+Peak-to-peak = max(x) - min(x).
+Mean-centred RMS = sqrt(mean((x - mean(x))**2)).
+L1S11_10000_1_2.mat: published stiffness index=0.076005931; peak-to-peak=4317.610107422; mean-centred RMS=512.272148271
+L1S11_100000_1_2.mat: published stiffness index=0.120155531; peak-to-peak=5090.426269531; mean-centred RMS=600.697375569
+
+Overlay uses raw exported samples. No filtering, alignment, normalization,
+gain correction, sampling-metadata edits, or model training.
+Matching stored rates does not resolve the physical timing issue in walkthrough.txt.
+Gain and excitation amplitude are reported as stored settings, not waveform units.
+Unchanged SHA-256: L1S11_10000_1_2.mat: f0c13d64ff11025272f0ee7898e3f376b9cc4aa5736af7693363148743f96261
+Unchanged SHA-256: L1S11_100000_1_2.mat: 9e5996dc48bbef168779f99fc9f08c7c2705dc98f0e8d250f879a886c02491d7

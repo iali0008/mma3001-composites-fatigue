@@ -1,0 +1,7 @@
+reason,count,counts_overlap
+amplitude != 65,109,True
+condition is not Loaded,60,True
+gain != 33,109,True
+load outside 3.95-4.05 kips,82,True
+missing/nonfinite/nonscalar published index,27,True
+not a positive-cycle checkpoint,2,True

@@ -1,0 +1,5 @@
+{
+  "files_checked": 2571,
+  "changed_size_or_mtime": [],
+  "method": "Compare source file presence, sizes and last-write timestamps to pre-analysis manifest; not a cryptographic before/after comparison."
+}

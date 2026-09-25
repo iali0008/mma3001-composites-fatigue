@@ -1,0 +1,9 @@
+specimen,reason,count
+L1S11,not a positive-cycle checkpoint,29
+L1S11,condition is not Loaded,87
+L1S11,load outside 3.95-4.05 kips,107
+L1S11,missing/nonfinite/nonscalar published index,31
+L1S12,not a positive-cycle checkpoint,2
+L1S12,condition is not Loaded,60
+L1S12,load outside 3.95-4.05 kips,82
+L1S12,missing/nonfinite/nonscalar published index,27

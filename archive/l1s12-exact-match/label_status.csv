@@ -1,0 +1,17 @@
+cycles,published_indices,missing_label_recordings,eligible_recordings,published_jump_flag
+1,0.043288345,0,0,False
+2,,17,0,False
+3,,3,0,False
+10,0.051679586,0,0,False
+100,0.047985147,0,0,False
+1000,0.059726484,0,0,False
+10000,0.084112497,0,0,False
+20000,,7,0,False
+30000,0.233175942,0,0,True
+40000,0.239071597,0,0,False
+50000,0.236134709,0,0,False
+60000,0.245338988,0,0,False
+70000,0.244799668,0,0,False
+80000,0.237792304,0,0,False
+90000,0.245462847,0,0,False
+100000,0.245730332,0,0,False

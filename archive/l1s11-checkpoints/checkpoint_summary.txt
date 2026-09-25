@@ -1,0 +1,32 @@
+Scoped to 145 L1S11 MAT recordings; no other specimens inspected.
+Eligible recordings (including repeats): 27
+Distinct eligible nonzero-cycle checkpoints: 14
+Excluded recordings: 118
+Exclusion reason counts (overlapping): {"not a positive-cycle checkpoint": 29, "condition is not Loaded": 87, "load outside 3.95-4.05 kips": 107, "missing/nonfinite/nonscalar published index": 31}
+Eligible signal flags: {"signal_actuator_nonfinite": 0, "signal_actuator_constant": 0, "signal_sensor_nonfinite": 0, "signal_sensor_constant": 0}
+Label-conflict checkpoints: 0
+Peak-to-peak = max(x)-min(x); centred RMS = sqrt(mean((x-mean(x))**2)).
+Both use received samples 0-1999 inclusive, with no filtering or alignment.
+Constant finite signals remain flagged with zero features. Nonfinite received signals
+remain in eligible output with blank features; summary counts disclose valid repeats.
+Conflicting repeat labels are flagged and not combined into an invented plot target.
+Each checkpoint feature is the median across its eligible finite repeats.
+Amplitude units unknown. Stored sampling metadata is not changed or corrected.
+Loaded/loaded are matched case-insensitively; original condition text is retained.
+All inspected source SHA-256 hashes verified unchanged. No model or label imputation.
+
+Checkpoint summaries:
+{'cycles': 1, 'eligible_repeats': 1, 'published_index': 0.055036381, 'label_conflict': False, 'published_indices': '0.055036381', 'filenames': 'L1S11_1_1_1.mat', 'peak_to_peak_median': 4922.16552734375, 'peak_to_peak_valid_repeats': 1, 'mean_centred_rms_median': 689.383565662073, 'mean_centred_rms_valid_repeats': 1}
+{'cycles': 10, 'eligible_repeats': 2, 'published_index': 0.045813245, 'label_conflict': False, 'published_indices': '0.045813245', 'filenames': 'L1S11_10_1_1.mat; L1S11_10_1_2.mat', 'peak_to_peak_median': 4907.4649658203125, 'peak_to_peak_valid_repeats': 2, 'mean_centred_rms_median': 676.7969876121626, 'mean_centred_rms_valid_repeats': 2}
+{'cycles': 100, 'eligible_repeats': 2, 'published_index': 0.060735707, 'label_conflict': False, 'published_indices': '0.060735707', 'filenames': 'L1S11_100_1_1.mat; L1S11_100_1_2.mat', 'peak_to_peak_median': 4874.9637451171875, 'peak_to_peak_valid_repeats': 2, 'mean_centred_rms_median': 637.9498353602683, 'mean_centred_rms_valid_repeats': 2}
+{'cycles': 1000, 'eligible_repeats': 2, 'published_index': 0.069766198, 'label_conflict': False, 'published_indices': '0.069766198', 'filenames': 'L1S11_1000_1_1.mat; L1S11_1000_1_3.mat', 'peak_to_peak_median': 4876.20654296875, 'peak_to_peak_valid_repeats': 2, 'mean_centred_rms_median': 606.0766957625717, 'mean_centred_rms_valid_repeats': 2}
+{'cycles': 10000, 'eligible_repeats': 2, 'published_index': 0.076005931, 'label_conflict': False, 'published_indices': '0.076005931', 'filenames': 'L1S11_10000_1_1.mat; L1S11_10000_1_2.mat', 'peak_to_peak_median': 4596.245849609375, 'peak_to_peak_valid_repeats': 2, 'mean_centred_rms_median': 547.394354050877, 'mean_centred_rms_valid_repeats': 2}
+{'cycles': 20000, 'eligible_repeats': 2, 'published_index': 0.098380137, 'label_conflict': False, 'published_indices': '0.098380137', 'filenames': 'L1S11_20000_1_1.mat; L1S11_20000_1_2.mat', 'peak_to_peak_median': 4325.99951171875, 'peak_to_peak_valid_repeats': 2, 'mean_centred_rms_median': 513.9231719014292, 'mean_centred_rms_valid_repeats': 2}
+{'cycles': 30000, 'eligible_repeats': 2, 'published_index': 0.10051699, 'label_conflict': False, 'published_indices': '0.10051699', 'filenames': 'L1S11_30000_1_1.mat; L1S11_30000_1_2.mat', 'peak_to_peak_median': 4936.0478515625, 'peak_to_peak_valid_repeats': 2, 'mean_centred_rms_median': 587.2728626333599, 'mean_centred_rms_valid_repeats': 2}
+{'cycles': 40000, 'eligible_repeats': 2, 'published_index': 0.11226211, 'label_conflict': False, 'published_indices': '0.11226211', 'filenames': 'L1S11_40000_1_1.mat; L1S11_40000_1_2.mat', 'peak_to_peak_median': 4883.1800537109375, 'peak_to_peak_valid_repeats': 2, 'mean_centred_rms_median': 578.6618980416863, 'mean_centred_rms_valid_repeats': 2}
+{'cycles': 50000, 'eligible_repeats': 2, 'published_index': 0.118553783, 'label_conflict': False, 'published_indices': '0.118553783', 'filenames': 'L1S11_50000_1_1.mat; L1S11_50000_1_2.mat', 'peak_to_peak_median': 4887.3270263671875, 'peak_to_peak_valid_repeats': 2, 'mean_centred_rms_median': 575.7172169852072, 'mean_centred_rms_valid_repeats': 2}
+{'cycles': 60000, 'eligible_repeats': 2, 'published_index': 0.10426744, 'label_conflict': False, 'published_indices': '0.10426744', 'filenames': 'L1S11_60000_1_1.mat; L1S11_60000_1_2.mat', 'peak_to_peak_median': 4908.716064453125, 'peak_to_peak_valid_repeats': 2, 'mean_centred_rms_median': 575.6440996905567, 'mean_centred_rms_valid_repeats': 2}
+{'cycles': 70000, 'eligible_repeats': 2, 'published_index': 0.128221136, 'label_conflict': False, 'published_indices': '0.128221136', 'filenames': 'L1S11_70000_1_1.mat; L1S11_70000_1_2.mat', 'peak_to_peak_median': 4926.45947265625, 'peak_to_peak_valid_repeats': 2, 'mean_centred_rms_median': 573.7773687897227, 'mean_centred_rms_valid_repeats': 2}
+{'cycles': 80000, 'eligible_repeats': 2, 'published_index': 0.12236086, 'label_conflict': False, 'published_indices': '0.12236086', 'filenames': 'L1S11_80000_1_1.mat; L1S11_80000_1_2.mat', 'peak_to_peak_median': 4928.1334228515625, 'peak_to_peak_valid_repeats': 2, 'mean_centred_rms_median': 569.5341251073531, 'mean_centred_rms_valid_repeats': 2}
+{'cycles': 90000, 'eligible_repeats': 2, 'published_index': 0.11445585, 'label_conflict': False, 'published_indices': '0.11445585', 'filenames': 'L1S11_90000_1_1.mat; L1S11_90000_1_2.mat', 'peak_to_peak_median': 4946.5867919921875, 'peak_to_peak_valid_repeats': 2, 'mean_centred_rms_median': 571.3460682034056, 'mean_centred_rms_valid_repeats': 2}
+{'cycles': 100000, 'eligible_repeats': 2, 'published_index': 0.120155531, 'label_conflict': False, 'published_indices': '0.120155531', 'filenames': 'L1S11_100000_1_1.mat; L1S11_100000_1_2.mat', 'peak_to_peak_median': 5063.1375732421875, 'peak_to_peak_valid_repeats': 2, 'mean_centred_rms_median': 593.316539963833, 'mean_centred_rms_valid_repeats': 2}

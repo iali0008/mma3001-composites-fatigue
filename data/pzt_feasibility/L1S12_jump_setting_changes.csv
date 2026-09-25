@@ -1,0 +1,8 @@
+file,relative_to,paths_checked,changed_settings_paths,gain_raw_changes,amplitude_raw_changes,sampling_rate_changes,sensor_n_changes,actuator_n_changes
+L1S12_10000_3_1.mat,L1S12_10000_3_1.mat,252,0,0,0,0,0,0
+L1S12_10000_3_2.mat,L1S12_10000_3_1.mat,252,0,0,0,0,0,0
+L1S12_20000_3_1.mat,L1S12_10000_3_1.mat,252,0,0,0,0,0,0
+L1S12_20000_3_2.mat,L1S12_10000_3_1.mat,252,0,0,0,0,0,0
+L1S12_20000_3_3.mat,L1S12_10000_3_1.mat,252,0,0,0,0,0,0
+L1S12_30000_3_1.mat,L1S12_10000_3_1.mat,252,0,0,0,0,0,0
+L1S12_30000_3_2.mat,L1S12_10000_3_1.mat,252,0,0,0,0,0,0

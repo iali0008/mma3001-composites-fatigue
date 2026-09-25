@@ -1,0 +1,14 @@
+layup,specimen,pzt_files,pzt_cycles,scalar_label_files,scalar_checkpoints,positive_checkpoints,zero_vector_files,empty_label_files,strain_mat,strain_binary,strain_numeric_text
+Layup1,L1_S11_F,145,21,114,15,14,0,31,80,0,0
+Layup1,L1_S12_F,109,17,82,14,13,0,27,57,0,0
+Layup1,L1_S18_F,180,63,0,0,0,16,164,0,66,0
+Layup1,L1_S19_F,82,14,0,0,0,1,81,3,0,0
+Layup2,L2_S11_F,128,20,59,10,8,0,69,69,0,0
+Layup2,L2_S17_F,108,38,0,0,0,0,108,0,38,0
+Layup2,L2_S18_F,110,35,0,0,0,4,106,0,30,0
+Layup2,L2_S20_F,107,35,0,0,0,0,107,0,23,0
+Layup3,L3_S11_F,122,18,0,0,0,4,118,17,0,0
+Layup3,L3_S13_F,147,21,0,0,0,3,144,47,0,0
+Layup3,L3_S14_F,0,0,0,0,0,0,0,44,44,127
+Layup3,L3_S18_F,134,41,0,0,0,17,117,0,39,0
+Layup3,L3_S20_F,123,38,0,0,0,4,119,0,35,1

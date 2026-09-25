@@ -1,0 +1,537 @@
+PAGE 1
+Accelerated Aging Experiments for 
+Prognostics of Damage Growth in 
+Composite Materials 
+ABHINAV S AXE NA, KAI GOE BE L, CE CILIA C. LARROS A, VIS HNUVARDHAN 
+JANAPATI, S URAJIT  ROY, AND F U-KUO CHANG 
+ 
+ 
+ 
+ 
+ 
+ 
+ABSTRACT 
+ 
+Composite structures are gaining impor tance for use in the aerospace industry . 
+Compared to metallic structures their behavior is less well understood. This lack of 
+understanding may pose constraints on their use. One possible way to deal with some 
+of the risks associated with potential failure is to perform in-situ monitoring to detect 
+precursors of failures. Prognostic algorithms can be used to predict impending failures. 
+They require large amounts of training data to build and tune damage model for 
+making useful predictions. One of the key aspects is to get confirmatory feedback 
+from data as damage progresses. These kinds of data are rarely available from actual 
+systems. The  next possible resource to collect such data  is an accelerated aging 
+platform. To that end this paper describes a fatigue cycling experiment with the goal to 
+stress carbon -carbon composite coupons with various lay ups. Piezoelectric disc 
+sensors were used to periodically interrogate the system. Analysis showed distinct 
+differences in the signatures of growing failures between data collected at conditions. 
+Periodic X-radiographs were taken to assess the damage ground truth. Results after 
+signal processing show ed clear trends of damage growth that were correlated to 
+damage assessed from the X-ray images.  
+ 
+INTRODUCTION 
+ 
+Use of carbon based composite materials in aerospace structures is increasing due 
+to their superior properties of strength, stiffness, weight, performance, corrosion 
+resistance, etc. to name a few . A dramatic rise is seen in the application of advanced 
+composite materials for aircraft in the last two decades. Current predictions estimate 
+that over the period of next ten years the manufacturing of composites will quadruple 
+at an increasing usage rate of 7% annually [1]. However, due to lack of dependable 
+Structural Health Monitoring (SHM)  techniques these systems are currently 
+overdesigned to avoid failures and hence are less cost-efficient.  
+ 
+ 
+_____________ 
+ 
+Abhinav Saxena, SGT Inc., and Kai Goebel, NASA Ames Research Center Moffett Field CA 
+Cecilia C. Larrosa, Vishnuvardhan Janapati, Surajit Roy, and Fu-Kuo Chang, Stanford 
+University, CA 
+
+PAGE 2
+Prognostics is defined as estimating the Remaining Useful Life (RUL) of a 
+structure based on a  current state assessment, anticipated future load, and 
+environmental conditions. This will allow avoiding catastrophic failures through 
+advance warnings. Augmented with a damage progression model  and condition 
+monitoring data, the prognostic algorithm can extrapolate damage growth trajectory 
+and provide an estimate of the RUL [1]. The damage growth model may be physics 
+based or derived from historical data, detailed understanding of the intrinsic material 
+properties, the structure’s geometry, loading environment, etc. For composites, some 
+of these factors are not as well understood as for metals. The anisotropic structure of 
+composites is significantly more complex than metallic structures. A ny model or 
+theoretical development based on a particular composite material rarely generalizes to 
+other variants. Where t here is a barrage of theoretic al models for co mposite failure 
+there is really no consensus. Thus for any new material, significant model adjustments 
+and fresh validations are required before one could use these models with confidence. 
+The RUL from p rognostics estimates can lead to more informed decisions for 
+future actions  such as  launch/abort decisions, near term repairs, or maintenance  
+scheduling. Data required for studying fault growth and  subsequently developing 
+models for prediction algorithms are rarely available from real applications, especially 
+for composites in new applications areas. Therefore, the scientific community relies on 
+customized accelerated ageing experiments to collect detailed run -to-failure data. 
+From prognostics point of view such experiments address several key issues such as 
+(i) allowing collection of relevant failure data in reasonable timeframe, (ii) ability to 
+control various competing stress factors and in-situ measurements for  desired 
+parameters, (iii) develop fault growth models and relate model parameters to identified 
+stress factors, and (iv) validation of prognostics and SHM methods.  
+The analysis presented in this paper builds on current understanding of fault modes 
+in composites. This paper investigates faults in laminated ply composites.  Such 
+structures mainly suffer from two damage types: matrix micro -cracks and inter -
+laminar delamination. When subject to fatigue loading matrix micro-cracks develop in 
+the matrix through the ply thickness direction, creating high stress concentration at the 
+ply interfaces. As more cracks form, an increased interfacial stress leads to initiation of 
+delamination, which then starts to propagate further. Delamination significantly 
+degrades the strength of the structure and is generally the ultimate cause of failure in 
+composite structures. This implies that the two damage modes co-exist, which should 
+be perceivable from the sensor measurements from the controlled experiments and, 
+therefore, motivates this effort. 
+Several efforts have characteriz ed composite failures due to  fatigue; however, 
+most approaches focused on statistically estimating S-N curves by recording the 
+number of cycles to fail under different loads. That is no failure progression data were 
+collected [2]. Many non-destructive inspection techniques are available for hidden 
+damage characterization but most of them require structure disassembly for inspection. 
+SHM, on the other hand, uses a network of sensors attached to the structure that are 
+able to rapidly inspect the structure. Apart from many other techniques, active PZT-
+sensor networks have been shown to be promising for guided Lamb waves based 
+interrogation of composite structures [3, 4]. A review of existing guided Lamb waves 
+techniques for composite structural health monitoring indicates that the majority of the 
+research conducted to date has focused on damage localization [4-6]. Also these 
+approaches mostly refer to damage  detection without isolating a  particular damage 
+
+PAGE 3
+type. Other approaches simulate damage by attaching mass, or drilling a through hole 
+into the structure. Some research papers [7, 8] have reported results on the effect of 
+matrix micro-cracks on Lamb wave propagation, in particular how it affects wave 
+velocity, however they did not quantify  matrix micro -crack density or develop 
+diagnosis for a matrix micro-cracking. Other papers have examined methods to study 
+delamination effects using lamb waves [6, 9]. Overall, there appears to be little efforts 
+on fatigue damaging a coupon with in-situ damage state estimation  or looking for 
+signatures of cracks and delamination separately [10]. This paper reports on run-to-
+failure experiments where intermittent ground truth and in -situ characteristics are 
+collected. Growth patterns are analyzed for damage types typical of laminated sheet 
+composites. 
+ 
+ 
+EXPERIMENTAL SETUP 
+ 
+The fatigue cycling experiments serve several objectives– (i) ability to collect run-
+to-failure data with periodic system health data using health monitoring sensors , (ii) 
+ability to collect ground -truth data for the damage to validate measurement data 
+analysis, (iii) a ccounting variations between samples of same internal structure 
+(layup), and (iv) c haracterizing variations between sample of diffe rent internal 
+structures. Three symmetric layup configurations were chosen to account for the effect 
+of ply orientation: Layup 1 : [0 2/904], Layup 2 : [0/90 2/45/-45/90], and Layup 3 : 
+[902/45/-45]2. Torayca T700G uni -directional carbon-prepreg material was used for 
+15.24 cm x 25.4 cm coupons with dogbone geometry and a notch (5.08mm x 19.3mm) 
+to induce stress concentration. Two six-PZT-sensor SMART Layer® from Acellent 
+Technologies, Inc (Figure 1(a)). were attached to the surface of each sample. This 
+configuration allows six actuators and six sensors to monitor wave propagation 
+through the samples, Figure 1(a) shows one such path  from actuator 5 to sensor 8 
+(path 58) that will be used as an example throughout this paper.  
+ 
+Figure 1(a) Coupon specimen, SMART Layers location, and diagnostic path from actuator 5 to sensor 8.  
+(b) Development of matrix cracks and delamination leading to fatigue failure. (c) Growth in 
+delamination area during the course of fatigue cycling experiment. 
+ 
+Strains of about 0.3-0.4% were estimated at the sensor location. Off-the-shelf data 
+acquisition software and hardware was used to actuate and receive the corresponding 
+signals for the 36 actuator-sensor paths at various actuation frequencies in the range of 
+(b)
+1 Cycle 10 Cycles 10K Cycles 40K Cycles 100K Cycles(c)
+Matrix 
+Cracks
+Delamination Fatigue 
+Failure
+(a)
+
+PAGE 4
+150-450 KHz, with an ave rage input voltage of 50 volts and a gain of 20dB . These 
+frequencies were selected so  that the fundamental symmetric and anti -symmetric 
+modes can be as distinguishable as possible based on the differences in their phase 
+velocities. Static failure load (σs) was determined through static tests run-to-failure for 
+two or three samples of each layup to determine maximum fatigue load (σf) that was 
+set to 75-85% of σs. All tests were performed on an MTS machine with a load ratio 
+(R) of approximately 0.14, following ASTM Standards D3039 and D3479  [11, 12]. 
+The fatigue tests followed a sinusoidal load profile at a frequency of 5Hz. The fatigue 
+cycling tests were stopped every 50,000 cycles to collect PZT sensor data for all paths 
+and interrogation frequencies. X-rays of the samples were taken using a dye-penetrant 
+to enhance X -ray absorption. The main goal of this test procedure is to be able to 
+acquire sensor data as a function of damage progression; Figure 1(c) shows increasing 
+level of damage in the X-ray images. 
+ 
+ 
+DATA ANALYSIS 
+ 
+The approach taken in this project is to understand the damage progression 
+characteristics through experimental run-to-failure data and seek following goals: 
+ Understand how faults grow in composites under fatigue environments. 
+ If multiple failure modes co-exist, then how does one isolate and characterize their 
+individual growth characteristics from the monitoring data. 
+ Identify relevant Condition Indicators (CIs) from the monitoring data. 
+ Understand the effects of material geometry, construction, and loading sequences. 
+ Identify and distinguish between various sources of uncertainty in the  
+experimental set up and incorporate them for more accurate predictions. 
+ Develop empirical models describing fault growths for prognostic modeling. 
+CIs or features were extracted from monitoring data and the trends observed thereby 
+were compared to those obtained from assessment of X-rays, which is regarded as 
+measured ground truth. This validates the CIs and also helps identify useful features of 
+damage (area, length, intensity, etc.) in the X-rays. Once a good set of CIs is obtained 
+that correlate well with the damage growth observed from the X-rays, an empirical 
+model can be developed for prognosti cs. X-ray images were processed to extract 
+damage quantifiers like matrix crack density and delamination area. Visible growth in 
+damage was observed for both fault modes (Figure 1(b)). The delamination area grows 
+significantly with fatigue cycl ing (Figure 1(c)). Delamination areas were measured 
+and plotted against corresponding cycle index. The number of cracks was counted on 
+the path between a sensor-actuator pair and normalized by the path length to obtain an 
+estimate of the crack density. To reduce the uncertainty in the measurements th is 
+process was repeated multiple times. 
+Health monitoring data using Lamb wave propagation in pitch-catch configuration 
+was collected from the PZT sensors to see effects of damage growth in the propagated 
+signal. Separate CIs for matrix cracks and delamination were computed to track the 
+growth of both damage types individually. Since the coupons are relatively small and 
+the velocity of fundamental anti-symmetric A0 mode is low, it is hard to distinguish 
+the reflected A0 mode from edge s; therefore this work focus ed only  on the 
+fundamental symmetric S0 mode. In order to distinguish the S0 mode from the rest of 
+the signal, theoretically calculated group velocity estimates and the known actuator to 
+
+PAGE 5
+sensor path lengths were used to approximate an S0 mode window as shown in Figure 
+2(a). Following CIs were computed from the windowed signals. 
+ 
+ Change in Power Spectral Density - Power Spectral Density (PSD) as a function 
+of ti me for a given  actuation frequency wa s extracted from Short Time Fourier 
+Transform (STFT) for the signal . The peak value within the specified S 0 mode 
+window decreases as a function of the matrix cracks that developed (see Figure 2(b)). 
+Change in the PSD peak value normalized by the baseline PSD peak was computed. 
+This feature, referred to as the ΔPSD throughout this paper , has been  shown to 
+correlate well to matrix micro-cracks on any given actuator sensor path [13]. 
+ 
+ 
+Figure 2(a) Isolating the first S0 mode by windowing the sensed signal. (b) Change in Power 
+Spectral Density curves with increasing matrix crack density. 
+ 
+Scatter Energy - Scatter energy measures wave energy dispersed into the medium 
+along the path due to discontinuities and obstructions. Growth in delamination area 
+increases the scatter proportional to the size of delamination. It is computed as t he 
+energy difference for the S0 mode (Figure 2(a)) between the measured signal and the 
+baseline signal ( obtained initially in damage free condition ). Normalized s catter 
+energy is calculated as the ratio of scatter energy to baseline signal energy. 
+ 
+Time of Flight (TOF) – The Time of Flight (TOF) is the time taken by an 
+actuation signal to reach a sensor, and is a measure of Lamb wave velocity. Physically, 
+delamination degrades the mechanical properties of the coupons, which in turn 
+reduces the Lamb w ave velocity leading to increased ToF. The change in TOF is 
+estimated by cross correlating current signal with baseline signal. 
+ 
+ 
+RESULTS AND ANALYSIS 
+ 
+In the search for  increasing trends representing damage growth, several features 
+were computed and compared to the trends obtained from  X-ray analysis  with 
+increasing number of fatigue cycles . The X -ray analysis show s that matrix crack 
+density grows very quickly initially and then flattens out for both layup types (Figure 3 
+(a)). The cracks grow rapidly again when the loads are ramped up; for instance at 
+cycle 450K when load was increased from 6 to 7 kips for L3S20 . The ΔPSD feature 
+plotted in Figure 3(b) follows the same matrix crack density growth trends. It is also 
+noticeable how the matrix crack growth difference between layups is captured by the 
+ΔPSD. 
+ 
+0 500 1000 1500 2000-1500
+-1000
+-500
+0
+500
+1000
+1500
+sample point
+Amplitude
+Actuation and sensor signal
+ 
+ 
+actuation signal
+sensed signal
+S0 mode window
+3 3.5 4 4.5 5 5.5 6
+x 10
+-5
+0
+0.5
+1
+1.5
+2
+2.5
+3
+3.5
+4
+4.5
+time (s)
+Power spectral density (V2)
+Power Spectral Density as a function of time
+ 
+ 
+baseline
+3 cracks/inch
+60 cracks/inch
+133 cracks/inch
+PSD peak values
+(a) (b)
+
+PAGE 6
+ 
+Figure 3. (a) Growth in matrix crack density as observed from X-ray images. (b) PSD based feature to 
+track growth in matrix crack density. 
+Figure 4 shows corresponding features extracted to track delamination growth.  
+Figure 4(b) shows the normalized scatter energy through cycles for L2 and L3 layups. 
+It was observed that the normalized scatter energy for L2 Layup was relatively higher 
+than that for L3 layup, which is consistent with the delamination sizes shown in Figure 
+4(a), but the growth trend is not accurately captured. The change in ToF for L2 and L3 
+layups as a function of cycles  is plotted in Figure 4(c). I t was observed that the 
+increase in ToF for L3 Layup was relatively higher than that for the L2 layup. This is 
+due to the fact that i n the case of L 3 layup, stiffness degradation comes from 
+delamination at the 90/45 ply interfaces and matrix cracking in the outer 90° plies. 
+Whereas for L2 Layup, the overall stiffness degradation is not as significant due to the 
+presence of the 0º outer plies. Despite this mismatch, the monotonically increasing 
+growth trends are observed, for example, L2S17 in Figure 4(a) delamination grows 
+early, then flattens out and as the fatigue loading was ramped up after 600 Kcycles, 
+delamination increases significantly. From Figure 4(c) a very similar growth trend is 
+seen in the change for ToF. 
+Even though these two parameters did not match well individually with the 
+delamination area growth observed from the X-rays, they are promising as signatures 
+of delamination growth trend. A preliminary study on combining these two features 
+indicates that a composite feature such as a product of normalized scatter energy and 
+ΔToF (shown in Figure 4(d)) has well matching trends with delamination area growth. 
+This composite feature shows good correlations to the trends observed in the X -rays 
+for both L2 samples (L2S17 & L2S20). Likewise for L 3 layups (L3S18 & L3S2 0) 
+these trends look repeatable, for instance an increase in load at 600K cycles for L3S20 
+results in increased delamination area, which is also well reflected in the 
+corresponding feature. However, the magnitudes of the delamination features do not 
+correspond to the s imilar levels for the two layups , i.e. the feature shows similar 
+values for very different magnitudes of delamination area. These differences could be 
+attributed to several reasons that require further investigation: (i) difference in layup 
+types, (L2:[0/90 2/+45/-45/90]2 vs. L3:[90 2/+45/-45]2s) and hence effect of 
+delamination geometry and orientation on sensor signals, (ii ) errors in the 
+delamination area measurement from the X-ray images, especially if the delamination 
+appears on different interfaces, which is not detectable from X-rays but still affects the 
+signal significantly. Therefore, the layup type should be an important factor in 
+interpreting the results and a good repeatability within a single layup type is desirable. 
+Further studies need to be conducted to assess the accuracy of this composite feature. 
+0 200 400 600 800 1000 1200 14000
+0.2
+0.4
+0.6
+0.8
+1
+Cycles x 1000
+ PSD
+ 
+ 
+(d) PSD Based Feature for Matrix Cracks
+L2 S17
+L2 S20
+L3 S18
+L3 S20
+0 200 400 600 800 1000 1200 14000
+50
+100
+150
+200
+250
+300
+Cycles x 1000
+Matrix Crack Density
+ 
+ 
+(c) Matrix Crack Density (Path 5-8)
+L2 S17
+L2 S20
+L3 S18
+L3 S20
+(a) (b)
+
+PAGE 7
+ 
+Figure 4. (a) Delamination area as observed from X-ray (b) Normalized scatter energy. (c) Time of flight 
+and (c) Composite feature for delamination. 
+There w ere several limitations in the experimental setup that posed technical 
+challenges leading to various uncertainties in the process  and are expected to have 
+contributed to some of the differences that we re observed above. It is important to 
+consider these sources of uncertainty while interpreting the results from data analysis. 
+Therefore, we present here some such aspects that have been identified and are 
+currently under investigation. 
+ 
+X-Ray analysis – (1) The X-ray machine used in this project was analog and 
+resulted in non -uniform digitization leading  to variance in contrasts, brightness, 
+scaling, and orientations  leading to some uncertainty in ground truth estimation 
+despite calibration steps. (2) X-ray images cannot pinpoint the exact  ply interface 
+where the delamination is present. Therefore a single delaminated layer shows same 
+features in the image as for multiple delaminated layers. ( 3) Matrix crack counting 
+process is a manual  process and prone to errors . (4) Cracks appear in different 
+orientations in different layups, and manual counting results in more uncertainties. 
+ 
+Data Collection Setup – (1) Wiring connections, and the adhesive all degrade with 
+fatigue cycling limiting our ability to collect high quality fatigue data towards the end 
+of the tests [14, 15]. (2) Since the experiments required the samples to be taken out of 
+the MTS for measurements , re -loading of sample resulted in slight changes in 
+orientation of the coupon that may affect the fault growth as tensile axis changes with 
+orientation. (3) Dye penetrant when wet significantly affected the signal.  (4) 
+Manufacturing variability between coupons of the same type also leads to different 
+damage trajectories. (5) Determining optimal load such that coupons break in a 
+0 200 400 600 800 1000 1200 14000
+2
+4
+6
+8
+10
+12
+14 x 10
+4
+Cycles x 1000
+Scatter Energy x ToF
+(d) Composite Feature for Delamination
+ 
+ 
+L2S17
+L2S20
+L3S18
+L3S20
+0 200 400 600 800 1000 1200 14000
+1
+2
+3
+4
+5
+ (c) Change in ToF
+Cycles x 1000
+Change in ToF
+ 
+ 
+L2S17
+L2S20
+L3S18
+L3S20
+0 200 400 600 800 1000 1200 14000
+0.2
+0.4
+0.6
+0.8
+1
+ (b) Normalized Scatter Energy
+Cycles x 1000
+Normalized Scatter Energy
+ 
+ 
+L2S17
+L2S20
+L3S18
+L3S20
+0 200 400 600 800 1000 1200 14000
+500
+1000
+1500
+2000
+2500
+3000
+Cycles x 1000
+Delamination Area (mm2)
+ 
+ 
+(a) Total Delamination Area
+L2S17
+L2S20
+L3S18
+L3S20
+
+PAGE 8
+reasonable timeframe has been a c hallenge. Data on single load levels is not yet 
+available. 
+ 
+Prognostic Algorithm Development 
+ 
+Prognostic algorithm development can take various approaches that may be data-
+driven or model based. Data -driven approaches learn current damage estimate from 
+condition indicators and damage growth rates from load factors, which then are used 
+to extrapolate the damage to a preset damage threshold to compute estimated RUL. 
+Model based methods make use of a damage progression model instead and extend 
+the current damage estimate through the use of those models. It was determined that 
+so far the collected data is not sufficient to train these models. But with more 
+experiments underway, two individual models for delamination growth and matrix 
+crack density growth will be developed. These models will be used to estimate growth 
+of both damages and then combined to produce a common end -of-life estimate 
+through a recursive Bayesian filtering methods like Particle Filters (PF). PFs have 
+been shown to represent and manage the uncertainty in the prediction process through 
+Importance Sampling, thereby refining the current estimates of multiple damage 
+growth model predictions using evidence from measurement data [16]. Furthermore, a 
+data-driven Gaussian Process Regression approach will also be explored. GPR is a 
+probabilistic technique for nonlinear regression that computes posterior degradation 
+estimates by constraining the prior distribution to fit the available training data [17]. It 
+provides variance around its mean predictions to describe associated uncertainty in the 
+predictions, which will be extremely useful in incorporating the effect of various 
+uncertainties listed above in RUL predictions. 
+ 
+ 
+CONCLUSIONS & FUTURE WORK 
+ 
+It was shown in this paper that it is possible to extract separate damage growth 
+indicators that will be useful for prognostic model development. Several features show 
+monotonically increasing trends characterizing damage growth. These indicators were 
+compared to the observations from X-ray images and positive correlations were shown 
+to be found. However , the authors would like to conduct more experiments to 
+establish statistical significance of these results. It is also planned to use strain gauge 
+rosettes at multiple location s to collect additional data  in further tests . That will 
+provide additional information about the strain levels during the fatigue tests and help 
+refine data analysis and interpretation. Data analysis, model development , and 
+algorithm work will continue to carry out damage prognosis on composite structures. 
+ 
+ 
+ACKNOWLEDGEMENT 
+ 
+The authors would like to acknowledge the National Aeronautics and Space 
+Administration (NASA) for supporting this work under grants ARMD/AvSafe NRA-
+07-IVHM1-07-0061, NRA -07-IVHM1-07-0064, the Space Act Agreement SAA2 -
+402292, and the Air Force Office of Scientific Research (AFOSR) MURI  FA9550-09-
+1-0677. We would like to thank Richard W. Ross (NASA LaRC) and Les Lee 
+
+PAGE 9
+(AFOSR) as the program monitor of the grants. We are also grateful for Acellent 
+Technology’s assistance with the active sensing system. 
+ 
+REFERENCES 
+ 
+[1] Michaels, K. Market Trends: Aerospace composites market will quadruple by 2026 . High -
+Performance Composites  2007 [cited; Available from: 
+ttp://www.compositesworld.com/columns/market-trends-aerospace-composites-market-will-
+quadruple-by-2026. 
+[2] Huston, R.J., Fatigue Life Prediction in Composites. International Journal of Pressure Vessels and 
+Piping, 1994. 59(1994): p. 131-140. 
+[3] Lin, M., et al. SMART layer and SMART suitcase for structural health monitoring applications. in 
+SPIE 4332. 2001. 
+[4] Pierce, S.G., et al. The application of ultrasonic Lamb wave techniques to the evaluation of advanced 
+composite structures. in SPIE. 2000. 
+[5] Ihn, J.-B. and F.-K. Chang, Pitch-catch active sensing methods in structural health monitoring for 
+aircraft structures. Structural Health Monitoring, 2008. 7: p. 5-19. 
+[6] Jha, R., I. Kim, and D. Widana -Gamage, Investigation of Incident Lamb Wave Parameters on  
+Detection of Composite Delamination, in ASME 2010 Conference on Smart Materials, Adaptive 
+Structures and Intelligent Systems SMASIS2010. 2010, ASME: Philadelphis PA. 
+[7] Seale, M.D., B.T. Smith, and W.H. Prosser, Lamb wave assessment of fatigue and thermal damage 
+in composites. Journal of Acoustical Society of America, 1998. 103 (5): p. 2416-2424. 
+[8] Toyama, N., et al., Stiffness evaluation and damage identification in composite beam under tension 
+using Lamb waves. Acta Materialia, 2005. 53: p. 4389-4397. 
+[9] Sridharan, S., ed. Delamination behaviour of composites. 2008, Woodhead Publishing: Cambridge, 
+UK. 788. 
+[10] Larrosa, C., et al., Damage Classification in Composite Laminates; Matrix Micro-Cracking and 
+Delamination, in The 8th International Workshop on Structural Health Monitoring, F.-K. Chang, 
+Editor. 2011: Stanford, CA. 
+[11] ASTM, Standard Test Method for Tension -Tension Fatigue of Polymer Matrix Composite 
+Materials, in D3479/D3479M – 96, A. International, Editor. 2007. 
+[12] ASTM, Standard Test Method for Tensile Properties of Polymer Matrix Composite Materials, in 
+D3039/D3039M - 08. 2008, ASTM International: Pennsylvania. 
+[13] Larossa, C., et al., In-situ Damage Assessment of Composite laminates Via Active Sensor Networks, 
+in Aircraft Airworthiness and Sustainment Conference 2011. 2011: San Diego, CA. p. 1-10. 
+[14] Kim, H., M. Park, and K. Hsieh, Fatigue fracture of embedded copper conductors in 
+multifunctional composite structures. Composites Science and Technology, 2006. 66: p. 1010-1021. 
+[15] Javidinejad, A. and S.P. Joshi, Design and structural testing of smart composite structures with 
+embedded conductive thermoplastic film. Smart Materials and Structures, 1999. 8: p. 585-590. 
+[16] Daigle, M. and K. Goebel. Multiple Damage Progression Paths in Model-Based Prognostics. in 
+IEEE Aerospace Conference. 2011. Big Sky, MT. 
+[17] Rasmussen, C.E. and C.K.I. Williams, eds. Gaussian Processes for Machine Learning. 2006, The 
+MIT Press Cambridge MA. 
+ 

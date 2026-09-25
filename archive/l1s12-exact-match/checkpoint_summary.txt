@@ -1,0 +1,23 @@
+Scoped to 109 L1S12 MAT recordings; no other specimens inspected.
+Eligible recordings (including repeats): 0
+Distinct eligible nonzero-cycle checkpoints: 0
+Excluded recordings: 109
+Exclusion reason counts (overlapping): {"not a positive-cycle checkpoint": 2, "condition is not Loaded": 60, "load outside 3.95-4.05 kips": 82, "gain != 33": 109, "amplitude != 65": 109, "missing/nonfinite/nonscalar published index": 27}
+Eligible signal flags: {"signal_actuator_nonfinite": 0, "signal_actuator_constant": 0, "signal_sensor_nonfinite": 0, "signal_sensor_constant": 0}
+All inspected signal flags: {"signal_actuator_nonfinite": 0, "signal_actuator_constant": 0, "signal_sensor_nonfinite": 0, "signal_sensor_constant": 0}
+Observed (gain, excitation setting) pairs: [(35.0, 50.0)]
+Label-conflict checkpoints: 0
+Peak-to-peak = max(x)-min(x); centred RMS = sqrt(mean((x-mean(x))**2)).
+Both use received samples 0-1999 inclusive, with no filtering or alignment.
+Constant finite signals remain flagged with zero features. Nonfinite received signals
+remain in eligible output with blank features; summary counts disclose valid repeats.
+Conflicting repeat labels are flagged and not combined into an invented plot target.
+Each checkpoint feature is the median across its eligible finite repeats.
+Amplitude units unknown. Stored sampling metadata is not changed or corrected.
+Loaded/loaded are matched case-insensitively; original condition text is retained.
+The 20,000-cycle label remains missing; no value is filled.
+The published 10,000-to-30,000-cycle index jump is flagged, never used for exclusion.
+Published label status (including settings-excluded checkpoints): [{"cycles": 1, "published_indices": "0.043288345", "missing_label_recordings": 0, "eligible_recordings": 0, "published_jump_flag": false}, {"cycles": 2, "published_indices": "", "missing_label_recordings": 17, "eligible_recordings": 0, "published_jump_flag": false}, {"cycles": 3, "published_indices": "", "missing_label_recordings": 3, "eligible_recordings": 0, "published_jump_flag": false}, {"cycles": 10, "published_indices": "0.051679586", "missing_label_recordings": 0, "eligible_recordings": 0, "published_jump_flag": false}, {"cycles": 100, "published_indices": "0.047985147", "missing_label_recordings": 0, "eligible_recordings": 0, "published_jump_flag": false}, {"cycles": 1000, "published_indices": "0.059726484", "missing_label_recordings": 0, "eligible_recordings": 0, "published_jump_flag": false}, {"cycles": 10000, "published_indices": "0.084112497", "missing_label_recordings": 0, "eligible_recordings": 0, "published_jump_flag": false}, {"cycles": 20000, "published_indices": "", "missing_label_recordings": 7, "eligible_recordings": 0, "published_jump_flag": false}, {"cycles": 30000, "published_indices": "0.233175942", "missing_label_recordings": 0, "eligible_recordings": 0, "published_jump_flag": true}, {"cycles": 40000, "published_indices": "0.239071597", "missing_label_recordings": 0, "eligible_recordings": 0, "published_jump_flag": false}, {"cycles": 50000, "published_indices": "0.236134709", "missing_label_recordings": 0, "eligible_recordings": 0, "published_jump_flag": false}, {"cycles": 60000, "published_indices": "0.245338988", "missing_label_recordings": 0, "eligible_recordings": 0, "published_jump_flag": false}, {"cycles": 70000, "published_indices": "0.244799668", "missing_label_recordings": 0, "eligible_recordings": 0, "published_jump_flag": false}, {"cycles": 80000, "published_indices": "0.237792304", "missing_label_recordings": 0, "eligible_recordings": 0, "published_jump_flag": false}, {"cycles": 90000, "published_indices": "0.245462847", "missing_label_recordings": 0, "eligible_recordings": 0, "published_jump_flag": false}, {"cycles": 100000, "published_indices": "0.245730332", "missing_label_recordings": 0, "eligible_recordings": 0, "published_jump_flag": false}]
+All inspected source SHA-256 hashes verified unchanged. No model or label imputation.
+
+Checkpoint summaries:

@@ -1,0 +1,54 @@
+{
+  "condition": "traction free; explicitly documented _0_0 baseline also allowed",
+  "rule": "Require all labelled cycles and pristine references in both coupons with exact settings; choose frequency with most eligible paths (tie: lower frequency); take first three actuator/sensor pairs in numeric order.",
+  "target_values_used_for_selection": false,
+  "cycle_max": 100000,
+  "eligible_settings": 25,
+  "eligible_per_frequency": {
+    "300": 1,
+    "350": 2,
+    "400": 3,
+    "450": 19
+  },
+  "paths": [
+    {
+      "actuator": 1,
+      "sensor": 10,
+      "frequency_raw": 450,
+      "gain_raw": 20,
+      "amplitude_raw": 25,
+      "sampling_rate": 1200000,
+      "sensor_n": 2000,
+      "actuator_n": 2000
+    },
+    {
+      "actuator": 2,
+      "sensor": 8,
+      "frequency_raw": 450,
+      "gain_raw": 20,
+      "amplitude_raw": 35,
+      "sampling_rate": 1200000,
+      "sensor_n": 2000,
+      "actuator_n": 2000
+    },
+    {
+      "actuator": 2,
+      "sensor": 11,
+      "frequency_raw": 450,
+      "gain_raw": 20,
+      "amplitude_raw": 15,
+      "sampling_rate": 1200000,
+      "sensor_n": 2000,
+      "actuator_n": 2000
+    }
+  ],
+  "reference_rule": "Own specimen pristine _0_0 recording; matched actuator, sensor, frequency, gain, amplitude, rate, length; no later reference or best-correlated reference selection.",
+  "preprocessing": "Whole 2000-sample trace, subtract its own mean; no filtering, alignment, resampling, learned normalization or target-selected window.",
+  "qc": {
+    "flat_relative_range": 1e-10,
+    "near_rail_fraction": 0.01,
+    "near_rail_range_tolerance": 0.001,
+    "min_exact_rail_run": 3,
+    "expected_length": 2000
+  }
+}
