@@ -1,0 +1,410 @@
+{
+  "LinearRegression:None": {
+    "memory": null,
+    "steps": [
+      [
+        "scale",
+        "StandardScaler()"
+      ],
+      [
+        "model",
+        "LinearRegression()"
+      ]
+    ],
+    "transform_input": null,
+    "verbose": false,
+    "scale": "StandardScaler()",
+    "model": "LinearRegression()",
+    "scale__copy": true,
+    "scale__with_mean": true,
+    "scale__with_std": true,
+    "model__copy_X": true,
+    "model__fit_intercept": true,
+    "model__n_jobs": null,
+    "model__positive": false,
+    "model__tol": 1e-06
+  },
+  "DecisionTreeRegressor:None": {
+    "memory": null,
+    "steps": [
+      [
+        "scale",
+        "passthrough"
+      ],
+      [
+        "model",
+        "DecisionTreeRegressor(max_depth=2, min_samples_leaf=3, min_samples_split=6,\n                      random_state=42)"
+      ]
+    ],
+    "transform_input": null,
+    "verbose": false,
+    "scale": "passthrough",
+    "model": "DecisionTreeRegressor(max_depth=2, min_samples_leaf=3, min_samples_split=6,\n                      random_state=42)",
+    "model__ccp_alpha": 0.0,
+    "model__criterion": "squared_error",
+    "model__max_depth": 2,
+    "model__max_features": null,
+    "model__max_leaf_nodes": null,
+    "model__min_impurity_decrease": 0.0,
+    "model__min_samples_leaf": 3,
+    "model__min_samples_split": 6,
+    "model__min_weight_fraction_leaf": 0.0,
+    "model__monotonic_cst": null,
+    "model__random_state": 42,
+    "model__splitter": "best"
+  },
+  "SVR:None": {
+    "check_inverse": true,
+    "func": null,
+    "inverse_func": null,
+    "regressor__memory": null,
+    "regressor__steps": [
+      [
+        "scale",
+        "StandardScaler()"
+      ],
+      [
+        "model",
+        "SVR(gamma=0.5)"
+      ]
+    ],
+    "regressor__transform_input": null,
+    "regressor__verbose": false,
+    "regressor__scale": "StandardScaler()",
+    "regressor__model": "SVR(gamma=0.5)",
+    "regressor__scale__copy": true,
+    "regressor__scale__with_mean": true,
+    "regressor__scale__with_std": true,
+    "regressor__model__C": 1.0,
+    "regressor__model__cache_size": 200,
+    "regressor__model__coef0": 0.0,
+    "regressor__model__degree": 3,
+    "regressor__model__epsilon": 0.1,
+    "regressor__model__gamma": 0.5,
+    "regressor__model__kernel": "rbf",
+    "regressor__model__max_iter": -1,
+    "regressor__model__shrinking": true,
+    "regressor__model__tol": 0.001,
+    "regressor__model__verbose": false,
+    "regressor": "Pipeline(steps=[('scale', StandardScaler()), ('model', SVR(gamma=0.5))])",
+    "transformer__copy": true,
+    "transformer__with_mean": true,
+    "transformer__with_std": true,
+    "transformer": "StandardScaler()"
+  },
+  "MLPRegressor:7": {
+    "check_inverse": true,
+    "func": null,
+    "inverse_func": null,
+    "regressor__memory": null,
+    "regressor__steps": [
+      [
+        "scale",
+        "StandardScaler()"
+      ],
+      [
+        "model",
+        "MLPRegressor(activation='tanh', alpha=1.0, hidden_layer_sizes=(3,),\n             max_fun=20000, max_iter=2000, random_state=7, shuffle=False,\n             solver='lbfgs', tol=1e-06)"
+      ]
+    ],
+    "regressor__transform_input": null,
+    "regressor__verbose": false,
+    "regressor__scale": "StandardScaler()",
+    "regressor__model": "MLPRegressor(activation='tanh', alpha=1.0, hidden_layer_sizes=(3,),\n             max_fun=20000, max_iter=2000, random_state=7, shuffle=False,\n             solver='lbfgs', tol=1e-06)",
+    "regressor__scale__copy": true,
+    "regressor__scale__with_mean": true,
+    "regressor__scale__with_std": true,
+    "regressor__model__activation": "tanh",
+    "regressor__model__alpha": 1.0,
+    "regressor__model__batch_size": "auto",
+    "regressor__model__beta_1": 0.9,
+    "regressor__model__beta_2": 0.999,
+    "regressor__model__early_stopping": false,
+    "regressor__model__epsilon": 1e-08,
+    "regressor__model__hidden_layer_sizes": [
+      3
+    ],
+    "regressor__model__learning_rate": "constant",
+    "regressor__model__learning_rate_init": 0.001,
+    "regressor__model__loss": "squared_error",
+    "regressor__model__max_fun": 20000,
+    "regressor__model__max_iter": 2000,
+    "regressor__model__momentum": 0.9,
+    "regressor__model__n_iter_no_change": 10,
+    "regressor__model__nesterovs_momentum": true,
+    "regressor__model__power_t": 0.5,
+    "regressor__model__random_state": 7,
+    "regressor__model__shuffle": false,
+    "regressor__model__solver": "lbfgs",
+    "regressor__model__tol": 1e-06,
+    "regressor__model__validation_fraction": 0.1,
+    "regressor__model__verbose": false,
+    "regressor__model__warm_start": false,
+    "regressor": "Pipeline(steps=[('scale', StandardScaler()),\n                ('model',\n                 MLPRegressor(activation='tanh', alpha=1.0,\n                              hidden_layer_sizes=(3,), max_fun=20000,\n                              max_iter=2000, random_state=7, shuffle=False,\n                              solver='lbfgs', tol=1e-06))])",
+    "transformer__copy": true,
+    "transformer__with_mean": true,
+    "transformer__with_std": true,
+    "transformer": "StandardScaler()"
+  },
+  "MLPRegressor:23": {
+    "check_inverse": true,
+    "func": null,
+    "inverse_func": null,
+    "regressor__memory": null,
+    "regressor__steps": [
+      [
+        "scale",
+        "StandardScaler()"
+      ],
+      [
+        "model",
+        "MLPRegressor(activation='tanh', alpha=1.0, hidden_layer_sizes=(3,),\n             max_fun=20000, max_iter=2000, random_state=23, shuffle=False,\n             solver='lbfgs', tol=1e-06)"
+      ]
+    ],
+    "regressor__transform_input": null,
+    "regressor__verbose": false,
+    "regressor__scale": "StandardScaler()",
+    "regressor__model": "MLPRegressor(activation='tanh', alpha=1.0, hidden_layer_sizes=(3,),\n             max_fun=20000, max_iter=2000, random_state=23, shuffle=False,\n             solver='lbfgs', tol=1e-06)",
+    "regressor__scale__copy": true,
+    "regressor__scale__with_mean": true,
+    "regressor__scale__with_std": true,
+    "regressor__model__activation": "tanh",
+    "regressor__model__alpha": 1.0,
+    "regressor__model__batch_size": "auto",
+    "regressor__model__beta_1": 0.9,
+    "regressor__model__beta_2": 0.999,
+    "regressor__model__early_stopping": false,
+    "regressor__model__epsilon": 1e-08,
+    "regressor__model__hidden_layer_sizes": [
+      3
+    ],
+    "regressor__model__learning_rate": "constant",
+    "regressor__model__learning_rate_init": 0.001,
+    "regressor__model__loss": "squared_error",
+    "regressor__model__max_fun": 20000,
+    "regressor__model__max_iter": 2000,
+    "regressor__model__momentum": 0.9,
+    "regressor__model__n_iter_no_change": 10,
+    "regressor__model__nesterovs_momentum": true,
+    "regressor__model__power_t": 0.5,
+    "regressor__model__random_state": 23,
+    "regressor__model__shuffle": false,
+    "regressor__model__solver": "lbfgs",
+    "regressor__model__tol": 1e-06,
+    "regressor__model__validation_fraction": 0.1,
+    "regressor__model__verbose": false,
+    "regressor__model__warm_start": false,
+    "regressor": "Pipeline(steps=[('scale', StandardScaler()),\n                ('model',\n                 MLPRegressor(activation='tanh', alpha=1.0,\n                              hidden_layer_sizes=(3,), max_fun=20000,\n                              max_iter=2000, random_state=23, shuffle=False,\n                              solver='lbfgs', tol=1e-06))])",
+    "transformer__copy": true,
+    "transformer__with_mean": true,
+    "transformer__with_std": true,
+    "transformer": "StandardScaler()"
+  },
+  "MLPRegressor:42": {
+    "check_inverse": true,
+    "func": null,
+    "inverse_func": null,
+    "regressor__memory": null,
+    "regressor__steps": [
+      [
+        "scale",
+        "StandardScaler()"
+      ],
+      [
+        "model",
+        "MLPRegressor(activation='tanh', alpha=1.0, hidden_layer_sizes=(3,),\n             max_fun=20000, max_iter=2000, random_state=42, shuffle=False,\n             solver='lbfgs', tol=1e-06)"
+      ]
+    ],
+    "regressor__transform_input": null,
+    "regressor__verbose": false,
+    "regressor__scale": "StandardScaler()",
+    "regressor__model": "MLPRegressor(activation='tanh', alpha=1.0, hidden_layer_sizes=(3,),\n             max_fun=20000, max_iter=2000, random_state=42, shuffle=False,\n             solver='lbfgs', tol=1e-06)",
+    "regressor__scale__copy": true,
+    "regressor__scale__with_mean": true,
+    "regressor__scale__with_std": true,
+    "regressor__model__activation": "tanh",
+    "regressor__model__alpha": 1.0,
+    "regressor__model__batch_size": "auto",
+    "regressor__model__beta_1": 0.9,
+    "regressor__model__beta_2": 0.999,
+    "regressor__model__early_stopping": false,
+    "regressor__model__epsilon": 1e-08,
+    "regressor__model__hidden_layer_sizes": [
+      3
+    ],
+    "regressor__model__learning_rate": "constant",
+    "regressor__model__learning_rate_init": 0.001,
+    "regressor__model__loss": "squared_error",
+    "regressor__model__max_fun": 20000,
+    "regressor__model__max_iter": 2000,
+    "regressor__model__momentum": 0.9,
+    "regressor__model__n_iter_no_change": 10,
+    "regressor__model__nesterovs_momentum": true,
+    "regressor__model__power_t": 0.5,
+    "regressor__model__random_state": 42,
+    "regressor__model__shuffle": false,
+    "regressor__model__solver": "lbfgs",
+    "regressor__model__tol": 1e-06,
+    "regressor__model__validation_fraction": 0.1,
+    "regressor__model__verbose": false,
+    "regressor__model__warm_start": false,
+    "regressor": "Pipeline(steps=[('scale', StandardScaler()),\n                ('model',\n                 MLPRegressor(activation='tanh', alpha=1.0,\n                              hidden_layer_sizes=(3,), max_fun=20000,\n                              max_iter=2000, random_state=42, shuffle=False,\n                              solver='lbfgs', tol=1e-06))])",
+    "transformer__copy": true,
+    "transformer__with_mean": true,
+    "transformer__with_std": true,
+    "transformer": "StandardScaler()"
+  },
+  "MLPRegressor:71": {
+    "check_inverse": true,
+    "func": null,
+    "inverse_func": null,
+    "regressor__memory": null,
+    "regressor__steps": [
+      [
+        "scale",
+        "StandardScaler()"
+      ],
+      [
+        "model",
+        "MLPRegressor(activation='tanh', alpha=1.0, hidden_layer_sizes=(3,),\n             max_fun=20000, max_iter=2000, random_state=71, shuffle=False,\n             solver='lbfgs', tol=1e-06)"
+      ]
+    ],
+    "regressor__transform_input": null,
+    "regressor__verbose": false,
+    "regressor__scale": "StandardScaler()",
+    "regressor__model": "MLPRegressor(activation='tanh', alpha=1.0, hidden_layer_sizes=(3,),\n             max_fun=20000, max_iter=2000, random_state=71, shuffle=False,\n             solver='lbfgs', tol=1e-06)",
+    "regressor__scale__copy": true,
+    "regressor__scale__with_mean": true,
+    "regressor__scale__with_std": true,
+    "regressor__model__activation": "tanh",
+    "regressor__model__alpha": 1.0,
+    "regressor__model__batch_size": "auto",
+    "regressor__model__beta_1": 0.9,
+    "regressor__model__beta_2": 0.999,
+    "regressor__model__early_stopping": false,
+    "regressor__model__epsilon": 1e-08,
+    "regressor__model__hidden_layer_sizes": [
+      3
+    ],
+    "regressor__model__learning_rate": "constant",
+    "regressor__model__learning_rate_init": 0.001,
+    "regressor__model__loss": "squared_error",
+    "regressor__model__max_fun": 20000,
+    "regressor__model__max_iter": 2000,
+    "regressor__model__momentum": 0.9,
+    "regressor__model__n_iter_no_change": 10,
+    "regressor__model__nesterovs_momentum": true,
+    "regressor__model__power_t": 0.5,
+    "regressor__model__random_state": 71,
+    "regressor__model__shuffle": false,
+    "regressor__model__solver": "lbfgs",
+    "regressor__model__tol": 1e-06,
+    "regressor__model__validation_fraction": 0.1,
+    "regressor__model__verbose": false,
+    "regressor__model__warm_start": false,
+    "regressor": "Pipeline(steps=[('scale', StandardScaler()),\n                ('model',\n                 MLPRegressor(activation='tanh', alpha=1.0,\n                              hidden_layer_sizes=(3,), max_fun=20000,\n                              max_iter=2000, random_state=71, shuffle=False,\n                              solver='lbfgs', tol=1e-06))])",
+    "transformer__copy": true,
+    "transformer__with_mean": true,
+    "transformer__with_std": true,
+    "transformer": "StandardScaler()"
+  },
+  "MLPRegressor:101": {
+    "check_inverse": true,
+    "func": null,
+    "inverse_func": null,
+    "regressor__memory": null,
+    "regressor__steps": [
+      [
+        "scale",
+        "StandardScaler()"
+      ],
+      [
+        "model",
+        "MLPRegressor(activation='tanh', alpha=1.0, hidden_layer_sizes=(3,),\n             max_fun=20000, max_iter=2000, random_state=101, shuffle=False,\n             solver='lbfgs', tol=1e-06)"
+      ]
+    ],
+    "regressor__transform_input": null,
+    "regressor__verbose": false,
+    "regressor__scale": "StandardScaler()",
+    "regressor__model": "MLPRegressor(activation='tanh', alpha=1.0, hidden_layer_sizes=(3,),\n             max_fun=20000, max_iter=2000, random_state=101, shuffle=False,\n             solver='lbfgs', tol=1e-06)",
+    "regressor__scale__copy": true,
+    "regressor__scale__with_mean": true,
+    "regressor__scale__with_std": true,
+    "regressor__model__activation": "tanh",
+    "regressor__model__alpha": 1.0,
+    "regressor__model__batch_size": "auto",
+    "regressor__model__beta_1": 0.9,
+    "regressor__model__beta_2": 0.999,
+    "regressor__model__early_stopping": false,
+    "regressor__model__epsilon": 1e-08,
+    "regressor__model__hidden_layer_sizes": [
+      3
+    ],
+    "regressor__model__learning_rate": "constant",
+    "regressor__model__learning_rate_init": 0.001,
+    "regressor__model__loss": "squared_error",
+    "regressor__model__max_fun": 20000,
+    "regressor__model__max_iter": 2000,
+    "regressor__model__momentum": 0.9,
+    "regressor__model__n_iter_no_change": 10,
+    "regressor__model__nesterovs_momentum": true,
+    "regressor__model__power_t": 0.5,
+    "regressor__model__random_state": 101,
+    "regressor__model__shuffle": false,
+    "regressor__model__solver": "lbfgs",
+    "regressor__model__tol": 1e-06,
+    "regressor__model__validation_fraction": 0.1,
+    "regressor__model__verbose": false,
+    "regressor__model__warm_start": false,
+    "regressor": "Pipeline(steps=[('scale', StandardScaler()),\n                ('model',\n                 MLPRegressor(activation='tanh', alpha=1.0,\n                              hidden_layer_sizes=(3,), max_fun=20000,\n                              max_iter=2000, random_state=101, shuffle=False,\n                              solver='lbfgs', tol=1e-06))])",
+    "transformer__copy": true,
+    "transformer__with_mean": true,
+    "transformer__with_std": true,
+    "transformer": "StandardScaler()"
+  },
+  "log_cycle_OLS:None": {
+    "memory": null,
+    "steps": [
+      [
+        "scale",
+        "StandardScaler()"
+      ],
+      [
+        "model",
+        "LinearRegression()"
+      ]
+    ],
+    "transform_input": null,
+    "verbose": false,
+    "scale": "StandardScaler()",
+    "model": "LinearRegression()",
+    "scale__copy": true,
+    "scale__with_mean": true,
+    "scale__with_std": true,
+    "model__copy_X": true,
+    "model__fit_intercept": true,
+    "model__n_jobs": null,
+    "model__positive": false,
+    "model__tol": 1e-06
+  },
+  "DummyRegressor:None": {
+    "memory": null,
+    "steps": [
+      [
+        "scale",
+        "passthrough"
+      ],
+      [
+        "model",
+        "DummyRegressor()"
+      ]
+    ],
+    "transform_input": null,
+    "verbose": false,
+    "scale": "passthrough",
+    "model": "DummyRegressor()",
+    "model__constant": null,
+    "model__quantile": null,
+    "model__strategy": "mean"
+  }
+}

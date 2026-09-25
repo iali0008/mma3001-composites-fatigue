@@ -1,4 +1,7 @@
 # Original experiments and archives remain outside version control.
+# Entire local download, including logs, images, text and metadata.
+/data/2.+Composites/
+/data/2.+Composites.zip
 data/raw/
 2. Composites/
 2.+Composites/

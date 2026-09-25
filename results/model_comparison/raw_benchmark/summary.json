@@ -1,0 +1,18 @@
+{
+  "serial_median_seconds": 12.769258500000433,
+  "prefetch_median_seconds": 7.77122640000016,
+  "speedup": 1.643145861765161,
+  "artifact_hash_equivalence": {
+    "checkpoint_features.csv": true,
+    "coefficients.csv": true,
+    "exclusion_counts.csv": true,
+    "metrics.csv": true,
+    "predicted_vs_observed.png": true,
+    "predictions.csv": true,
+    "README.txt": true,
+    "recordings.csv": true,
+    "references.csv": true,
+    "source_hashes.json": true
+  },
+  "method": "Separate fresh processes; imports, extraction, hash checks, modelling and plot included. One warm-up each, three alternating measured pairs. OS caches not flushed. No profiler."
+}

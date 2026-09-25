@@ -9,7 +9,7 @@ import csv
 import hashlib
 import json
 import numpy as np
-from scipy.io import loadmat
+from raw_loading import iter_coupons
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -20,6 +20,8 @@ parser.add_argument('--data-root', required=True, type=Path,
 parser.add_argument('--output', type=Path,
                     default=Path(__file__).resolve().parents[1] / 'results' / 'rebuilt',
                     help='Separate output folder (default: results/rebuilt).')
+parser.add_argument('--workers', type=int, choices=(1, 4), default=1,
+                    help='MAT prefetch workers; serial remains the default.')
 args = parser.parse_args()
 data_root = args.data_root.expanduser().resolve()
 BASE = data_root / 'Layup1'
@@ -53,9 +55,9 @@ def save(name, rows):
 recordings, checkpoints, references, hashes, exclusions = [], [], [], {}, []
 for specimen, (folder, gain, amplitude) in SETTINGS.items():
     local = []
-    for path in sorted((BASE / folder / 'PZT-data').glob(specimen + '_*.mat')):
-        hashes[path.relative_to(data_root).as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
-        c = loadmat(path, simplify_cells=True)['coupon']
+    paths_to_load = sorted((BASE / folder / 'PZT-data').glob(specimen + '_*.mat'))
+    for path, source_digest, c in iter_coupons(paths_to_load, args.workers):
+        hashes[path.relative_to(data_root).as_posix()] = source_digest
         cycle, load = scalar(c.get('cycles', [])), scalar(c.get('load', []))
         label = scalar(c.get('straingage_data', {}).get('stiffness_degradation', []))
         r = dict(specimen=specimen, filename=path.name, cycles=cycle, load_kips=load,

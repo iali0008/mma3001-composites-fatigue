@@ -1,0 +1,9 @@
+workers,repetition,warmup,elapsed_seconds,numerical_outputs_match_baseline
+1,-1,True,12.66063480000048,True
+4,-1,True,7.728005499999199,True
+1,0,False,12.769258500000433,True
+4,0,False,8.00947940000151,True
+4,1,False,7.77122640000016,True
+1,1,False,12.695783099999971,True
+1,2,False,12.917981700000382,True
+4,2,False,7.723935699999856,True

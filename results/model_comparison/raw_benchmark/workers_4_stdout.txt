@@ -1,0 +1,30 @@
+Exploratory two-specimen comparison requiring an early reference measurement.
+Actuator 1 -> receiver 7, nominal 150 kHz; Loaded, 3.95-4.05 kips inclusive.
+L1S11 gain 33 / excitation 65; L1S12 gain 35 / excitation 50.
+Stored sampling rate 1.2e6 unchanged; both signal lengths 2000; samples 0-1999.
+Received PTP=max(x)-min(x); RMS=sqrt(mean((x-mean(x))**2)); then median across eligible repeats.
+Relative features = checkpoint median / earliest eligible checkpoint median, selected by cycle order.
+Reference targets are never used in fitting, scoring, or calibration; references are not assumed undamaged.
+All three models use an intercept and equal checkpoint weights. No tuning on the test specimen.
+Missing labels remain missing (including L1S12 20,000); the 30,000-cycle published jump is retained.
+No prediction clipping, filtering, alignment, gain correction, or label interpolation.
+Raw waveform units unknown; relative features dimensionless; MAE/RMSE in published-index units.
+Two specimens cannot establish broad transfer performance or distinguish specimen effects from acquisition-setting effects.
+OLS coefficients checked against QR; source SHA-256 hashes verified unchanged.
+
+References:
+{'specimen': 'L1S11', 'cycles': 1, 'filenames': 'L1S11_1_1_1.mat', 'rms_denominator': 689.383565662073, 'ptp_denominator': 4922.16552734375}
+{'specimen': 'L1S12', 'cycles': 1, 'filenames': 'L1S12_1_1_8.mat', 'rms_denominator': 658.4574074547975, 'ptp_denominator': 3645.8231201171875}
+
+Coverage:
+L1S11: 27 eligible recordings; 14 checkpoints; 13 fit/score checkpoints; 0 eligible recordings with signal flags.
+L1S12: 24 eligible recordings; 13 checkpoints; 12 fit/score checkpoints; 0 eligible recordings with signal flags.
+
+Held-out metrics:
+{'train_specimen': 'L1S11', 'test_specimen': 'L1S12', 'model': 'log10_cycles', 'train_checkpoints': 13, 'test_checkpoints': 12, 'MAE': 0.09029909937841256, 'RMSE': 0.10543148833030798}
+{'train_specimen': 'L1S11', 'test_specimen': 'L1S12', 'model': 'relative_rms', 'train_checkpoints': 13, 'test_checkpoints': 12, 'MAE': 0.07101260334151566, 'RMSE': 0.07270462775898054}
+{'train_specimen': 'L1S11', 'test_specimen': 'L1S12', 'model': 'relative_rms_and_ptp', 'train_checkpoints': 13, 'test_checkpoints': 12, 'MAE': 0.050531852911642174, 'RMSE': 0.058253681122976034}
+{'train_specimen': 'L1S12', 'test_specimen': 'L1S11', 'model': 'log10_cycles', 'train_checkpoints': 12, 'test_checkpoints': 13, 'MAE': 0.0920131996517434, 'RMSE': 0.09838145264971983}
+{'train_specimen': 'L1S12', 'test_specimen': 'L1S11', 'model': 'relative_rms', 'train_checkpoints': 12, 'test_checkpoints': 13, 'MAE': 0.05690550011520003, 'RMSE': 0.0608756118843625}
+{'train_specimen': 'L1S12', 'test_specimen': 'L1S11', 'model': 'relative_rms_and_ptp', 'train_checkpoints': 12, 'test_checkpoints': 13, 'MAE': 0.02935699038052205, 'RMSE': 0.035001220146199725}
+

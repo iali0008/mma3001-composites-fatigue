@@ -1,0 +1,7 @@
+variant,train_specimen,test_specimen,lowest_MAE_model,lowest_RMSE_model
+median,L1S11,L1S12,relative_rms_and_ptp,relative_rms_and_ptp
+median,L1S12,L1S11,relative_rms_and_ptp,relative_rms_and_ptp
+first,L1S11,L1S12,relative_rms_and_ptp,relative_rms_and_ptp
+first,L1S12,L1S11,relative_rms_and_ptp,relative_rms_and_ptp
+last,L1S11,L1S12,relative_rms_and_ptp,relative_rms_and_ptp
+last,L1S12,L1S11,relative_rms,relative_rms

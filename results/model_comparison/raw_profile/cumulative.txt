@@ -1,0 +1,50 @@
+Fri Sep 25 14:24:27 2026    D:\Saneeh\Monash\Year 3\MMA3001\Projects\mma3001-composites-fatigue\results\model_comparison\raw_profile\workflow.prof
+
+         7256735 function calls (7137445 primitive calls) in 16.778 seconds
+
+   Ordered by: cumulative time
+   List reduced from 4959 to 40 due to restriction <40>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+    459/2    0.007    0.000   15.144    7.572 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\text.py:926(get_window_extent)
+    462/2    0.302    0.001   15.144    7.572 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\text.py:358(_get_layout)
+      254    0.015    0.000   10.121    0.040 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\io\matlab\_mio.py:86(loadmat)
+      254    0.005    0.000    9.991    0.039 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\io\matlab\_mio5.py:293(get_variables)
+      254    7.745    0.030    8.791    0.035 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\io\matlab\_mio5.py:274(read_var_array)
+   585/14    0.005    0.000    1.910    0.136 <frozen importlib._bootstrap>:1349(_find_and_load)
+   576/14    0.004    0.000    1.909    0.136 <frozen importlib._bootstrap>:1304(_find_and_load_unlocked)
+   566/15    0.003    0.000    1.899    0.127 <frozen importlib._bootstrap>:911(_load_unlocked)
+   501/15    0.003    0.000    1.898    0.127 <frozen importlib._bootstrap_external>:1020(exec_module)
+  1362/25    0.002    0.000    1.887    0.075 <frozen importlib._bootstrap>:480(_call_with_frames_removed)
+   499/60    0.001    0.000    1.594    0.027 {built-in method builtins.__import__}
+  792/384    0.003    0.000    1.555    0.004 <frozen importlib._bootstrap>:1390(_handle_fromlist)
+     2533    1.260    0.000    1.260    0.000 {method 'read' of '_io.BufferedReader' objects}
+      508    0.003    0.000    1.239    0.002 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\pathlib\_abc.py:621(read_bytes)
+      509    1.160    0.002    1.160    0.002 {built-in method _hashlib.openssl_sha256}
+        1    0.001    0.001    0.802    0.802 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\pyplot.py:1(<module>)
+      254    0.001    0.000    0.795    0.003 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\io\matlab\_mio5.py:139(_simplify_cells)
+64661/254    0.325    0.000    0.793    0.003 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\io\matlab\_mio5.py:125(_matstruct_to_dict)
+      254    0.052    0.000    0.787    0.003 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\io\matlab\_mio5.py:111(_inspect_cell_array)
+      276    0.016    0.000    0.706    0.003 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\axis.py:1276(_update_ticks)
+    74220    0.252    0.000    0.660    0.000 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\copy.py:62(copy)
+1477/1389    0.029    0.000    0.609    0.000 {built-in method builtins.__build_class__}
+        1    0.000    0.000    0.488    0.488 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\io\__init__.py:1(<module>)
+      501    0.008    0.000    0.485    0.001 <frozen importlib._bootstrap_external>:1093(get_code)
+        1    0.000    0.000    0.437    0.437 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\io\matlab\__init__.py:1(<module>)
+      106    0.006    0.000    0.434    0.004 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\artist.py:158(_update_set_signature_and_docstring)
+      105    0.001    0.000    0.425    0.004 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\artist.py:125(__init_subclass__)
+        1    0.000    0.000    0.422    0.422 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\io\matlab\_mio.py:1(<module>)
+        1    0.000    0.000    0.408    0.408 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\io\matlab\_mio4.py:1(<module>)
+        1    0.000    0.000    0.404    0.404 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\__init__.py:1(<module>)
+        1    0.000    0.000    0.399    0.399 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\figure.py:1(<module>)
+      254    0.378    0.001    0.378    0.001 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\io\matlab\_mio5.py:239(read_var_header)
+        1    0.000    0.000    0.377    0.377 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\projections\__init__.py:1(<module>)
+        1    0.000    0.000    0.367    0.367 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py:1(<module>)
+        1    0.000    0.000    0.364    0.364 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_sputils.py:1(<module>)
+        1    0.000    0.000    0.363    0.363 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\_lib\_util.py:1(<module>)
+        1    0.000    0.000    0.360    0.360 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\_lib\_array_api.py:1(<module>)
+   514462    0.189    0.000    0.353    0.000 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_core\fromnumeric.py:1620(squeeze)
+        1    0.001    0.001    0.338    0.338 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\__init__.py:1(<module>)
+      120    0.001    0.000    0.335    0.003 C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\artist.py:1832(kwdoc)
+
+

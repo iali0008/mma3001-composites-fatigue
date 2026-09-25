@@ -2,7 +2,7 @@
 
 An exploratory engineering project investigating whether reference-normalised ultrasonic features estimate a published stiffness-degradation index better than a cycle-count baseline.
 
-**Current stage:** the first two-specimen regression experiment is complete. This repository collects the work already performed; its initial import does not recreate an earlier Git history.
+**Current stage:** the median regression, repeat sensitivity and predeclared four-family regression comparison are complete. Linear regression has the lowest evaluation MAE in L1S11 -> L1S12; the small MLP has the lowest MAE in the reverse direction. These are exploratory specimen-held-out validation results, with no untouched final test specimen.
 
 ## Question and scope
 
@@ -38,17 +38,30 @@ The replay reads the included checkpoint table and writes new CSVs under `result
 
 ## Rebuild from the NASA files
 
-Keep the original downloaded dataset outside this repository. Pass the **directory containing `Layup1`**, usually named `2. Composites`:
+The local download is in the ignored `data/2.+Composites/` directory. Inspection confirmed that its `2. Composites` child contains `Layup1`, `Layup2` and `Layup3`. Pass that child directory:
 
 ```powershell
-.\.venv\Scripts\python.exe scripts/exploratory_regression.py --data-root "D:\path\to\2. Composites"
+.\.venv\Scripts\python.exe scripts/exploratory_regression.py --data-root "data/2.+Composites/2. Composites"
 ```
 
-Replace the example path with your actual extracted dataset directory. No re-extraction or moving the NASA files is required. Outputs go to `results/rebuilt/`. The script refuses an output directory within the original data or the recorded baseline.
+No re-extraction or moving the NASA files is required. Outputs go to `results/rebuilt/`. The script refuses an output directory within the original data or the recorded baseline.
 
-See [data setup](data/README.md) for the source and expected layout. The raw-data entry point has been made portable; full extraction still needs to be rerun on the student's machine because the MAT files are not included here.
+See [data setup](data/README.md) for the actual layout and exclusions. Raw extraction has now reproduced the recorded baseline locally. Original files remain excluded from Git, including documentation, logbooks and X-rays.
+
+## Repeat-recording sensitivity
+
+```powershell
+.\.venv\Scripts\python.exe scripts/repeat_sensitivity.py --data-root "data/2.+Composites/2. Composites"
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+```
+
+Original logbook timestamps uniquely order all 51 eligible recordings within their checkpoints. The comparison keeps the 27 checkpoints (25 after excluding references), targets, references and denominators, eligibility, model definitions and specimen splits fixed, and refits each model for median, first and last selection.
+
+The two-feature model remains best on MAE and RMSE for first repeats in both directions and for last repeats in L1S11 -> L1S12. For last repeats in L1S12 -> L1S11, **RMS-only is best** (MAE 0.031399; RMSE 0.034864), ahead of two features (0.033315; 0.038596). Thus the original ranking is sensitive to repeat selection. Full metrics and changes are in [the sensitivity results](results/repeat_sensitivity/README.md). This is still a two-specimen exploratory study.
 
 ## First experiment
+
+The original experiment below is preserved. The later model-family comparison uses the same two median signal features and data boundaries; it does not replace these recorded results.
 
 14 labelled nonzero-cycle checkpoints were retained for L1S11 and 13 for L1S12. Removing one reference per specimen leaves **13 and 12 checkpoints** for fitting/scoring. Multiple checkpoints from one specimen remain correlated.
 
@@ -71,6 +84,9 @@ Errors are in published-index units. The two-feature model reduces MAE by about 
 |---|---|
 | `scripts/exploratory_regression.py` | Rebuild features, models and plots from the external MAT dataset |
 | `scripts/reproduce_results.py` | Independently refit the exported features using centred QR |
+| `docs/model_comparison_protocol.md`, `config/model_comparison.json` | Protocol and fixed settings written before running the new comparisons |
+| `scripts/model_comparison.py` | Reference audit, six-comparator evaluation, all MLP seeds, repeated timings and plots |
+| `results/model_comparison/` | Comparison scores, predictions, warnings, provenance, timing and raw-workflow profiling |
 | `results/baseline/` | Recorded first experiment: features, references, predictions, metrics and plot |
 | `tests/` | Scientific-result reproduction and checks against target leakage |
 | `docs/methodology.md` | Selection rules, equations and validation design |
@@ -78,6 +94,37 @@ Errors are in published-index units. The two-feature model reduces MAE by about 
 | `docs/ai-use.md` | Record of AI assistance, for student review |
 | `docs/github-setup.md` | Creating the private GitHub remote and normal commit workflow |
 | `archive/` | Earlier exploratory scripts, figures and audit summaries |
+
+## Week 5 model-family comparison
+
+Install the updated requirements (including scikit-learn and threadpoolctl), then run:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/model_comparison.py --data-root "data/2.+Composites/2. Composites"
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+```
+
+MAE is primary; RMSE and residual patterns support interpretation. All four families use checkpoint-median relative RMS and relative peak-to-peak. The log-cycle OLS and training-mean Dummy are controls. Input scaling is learned on the training specimen only; SVR/MLP target scaling is likewise training-only and predictions are returned to published-index units. The target-independent acquisition/waveform reference audit preserves both original cycle-1 reference files and denominators exactly.
+
+| Model | MAE: L1S11 -> L1S12 | MAE: L1S12 -> L1S11 |
+|---|---:|---:|
+| LinearRegression | **0.050532** | 0.029357 |
+| DecisionTreeRegressor | 0.105158 | 0.045803 |
+| RBF SVR | 0.111193 | 0.056257 |
+| Small MLP, median across five seeds | 0.078193 | **0.020942** |
+| Log-cycle OLS | 0.090299 | 0.092013 |
+| Training-mean Dummy | 0.107731 | 0.083110 |
+
+MLP MAE ranges across the fixed seeds are 0.074266--0.078196 and 0.020936--0.021264 respectively. No seed was selected and no convergence warnings occurred. There is no overall winner across directions. Full training/evaluation MAE, RMSE and R², seed-specific results, plots and timing evidence are in [comparison results](results/model_comparison/README.md) and [interpretation](results/model_comparison/INTERPRETATION.md).
+
+Raw-workflow profiling and unprofiled serial/prefetch measurements are separate commands:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/profile_raw_workflow.py --data-root "data/2.+Composites/2. Composites"
+.\.venv\Scripts\python.exe scripts/benchmark_raw_workflow.py --data-root "data/2.+Composites/2. Composites"
+```
+
+MAT parsing was the measured bottleneck. A bounded ordered prefetch option is available as `--workers 4` on `scripts/exploratory_regression.py`; default `--workers 1` preserves serial execution. All original hash/selection checks remain enabled. Timing results are local observations, not general hardware benchmarks.
 
 ## Limitations
 

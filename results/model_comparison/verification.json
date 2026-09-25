@@ -1,0 +1,52 @@
+{
+  "git_exclusions": {
+    "all_raw_files_ignored": 2607,
+    "tracked_raw_files": 0,
+    "staged_raw_files": 0,
+    "data_readme_tracked": true,
+    "scopes": [
+      "data/2.+Composites",
+      "data/2.+Composites.zip"
+    ]
+  },
+  "source_metadata_unchanged": 2607,
+  "surveyed_mat_hashes_unchanged": 254,
+  "historical_outputs_hashes_unchanged": {
+    "results/baseline/checkpoint_features.csv": "0a202675ba2718d020b0f6084f95721bd69015a4fa53d65eb9920c4f77c84a3c",
+    "results/baseline/coefficients.csv": "fa89fb8ce01f2ea087c41b763c311aa3780c55d1eaffb5404c1a2fbca8c49afb",
+    "results/baseline/exclusion_counts.csv": "1b4a15a943ba772857cf9cca109627835e264ed1d98d346c02b80b5221f3ace7",
+    "results/baseline/metrics.csv": "231d1c9b9838c5e57705c5aad00bdea10695ee9312474fb8a2cb5dc193400661",
+    "results/baseline/predicted_vs_observed.png": "6004b7c75da78552672ead6a716d1b76e152eb5b9d5929ca358bc6e2ecb24e4f",
+    "results/baseline/predictions.csv": "cbf01f1bb8f694e98805ead6de9c95664f8548a2a9ade857e77a85239b7dddda",
+    "results/baseline/README.txt": "66e0d9545751ceb838ed47780dc51580721a1611dc7bd46f76eef855788a3d4e",
+    "results/baseline/recordings.csv": "d83d29dc9fef78a26dda1acd5a01bc8fc1c319192ff9a0d5e5ec27a35ff27535",
+    "results/baseline/references.csv": "00da393824178d78054844e85a3150052f1adf2eb4e36991711e69abd94ddc5a",
+    "results/baseline/source_hashes.json": "ecc03b1808a556ff56c93c739d536caa64354a9d94ffca3b559051fb35ad29a3",
+    "results/repeat_sensitivity/coefficients.csv": "cc43b2d0f0766e05aa2e5caa09e918db352d182de7b3651cbb899f0dfd940d3c",
+    "results/repeat_sensitivity/first_checkpoint_features.csv": "45166f71774dee04325e5bcd6be14cea23f9170695636c4c98ef27a26ffb3a15",
+    "results/repeat_sensitivity/last_checkpoint_features.csv": "c5316a9daea52c39e8e4f3284f589130af8bfebe5725459fca0311010f4cb46f",
+    "results/repeat_sensitivity/median_checkpoint_features.csv": "61a4f645bc61d4803e8bfb96075ef4ce137e887af56dd350cc8f870d1d83a224",
+    "results/repeat_sensitivity/metrics.csv": "db5e12b94407d213b4535447d9b34b14c566a5d16538284e3d4d006de8117ee5",
+    "results/repeat_sensitivity/predictions.csv": "bc5c4376f83114dcc30e0fbd264d45f871d17da5cd9f464a83386387f19b62d2",
+    "results/repeat_sensitivity/rankings.csv": "f9edb8f8877d8748f58391e9445bb9b72d72243c8683a14f769eda2fda724c1a",
+    "results/repeat_sensitivity/README.md": "f76b2e53cb2b8038424e9ce69445c5abc4ade6252af7360809114aefc150c88a",
+    "results/repeat_sensitivity/references.csv": "00da393824178d78054844e85a3150052f1adf2eb4e36991711e69abd94ddc5a",
+    "results/repeat_sensitivity/selection_provenance.csv": "b7fd51cd5017a69e743cace089d21d4966bf2e281f9a33086f538b47e1123cb7",
+    "results/repeat_sensitivity/source_inventory.json": "bd5a27b001cff4defe56942ec9bbea7e2c9a531aaa1c1d3927a99b816bbd1799",
+    "results/repeat_sensitivity/verification.json": "48ae07cfc805758d536ba1561e8955c0a76eb2b83a648b2efe5b5f7ec22f4d38",
+    "results/repeat_sensitivity/median_rebuild/checkpoint_features.csv": "0a202675ba2718d020b0f6084f95721bd69015a4fa53d65eb9920c4f77c84a3c",
+    "results/repeat_sensitivity/median_rebuild/coefficients.csv": "fa89fb8ce01f2ea087c41b763c311aa3780c55d1eaffb5404c1a2fbca8c49afb",
+    "results/repeat_sensitivity/median_rebuild/exclusion_counts.csv": "1b4a15a943ba772857cf9cca109627835e264ed1d98d346c02b80b5221f3ace7",
+    "results/repeat_sensitivity/median_rebuild/metrics.csv": "231d1c9b9838c5e57705c5aad00bdea10695ee9312474fb8a2cb5dc193400661",
+    "results/repeat_sensitivity/median_rebuild/predicted_vs_observed.png": "ab2c2054911ce5790a032b3372d41c63964266d72062bd690ad1ca5f4443704a",
+    "results/repeat_sensitivity/median_rebuild/predictions.csv": "cbf01f1bb8f694e98805ead6de9c95664f8548a2a9ade857e77a85239b7dddda",
+    "results/repeat_sensitivity/median_rebuild/README.txt": "66e0d9545751ceb838ed47780dc51580721a1611dc7bd46f76eef855788a3d4e",
+    "results/repeat_sensitivity/median_rebuild/recordings.csv": "d83d29dc9fef78a26dda1acd5a01bc8fc1c319192ff9a0d5e5ec27a35ff27535",
+    "results/repeat_sensitivity/median_rebuild/references.csv": "00da393824178d78054844e85a3150052f1adf2eb4e36991711e69abd94ddc5a",
+    "results/repeat_sensitivity/median_rebuild/source_hashes.json": "abbc0ff3fda3980916a9dc3cb66610f1fdfea930d72b8ae2b9d3f6e40d938112"
+  },
+  "target_independent_references_preserved": true,
+  "sklearn_ols_matches_baseline": true,
+  "convergence_warnings": 0,
+  "completed_utc": "2026-09-25T04:29:42.314855+00:00"
+}

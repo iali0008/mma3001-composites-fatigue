@@ -1,3 +1,6 @@
 numpy>=1.26,<3
 scipy>=1.11,<2
 matplotlib>=3.8,<4
+openpyxl>=3.1,<4
+scikit-learn>=1.6,<2
+threadpoolctl>=3.5,<4

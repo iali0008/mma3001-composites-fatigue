@@ -1,0 +1,38 @@
+{
+  "baseline_reproduced": true,
+  "independent_ols_agrees": true,
+  "git_exclusions": {
+    "all_raw_files_ignored": 2607,
+    "tracked_raw_files": 0,
+    "staged_raw_files": 0,
+    "data_readme_tracked": true,
+    "scopes": [
+      "data/2.+Composites",
+      "data/2.+Composites.zip"
+    ]
+  },
+  "source_files_metadata_unchanged": 2607,
+  "mat_hashes_match_baseline": true,
+  "logbook_hashes_unchanged": {
+    "Layup1/L1_S11_F/L1S11.xlsx": "bdf80cd420b9d6ce8ff92ddadb3116af9d92f191cba26b0d8a5a5ce2ad2b5a4d",
+    "Layup1/L1_S12_F/L1S12.xlsx": "844e63cc49d285689f650ea715af1adf18c5ebc8425f6983f015f08dffd571f2"
+  },
+  "baseline_hashes_unchanged": {
+    "checkpoint_features.csv": "0a202675ba2718d020b0f6084f95721bd69015a4fa53d65eb9920c4f77c84a3c",
+    "coefficients.csv": "fa89fb8ce01f2ea087c41b763c311aa3780c55d1eaffb5404c1a2fbca8c49afb",
+    "exclusion_counts.csv": "1b4a15a943ba772857cf9cca109627835e264ed1d98d346c02b80b5221f3ace7",
+    "metrics.csv": "231d1c9b9838c5e57705c5aad00bdea10695ee9312474fb8a2cb5dc193400661",
+    "predicted_vs_observed.png": "6004b7c75da78552672ead6a716d1b76e152eb5b9d5929ca358bc6e2ecb24e4f",
+    "predictions.csv": "cbf01f1bb8f694e98805ead6de9c95664f8548a2a9ade857e77a85239b7dddda",
+    "README.txt": "66e0d9545751ceb838ed47780dc51580721a1611dc7bd46f76eef855788a3d4e",
+    "recordings.csv": "d83d29dc9fef78a26dda1acd5a01bc8fc1c319192ff9a0d5e5ec27a35ff27535",
+    "references.csv": "00da393824178d78054844e85a3150052f1adf2eb4e36991711e69abd94ddc5a",
+    "source_hashes.json": "ecc03b1808a556ff56c93c739d536caa64354a9d94ffca3b559051fb35ad29a3"
+  },
+  "filename_ordered_checkpoints": [],
+  "data_root": "data/2.+Composites/2. Composites",
+  "python": "3.13.3",
+  "numpy": "2.3.0",
+  "scipy": "1.17.1",
+  "openpyxl": "3.1.5"
+}

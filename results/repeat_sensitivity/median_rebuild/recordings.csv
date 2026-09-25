@@ -1,0 +1,255 @@
+specimen,filename,cycles,load_kips,published_index,condition,published_jump_flag,peak_to_peak,mean_centred_rms,gain,amplitude,sampling_rate,signal_actuator_length,signal_actuator_nonfinite,signal_actuator_constant,signal_sensor_length,signal_sensor_nonfinite,signal_sensor_constant,eligible,exclusion_reasons
+L1S11,L1S11_0_0.mat,0.0,0.0,0.0,Baseline,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_0_1_1.mat,0.0,0.502,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; load outside 3.95-4.05 kips
+L1S11,L1S11_0_1_10.mat,0.0,0.997,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; load outside 3.95-4.05 kips
+L1S11,L1S11_0_1_11.mat,0.0,1.502,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; load outside 3.95-4.05 kips
+L1S11,L1S11_0_1_12.mat,0.0,2.0,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; load outside 3.95-4.05 kips
+L1S11,L1S11_0_1_13.mat,0.0,2.504,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; load outside 3.95-4.05 kips
+L1S11,L1S11_0_1_14.mat,0.0,2.998,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; load outside 3.95-4.05 kips
+L1S11,L1S11_0_1_15.mat,0.0,3.498,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; load outside 3.95-4.05 kips
+L1S11,L1S11_0_1_16.mat,0.0,3.999,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint
+L1S11,L1S11_0_1_17.mat,0.0,4.5,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; load outside 3.95-4.05 kips
+L1S11,L1S11_0_1_18.mat,0.0,5.004,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; load outside 3.95-4.05 kips
+L1S11,L1S11_0_1_19.mat,0.0,5.498,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; load outside 3.95-4.05 kips
+L1S11,L1S11_0_1_2.mat,0.0,1.002,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; load outside 3.95-4.05 kips
+L1S11,L1S11_0_1_20.mat,0.0,5.998,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; load outside 3.95-4.05 kips
+L1S11,L1S11_0_1_21.mat,0.0,6.501,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; load outside 3.95-4.05 kips
+L1S11,L1S11_0_1_22.mat,0.0,7.004,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; load outside 3.95-4.05 kips
+L1S11,L1S11_0_1_3.mat,0.0,1.501,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; load outside 3.95-4.05 kips
+L1S11,L1S11_0_1_4.mat,0.0,1.997,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; load outside 3.95-4.05 kips
+L1S11,L1S11_0_1_5.mat,0.0,2.502,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; load outside 3.95-4.05 kips
+L1S11,L1S11_0_1_6.mat,0.0,3.0,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; load outside 3.95-4.05 kips
+L1S11,L1S11_0_1_7.mat,0.0,3.498,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; load outside 3.95-4.05 kips
+L1S11,L1S11_0_1_8.mat,0.0,4.007,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint
+L1S11,L1S11_0_1_9.mat,0.0,0.505,0.0,loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; load outside 3.95-4.05 kips
+L1S11,L1S11_0_2_1.mat,0.0,0.0,0.0,clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_0_2_2.mat,0.0,-0.003,0.0,clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_0_2_3.mat,0.0,0.0,0.0,clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_0_2_4.mat,0.0,-0.001,0.0,clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_0_3_1.mat,0.0,0.0,0.0,traction free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_0_3_2.mat,0.0,0.0,0.0,traction free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_100000_1_1.mat,100000.0,4.014,0.120155531,Loaded,False,5035.848876953125,585.9357043591258,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_100000_1_2.mat,100000.0,4.0,0.120155531,Loaded,False,5090.42626953125,600.6973755685401,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_100000_2_1.mat,100000.0,0.0,0.120155531,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_100000_2_2.mat,100000.0,0.0,0.120155531,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_100000_3_1.mat,100000.0,0.0,0.120155531,Traction free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_100000_3_2.mat,100000.0,0.0,0.120155531,Traction free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_10000_1_1.mat,10000.0,4.013,0.076005931,Loaded,False,4874.881591796875,582.5165598308197,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_10000_1_2.mat,10000.0,4.004,0.076005931,Loaded,False,4317.610107421875,512.2721482709344,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_10000_2_1.mat,10000.0,0.0,0.076005931,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_10000_2_2.mat,10000.0,-0.002,0.076005931,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_10000_3_1.mat,10000.0,0.0,0.076005931,Traction free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_10000_3_2.mat,10000.0,0.0,0.076005931,Traction free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_1000_1_1.mat,1000.0,4.008,0.069766198,Loaded,False,4867.245361328125,602.7022820963597,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_1000_1_2.mat,1000.0,0.0,0.069766198,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_1000_1_3.mat,1000.0,4.0,0.069766198,Loaded,False,4885.167724609375,609.4511094287836,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_1000_2_1.mat,1000.0,-0.004,0.069766198,clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_1000_2_2.mat,1000.0,0.0,0.069766198,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_1000_3_1.mat,1000.0,0.0,0.069766198,Traction free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_100_1_1.mat,100.0,3.993,0.060735707,Loaded,False,4883.952392578125,636.1986096534936,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_100_1_2.mat,100.0,3.998,0.060735707,Loaded,False,4865.97509765625,639.7010610670428,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_100_2_1.mat,100.0,0.0,0.060735707,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_100_2_2.mat,100.0,-0.001,0.060735707,clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_100_3_1.mat,100.0,0.0,0.060735707,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_100_3_2.mat,100.0,0.0,0.060735707,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_10_1_1.mat,10.0,3.991,0.045813245,loaded,False,4918.46337890625,676.3809607246823,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_10_1_2.mat,10.0,3.999,0.045813245,Loaded,False,4896.466552734375,677.213014499643,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_10_2_1.mat,10.0,0.002,0.045813245,clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_10_2_2.mat,10.0,-0.001,0.045813245,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_10_3_1.mat,10.0,0.0,0.045813245,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_10_3_2.mat,10.0,0.0,0.045813245,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_125000_1_1.mat,125000.0,4.005,,Loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index
+L1S11,L1S11_125000_1_2.mat,125000.0,4.001,,Loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index
+L1S11,L1S11_125000_2_1.mat,125000.0,0.0,,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_125000_2_2.mat,125000.0,0.0,,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_125000_3_1.mat,125000.0,0.0,,Traction free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_125000_3_2.mat,125000.0,0.0,,Traction free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_150000_1_1.mat,150000.0,4.008,,Loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index
+L1S11,L1S11_150000_1_2.mat,150000.0,4.001,,Loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index
+L1S11,L1S11_150000_2_1.mat,150000.0,0.0,,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_150000_2_2.mat,150000.0,0.0,,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_150000_3_1.mat,150000.0,0.0,,Traction free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_150000_3_2.mat,150000.0,0.0,,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_175000_1_1.mat,175000.0,4.003,,Loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index
+L1S11,L1S11_175000_1_2.mat,175000.0,0.002,,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_175000_3_1.mat,175000.0,0.0,,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_175000_3_2.mat,175000.0,0.0,,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_177000_1_1.mat,177000.0,4.003,,Loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index
+L1S11,L1S11_177000_2_1.mat,177000.0,0.001,,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_177000_3_1.mat,177000.0,0.0,,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_177309_2_1.mat,177309.0,-0.001,,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_177309_2_2.mat,177309.0,-0.001,,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_177309_3_1.mat,177309.0,0.0,,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_1_1_1.mat,1.0,3.997,0.055036381,loaded,False,4922.16552734375,689.383565662073,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_1_2_1.mat,1.0,0.0,0.055036381,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_1_3_1.mat,1.0,0.0,0.055036381,traction free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_1_3_2.mat,1.0,0.0,0.055036381,traction free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_20000_1_1.mat,20000.0,4.003,0.098380137,Loaded,False,4334.50341796875,514.1381614118999,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_20000_1_2.mat,20000.0,4.001,0.098380137,Loaded,False,4317.49560546875,513.7081823909584,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_20000_2_1.mat,20000.0,0.0,0.098380137,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_20000_2_2.mat,20000.0,0.002,0.098380137,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_20000_3_1.mat,20000.0,0.0,0.098380137,Traction free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_20000_3_2.mat,20000.0,0.0,0.098380137,Traction free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_227000_1_1.mat,227000.0,4.004,,Loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index
+L1S11,L1S11_227000_1_2.mat,227000.0,4.005,,Loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index
+L1S11,L1S11_227000_1_3.mat,227000.0,4.005,,Loaded,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index
+L1S11,L1S11_227000_2_1.mat,227000.0,0.0,,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_227000_2_2.mat,227000.0,0.0,,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_227000_2_3.mat,227000.0,0.0,,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_227000_3_1.mat,227000.0,0.0,,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_227000_3_2.mat,227000.0,0.0,,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_227000_3_3.mat,227000.0,0.0,,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_30000_1_1.mat,30000.0,3.999,0.10051699,loaded,False,4967.796875,591.7139821395681,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_30000_1_2.mat,30000.0,4.002,0.10051699,Loaded,False,4904.298828125,582.8317431271516,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_30000_2_1.mat,30000.0,0.0,0.10051699,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_30000_2_2.mat,30000.0,0.005,0.10051699,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_30000_2_3.mat,30000.0,0.001,0.10051699,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_30000_2_4.mat,30000.0,0.0,0.10051699,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_30000_3_1.mat,30000.0,0.0,0.10051699,Traction free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_30000_3_2.mat,30000.0,0.0,0.10051699,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_40000_1_1.mat,40000.0,4.013,0.11226211,Loaded,False,4886.429931640625,579.4815045916059,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_40000_1_2.mat,40000.0,4.0,0.11226211,Loaded,False,4879.93017578125,577.8422914917667,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_40000_2_1.mat,40000.0,0.002,0.11226211,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_40000_2_2.mat,40000.0,0.002,0.11226211,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_40000_3_1.mat,40000.0,0.0,0.11226211,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_40000_3_2.mat,40000.0,0.0,0.11226211,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_50000_1_1.mat,50000.0,4.001,0.118553783,Loaded,False,4871.843017578125,571.3397945633565,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_50000_1_2.mat,50000.0,4.0,0.118553783,loaded,False,4902.81103515625,580.0946394070579,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_50000_2_1.mat,50000.0,0.0,0.118553783,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_50000_2_2.mat,50000.0,0.0,0.118553783,clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_50000_3_1.mat,50000.0,0.0,0.118553783,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_50000_3_2.mat,50000.0,0.0,0.118553783,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_60000_1_1.mat,60000.0,4.007,0.10426744,loaded,False,4883.75927734375,572.4110006994262,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_60000_1_2.mat,60000.0,3.999,0.10426744,Loaded,False,4933.6728515625,578.8771986816872,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_60000_2_1.mat,60000.0,0.002,0.10426744,clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_60000_2_2.mat,60000.0,0.0,0.10426744,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_60000_3_1.mat,60000.0,0.0,0.10426744,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_60000_3_2.mat,60000.0,0.0,0.10426744,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_70000_1_1.mat,70000.0,4.007,0.128221136,Loaded,False,4918.8818359375,570.4170501608006,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_70000_1_2.mat,70000.0,4.001,0.128221136,loaded,False,4934.037109375,577.1376874186448,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_70000_2_1.mat,70000.0,0.003,0.128221136,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_70000_2_2.mat,70000.0,0.003,0.128221136,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_70000_3_1.mat,70000.0,0.0,0.128221136,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_70000_3_2.mat,70000.0,0.0,0.128221136,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_70000_3_3.mat,70000.0,0.0,0.128221136,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_80000_1_1.mat,80000.0,4.016,0.12236086,loaded,False,4922.0830078125,569.0716293409722,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_80000_1_2.mat,80000.0,4.0,0.12236086,loaded,False,4934.183837890625,569.9966208737341,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_80000_2_1.mat,80000.0,0.0,0.12236086,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_80000_2_2.mat,80000.0,0.001,0.12236086,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_80000_3_1.mat,80000.0,0.0,0.12236086,Traction Free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_80000_3_2.mat,80000.0,0.0,0.12236086,Traction free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_90000_1_1.mat,90000.0,4.017,0.11445585,loaded,False,4921.943115234375,566.4222071426173,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_90000_1_2.mat,90000.0,4.0,0.11445585,Loaded,False,4971.23046875,576.269929264194,33.0,65.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S11,L1S11_90000_2_1.mat,90000.0,0.0,0.11445585,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_90000_2_2.mat,90000.0,0.0,0.11445585,Clamped,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_90000_3_1.mat,90000.0,0.0,0.11445585,Traction free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S11,L1S11_90000_3_2.mat,90000.0,0.0,0.11445585,Traction free,False,,,33.0,65.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_0_0.mat,0.0,0.0,0.0,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_0_2_1.mat,0.0,0.0,0.0,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,not a positive-cycle checkpoint; condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_100000_1_1.mat,100000.0,4.01,0.245730332,Loaded,False,3037.946533203125,364.4164137523037,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_100000_2_1.mat,100000.0,0.0,0.245730332,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_100000_3_1.mat,100000.0,0.0,0.245730332,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_10000_1_1.mat,10000.0,4.018,0.084112497,Loaded,False,3253.13916015625,439.39697235930305,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_10000_1_2.mat,10000.0,4.0,0.084112497,Loaded,False,3548.6463623046875,481.1089694214493,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_10000_2_1.mat,10000.0,-0.001,0.084112497,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_10000_2_2.mat,10000.0,0.0,0.084112497,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_10000_3_1.mat,10000.0,0.0,0.084112497,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_10000_3_2.mat,10000.0,0.0,0.084112497,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_1000_1_1.mat,1000.0,4.014,0.059726484,Loaded,False,3230.2508544921875,490.54140696915,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_1000_1_2.mat,1000.0,4.002,0.059726484,Loaded,False,3104.52783203125,488.8665176176075,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_1000_2_1.mat,1000.0,0.0,0.059726484,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_1000_2_2.mat,1000.0,0.001,0.059726484,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_1000_3_1.mat,1000.0,0.0,0.059726484,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_1000_3_2.mat,1000.0,0.0,0.059726484,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_100_1_1.mat,100.0,4.011,0.047985147,Loaded,False,3238.799072265625,528.9531230569698,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_100_1_2.mat,100.0,4.004,0.047985147,Loaded,False,3267.9620361328125,542.2048440166907,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_100_2_1.mat,100.0,0.001,0.047985147,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_100_2_2.mat,100.0,0.001,0.047985147,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_100_3_1.mat,100.0,0.0,0.047985147,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_100_3_2.mat,100.0,0.0,0.047985147,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_10_1_1.mat,10.0,4.003,0.051679586,Loaded,False,3266.1705322265625,553.8429078200529,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_10_1_2.mat,10.0,4.0,0.051679586,Loaded,False,3287.5186767578125,563.0508764966362,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_10_2_1.mat,10.0,0.0,0.051679586,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_10_2_2.mat,10.0,0.0,0.051679586,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_10_3_1.mat,10.0,0.0,0.051679586,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_10_3_2.mat,10.0,0.0,0.051679586,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_1_1_1.mat,1.0,0.501,0.043288345,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,load outside 3.95-4.05 kips
+L1S12,L1S12_1_1_2.mat,1.0,1.001,0.043288345,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,load outside 3.95-4.05 kips
+L1S12,L1S12_1_1_3.mat,1.0,1.501,0.043288345,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,load outside 3.95-4.05 kips
+L1S12,L1S12_1_1_4.mat,1.0,2.001,0.043288345,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,load outside 3.95-4.05 kips
+L1S12,L1S12_1_1_5.mat,1.0,2.5,0.043288345,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,load outside 3.95-4.05 kips
+L1S12,L1S12_1_1_6.mat,1.0,3.0,0.043288345,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,load outside 3.95-4.05 kips
+L1S12,L1S12_1_1_7.mat,1.0,3.503,0.043288345,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,load outside 3.95-4.05 kips
+L1S12,L1S12_1_1_8.mat,1.0,4.003,0.043288345,Loaded,False,3645.8231201171875,658.4574074547975,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_1_2_1.mat,1.0,0.0,0.043288345,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_1_3_1.mat,1.0,0.0,0.043288345,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_1_3_2.mat,1.0,0.0,0.043288345,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_20000_1_1.mat,20000.0,4.005,,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index
+L1S12,L1S12_20000_1_2.mat,20000.0,4.06,,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; load outside 3.95-4.05 kips
+L1S12,L1S12_20000_2_1.mat,20000.0,0.0,,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_20000_2_2.mat,20000.0,0.001,,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_20000_3_1.mat,20000.0,0.0,,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_20000_3_2.mat,20000.0,0.0,,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_20000_3_3.mat,20000.0,0.0,,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_2_1_1.mat,2.0,0.501,,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; load outside 3.95-4.05 kips
+L1S12,L1S12_2_1_10.mat,2.0,5.004,,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; load outside 3.95-4.05 kips
+L1S12,L1S12_2_1_11.mat,2.0,5.503,,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; load outside 3.95-4.05 kips
+L1S12,L1S12_2_1_12.mat,2.0,6.004,,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; load outside 3.95-4.05 kips
+L1S12,L1S12_2_1_13.mat,2.0,6.504,,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; load outside 3.95-4.05 kips
+L1S12,L1S12_2_1_14.mat,2.0,7.008,,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; load outside 3.95-4.05 kips
+L1S12,L1S12_2_1_2.mat,2.0,1.0,,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; load outside 3.95-4.05 kips
+L1S12,L1S12_2_1_3.mat,2.0,1.499,,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; load outside 3.95-4.05 kips
+L1S12,L1S12_2_1_4.mat,2.0,2.004,,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; load outside 3.95-4.05 kips
+L1S12,L1S12_2_1_5.mat,2.0,2.5,,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; load outside 3.95-4.05 kips
+L1S12,L1S12_2_1_6.mat,2.0,3.003,,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; load outside 3.95-4.05 kips
+L1S12,L1S12_2_1_7.mat,2.0,3.5,,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; load outside 3.95-4.05 kips
+L1S12,L1S12_2_1_8.mat,2.0,4.005,,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index
+L1S12,L1S12_2_1_9.mat,2.0,4.501,,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; load outside 3.95-4.05 kips
+L1S12,L1S12_2_2_1.mat,2.0,-0.001,,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_2_2_2.mat,2.0,0.0,,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_2_3_1.mat,2.0,0.0,,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_30000_1_1.mat,30000.0,4.013,0.233175942,Loaded,True,3188.3563232421875,430.57033133694006,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_30000_1_2.mat,30000.0,4.002,0.233175942,Loaded,True,3198.751220703125,420.7255578480948,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_30000_2_1.mat,30000.0,0.0,0.233175942,Clamped,True,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_30000_2_2.mat,30000.0,0.001,0.233175942,Clamped,True,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_30000_3_1.mat,30000.0,0.0,0.233175942,Traction Free,True,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_30000_3_2.mat,30000.0,0.0,0.233175942,Traction Free,True,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_3_1_1.mat,3.0,4.001,,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index
+L1S12,L1S12_3_2_1.mat,3.0,0.0,,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_3_3_1.mat,3.0,0.0,,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,missing/nonfinite/nonscalar published index; condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_40000_1_1.mat,40000.0,4.012,0.239071597,Loaded,False,3173.078857421875,415.56973431835075,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_40000_1_2.mat,40000.0,4.003,0.239071597,Loaded,False,4558.12548828125,555.7468461289507,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_40000_2_1.mat,40000.0,0.0,0.239071597,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_40000_2_2.mat,40000.0,0.0,0.239071597,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_40000_3_1.mat,40000.0,0.0,0.239071597,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_40000_3_2.mat,40000.0,0.0,0.239071597,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_50000_1_1.mat,50000.0,4.01,0.236134709,Loaded,False,4162.6607666015625,477.77194941476785,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_50000_1_2.mat,50000.0,4.004,0.236134709,Loaded,False,3276.5701904296875,384.8347928366313,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_50000_2_1.mat,50000.0,-0.002,0.236134709,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_50000_2_2.mat,50000.0,0.001,0.236134709,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_50000_3_1.mat,50000.0,0.0,0.236134709,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_50000_3_2.mat,50000.0,0.0,0.236134709,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_60000_1_1.mat,60000.0,4.006,0.245338988,Loaded,False,3205.9866943359375,376.30287255846287,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_60000_1_2.mat,60000.0,4.002,0.245338988,Loaded,False,3529.924072265625,407.562134679253,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_60000_2_1.mat,60000.0,0.001,0.245338988,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_60000_2_2.mat,60000.0,0.001,0.245338988,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_60000_3_1.mat,60000.0,0.0,0.245338988,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_60000_3_2.mat,60000.0,0.0,0.245338988,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_70000_1_1.mat,70000.0,4.008,0.244799668,Loaded,False,3186.8966064453125,373.80532440030333,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_70000_1_2.mat,70000.0,4.0,0.244799668,Loaded,False,3257.5350341796875,376.10592410516807,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_70000_2_1.mat,70000.0,0.0,0.244799668,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_70000_2_2.mat,70000.0,0.0,0.244799668,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_70000_3_1.mat,70000.0,0.0,0.244799668,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_70000_3_2.mat,70000.0,0.0,0.244799668,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_80000_1_1.mat,80000.0,4.006,0.237792304,Loaded,False,3248.97705078125,376.775621690956,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_80000_1_2.mat,80000.0,4.003,0.237792304,Loaded,False,3219.41455078125,379.46432460596736,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_80000_2_1.mat,80000.0,0.0,0.237792304,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_80000_2_2.mat,80000.0,0.0,0.237792304,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_80000_3_1.mat,80000.0,0.0,0.237792304,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_80000_3_2.mat,80000.0,0.0,0.237792304,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_90000_1_1.mat,90000.0,4.004,0.245462847,Loaded,False,3371.219970703125,396.22497030550005,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_90000_1_2.mat,90000.0,4.001,0.245462847,Loaded,False,3069.505859375,370.46354908990077,35.0,50.0,1200000.0,2000,False,False,2000,False,False,True,
+L1S12,L1S12_90000_2_1.mat,90000.0,0.0,0.245462847,Loaded,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,load outside 3.95-4.05 kips
+L1S12,L1S12_90000_2_2.mat,90000.0,0.0,0.245462847,Clamped,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_90000_3_1.mat,90000.0,0.0,0.245462847,Traction Free,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips
+L1S12,L1S12_90000_3_2.mat,90000.0,0.0,0.245462847,Traction Free ,False,,,35.0,50.0,1200000.0,2000,False,False,2000,False,False,False,condition is not Loaded; load outside 3.95-4.05 kips

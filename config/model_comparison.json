@@ -1,0 +1,16 @@
+{
+  "protocol_version": 1,
+  "inputs": ["relative_rms", "relative_ptp"],
+  "primary_metric": "MAE",
+  "directions": [["L1S11", "L1S12"], ["L1S12", "L1S11"]],
+  "mlp_seeds": [7, 23, 42, 71, 101],
+  "timing": {"warmups": 1, "repetitions": 15, "prediction_calls_per_repeat": 100, "threads": 1},
+  "models": {
+    "LinearRegression": {"fit_intercept": true, "positive": false},
+    "DecisionTreeRegressor": {"criterion": "squared_error", "splitter": "best", "max_depth": 2, "min_samples_leaf": 3, "min_samples_split": 6, "max_features": null, "ccp_alpha": 0.0, "random_state": 42},
+    "SVR": {"kernel": "rbf", "C": 1.0, "epsilon": 0.1, "gamma": 0.5, "tol": 0.001, "shrinking": true, "cache_size": 200, "max_iter": -1},
+    "MLPRegressor": {"hidden_layer_sizes": [3], "activation": "tanh", "solver": "lbfgs", "alpha": 1.0, "max_iter": 2000, "max_fun": 20000, "tol": 0.000001, "early_stopping": false, "shuffle": false},
+    "log_cycle_OLS": {"fit_intercept": true, "positive": false},
+    "DummyRegressor": {"strategy": "mean"}
+  }
+}
