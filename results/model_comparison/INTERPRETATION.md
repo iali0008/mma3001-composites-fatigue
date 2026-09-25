@@ -57,6 +57,64 @@ shown, with seed/marker legends. They were visually inspected.
 * [Forward residuals](residuals_L1S11_to_L1S12.png)
 * [Reverse residuals](residuals_L1S12_to_L1S11.png)
 
+## Two-feature coverage diagnostic
+
+This post-hoc diagnostic uses the same non-reference checkpoint medians as the
+comparison: 13 L1S11 checkpoints and 12 L1S12 checkpoints. A StandardScaler is
+fitted to the training specimen only in each direction, and its means, scales
+and sample count match the recorded comparison preprocessing exactly. The hull
+is constructed from training points only. Evaluation coordinates and all target
+values play no part in defining the scaler or hull. No regressors were fitted,
+no configurations were tuned, and all existing model predictions remain unchanged.
+
+| Train -> evaluate | Training checkpoints | Evaluation outside training hull | Evaluation inside/on hull |
+|---|---:|---:|---:|
+| L1S11 -> L1S12 | 13 | **12/12** | 0/12 |
+| L1S12 -> L1S11 | 12 | **11/13** | 2/13 |
+
+The two reverse-direction evaluation points inside the hull are L1S11 at
+**10,000 and 20,000 cycles**. All training points lie inside or on their own hull.
+The reported outside-hull counts are therefore independently confirmed.
+
+The primary check evaluates SciPy ConvexHull's half-space inequalities in
+training-standardised coordinates. The independent check tests containment in
+every nondegenerate triangle formed by training points using barycentric weights;
+it does not use Qhull or the primary hull's vertices. In two dimensions, these
+triangles cover the convex hull. Both methods agree for every checkpoint,
+including a check in unscaled feature coordinates. Boundaries count as inside.
+The half-space tolerance is 1e-10 in standardised coordinates and the independent
+weight tolerance is 1e-10; all classifications are unchanged at 1e-12 and 1e-8.
+
+The main plot uses dimensionless relative RMS and relative peak-to-peak axes;
+the companion plot shows the training-standardised coordinates. Hull membership
+is invariant under this nonsingular affine scaling, so the raw-axis plot and
+scaled check describe the same coverage. Both plots show all non-reference
+training/evaluation points and each direction's training hull.
+
+* [Relative-feature coverage plot](coverage/feature_coverage.png)
+* [Training-standardised coverage plot](coverage/feature_coverage_standardised.png)
+* [Per-checkpoint flags and coordinates](coverage/checkpoint_coverage.csv)
+* [Hull vertices](coverage/training_hull_vertices.csv)
+* [Independent checks, scaler audit and preservation hashes](coverage/verification.json)
+
+**Outside-hull membership is not a measure of extrapolation distance.** A point
+just beyond an edge and a point far from the training cloud receive the same
+outside flag. These counts neither quantify how far predictions extrapolate nor
+rank extrapolation severity between directions. They also do not imply that a
+point exceeds either feature's individual range: a new combination of two
+individually familiar feature values can fall outside the hull. Conversely,
+inside-hull membership does not guarantee dense nearby support or accurate
+predictions. The high outside counts show limited joint feature coverage, but do
+not by themselves explain residual magnitude, prove a model's extrapolation
+ability, or establish a causal reason for the directional ranking difference.
+This geometric diagnostic does not change the exploratory validation status.
+
+Reproduce with `python scripts/feature_coverage.py` from the repository root.
+The script reads exported features and preprocessing provenance; it does not read
+or modify the original NASA files. Focused tests cover known interior/boundary/
+exterior points, training-only scaling, duplicate training points and the saved
+checkpoint membership/counts.
+
 ## Reference handling and reproducibility
 
 The independent acquisition/waveform gate does not access target values,
