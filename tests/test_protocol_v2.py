@@ -176,3 +176,35 @@ class SelectionTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class TestStageHelpers(unittest.TestCase):
+    """Label attachment after blind prediction, and sanity criteria C1-C3."""
+
+    def test_attach_labels_uses_eligible_files_and_keeps_missing(self):
+        from protocol_v2 import attach_labels
+        cps = [dict(cycles=3, filenames='a.mat; b.mat', published_index=None),
+               dict(cycles=10, filenames='c.mat', published_index=None)]
+        labels = {'a.mat': (3.0, None), 'b.mat': (3.0, None), 'c.mat': (10.0, 0.04),
+                  'z.mat': (1.0, -0.012)}
+        out = attach_labels(cps, labels)
+        self.assertIsNone(out[0]['published_index'])
+        self.assertEqual(out[1]['published_index'], 0.04)
+        self.assertIsNone(cps[1]['published_index'])  # inputs are not modified
+
+    def test_attach_labels_rejects_conflicts_and_unknown_files(self):
+        from protocol_v2 import attach_labels
+        cp = [dict(cycles=10, filenames='a.mat; b.mat', published_index=None)]
+        with self.assertRaisesRegex(ValueError, 'Conflicting'):
+            attach_labels(cp, {'a.mat': (10.0, 0.1), 'b.mat': (10.0, 0.2)})
+        with self.assertRaisesRegex(ValueError, 'Unknown file'):
+            attach_labels(cp, {'a.mat': (10.0, 0.1)})
+
+    def test_sanity_criteria(self):
+        from protocol_v2 import sanity_criteria
+        ok = sanity_criteria([0.20, 0.22], 0.19, [0.04, 0.25], PROTOCOL)
+        self.assertTrue(ok['pass'])
+        self.assertEqual(ok['C3']['bounds'], [0.04 - 0.105, 0.25 + 0.105])
+        self.assertFalse(sanity_criteria([0.10, 0.12], 0.19, [0.04, 0.25], PROTOCOL)['C1']['pass'])
+        self.assertFalse(sanity_criteria([-0.06, 0.3], 0.0, [0.04, 0.25], PROTOCOL)['C2']['pass'])
+        self.assertFalse(sanity_criteria([0.4], 0.19, [0.04, 0.25], PROTOCOL)['C3']['pass'])

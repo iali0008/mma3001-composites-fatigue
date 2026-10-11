@@ -359,3 +359,102 @@ def select_final(candidates, protocol):
                    if c['worst_direction_MAE'] - best <= rule['tie_tolerance_mae']],
                   key=lambda c: (order_m.index(c['model']), order_i.index(c['input_set'])))
     return dict(selected=tied[0], minimum=best, tied=tied)
+
+
+def read_published_labels(data_root, specimen, protocol, workers=1):
+    """Read only the published label of every PZT file of one specimen.
+
+    Used for the held-out specimen *after* its predictions have been written,
+    so features and predictions are fixed before any label is seen.
+
+    Parameters
+    ----------
+    data_root : pathlib.Path
+        The extracted ``2. Composites`` directory.
+    specimen : str
+        Specimen name in ``protocol['specimens']``.
+    protocol : dict
+        Output of :func:`load_protocol`.
+    workers : int, optional
+        MAT prefetch workers.
+
+    Returns
+    -------
+    dict
+        ``{filename: (cycles, label)}``; ``label`` is ``None`` when missing.
+    """
+    folder = protocol['specimens'][specimen]['folder']
+    files = sorted((data_root / folder / 'PZT-data').glob(specimen + '_*.mat'))
+    return {path.name: (scalar(c.get('cycles', [])),
+                        scalar(c.get('straingage_data', {}).get('stiffness_degradation', [])))
+            for path, _, c in iter_coupons(files, workers)}
+
+
+def attach_labels(checkpoints, labels):
+    """Copy published labels onto checkpoints from their eligible files.
+
+    Parameters
+    ----------
+    checkpoints : list of dict
+        Output of :func:`build_checkpoints` built with ``read_labels=False``.
+    labels : dict
+        Output of :func:`read_published_labels`.
+
+    Returns
+    -------
+    list of dict
+        Copies with ``published_index`` set (``None`` if no file is labelled).
+
+    Raises
+    ------
+    ValueError
+        If files of one checkpoint carry different labels or a file is unknown.
+    """
+    out = []
+    for cp in checkpoints:
+        names = cp['filenames'].split('; ')
+        require(all(n in labels for n in names), f"Unknown file at cycle {cp['cycles']}")
+        found = {labels[n][1] for n in names if labels[n][1] is not None}
+        require(len(found) <= 1, f"Conflicting published labels at cycle {cp['cycles']}")
+        out.append(dict(cp, published_index=found.pop() if found else None))
+    return out
+
+
+def sanity_criteria(late_predictions, prediction_at_100k, training_targets, protocol):
+    """Evaluate the predeclared plausibility criteria C1-C3 (protocol section 9).
+
+    Parameters
+    ----------
+    late_predictions : sequence of float
+        Frozen-model predictions at the unlabelled late L1S11 checkpoints.
+    prediction_at_100k : float
+        Frozen-model prediction at the L1S11 100,000-cycle checkpoint.
+    training_targets : sequence of float
+        Published targets of the pooled training checkpoints.
+    protocol : dict
+        Output of :func:`load_protocol` (only documents the rule source).
+
+    Returns
+    -------
+    dict
+        Each criterion's inputs and pass flag, and the overall ``pass``.
+
+    Examples
+    --------
+    >>> r = sanity_criteria([0.2, 0.25], 0.18, [0.05, 0.25], {})
+    >>> r['C1']['pass'], r['C2']['pass'], r['C3']['pass'], r['pass']
+    (True, True, True, True)
+    >>> sanity_criteria([0.5], 0.18, [0.05, 0.25], {})['C3']['pass']
+    False
+    """
+    late = [float(v) for v in late_predictions]
+    low, high = min(training_targets), max(training_targets)
+    width = high - low
+    bounds = (low - 0.5 * width, high + 0.5 * width)
+    c1 = dict(mean_late_prediction=float(np.mean(late)), prediction_at_100k=float(prediction_at_100k),
+              **{'pass': bool(np.mean(late) >= prediction_at_100k)})
+    c2 = dict(bounds=[-0.05, 1.0], min=min(late), max=max(late),
+              **{'pass': all(-0.05 <= v <= 1.0 for v in late)})
+    c3 = dict(bounds=list(bounds), training_target_range=[low, high], min=min(late), max=max(late),
+              **{'pass': all(bounds[0] <= v <= bounds[1] for v in late)})
+    return dict(C1=c1, C2=c2, C3=c3, **{'pass': c1['pass'] and c2['pass'] and c3['pass']})
