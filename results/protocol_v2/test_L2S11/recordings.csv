@@ -1,0 +1,129 @@
+specimen,filename,cycles,load_kips,condition,published_index,eligible,exclusion_reasons
+L2S11,L2S11_0_2_1.mat,0.0,0.0,Clamped,,False,not a positive-cycle checkpoint; condition is not loaded; load outside 4.53-4.63 kips; setting vector differs from specimen modal vector
+L2S11,L2S11_100000_1_1.mat,100000.0,4.584,Loaded,,True,
+L2S11,L2S11_100000_1_2.mat,100000.0,4.577,Loaded,,True,
+L2S11,L2S11_100000_2_1.mat,100000.0,0.001,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_100000_2_2.mat,100000.0,0.001,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_100000_3_1.mat,100000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_100000_3_2.mat,100000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_10000_1_1.mat,10000.0,4.583,Loaded,,True,
+L2S11,L2S11_10000_1_2.mat,10000.0,4.574,Loaded,,True,
+L2S11,L2S11_10000_2_1.mat,10000.0,0.0,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_10000_2_2.mat,10000.0,0.0,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_10000_3_1.mat,10000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_10000_3_2.mat,10000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_1000_1_1.mat,1000.0,4.571,Loaded,,True,
+L2S11,L2S11_1000_1_2.mat,1000.0,4.575,Loaded,,True,
+L2S11,L2S11_1000_2_1.mat,1000.0,0.0,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_1000_2_2.mat,1000.0,0.003,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_1000_3_1.mat,1000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_1000_3_2.mat,1000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_10_1_1.mat,10.0,4.575,Loaded,,True,
+L2S11,L2S11_10_2_1.mat,10.0,0.0,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_10_2_2.mat,10.0,-0.001,Loaded,,False,load outside 4.53-4.63 kips
+L2S11,L2S11_10_3_1.mat,10.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_110_1_1.mat,110.0,4.584,Loaded,,True,
+L2S11,L2S11_110_1_2.mat,110.0,4.575,Loaded,,True,
+L2S11,L2S11_110_2_1.mat,110.0,0.001,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_110_2_2.mat,110.0,0.0,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_110_3_1.mat,110.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_110_3_2.mat,110.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_150000_1_1.mat,150000.0,4.584,Loaded,,True,
+L2S11,L2S11_150000_1_2.mat,150000.0,4.573,Loaded,,True,
+L2S11,L2S11_150000_2_1.mat,150000.0,-0.001,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_150000_2_2.mat,150000.0,0.0,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_150000_3_1.mat,150000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_150000_3_2.mat,150000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_1_0.mat,1.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_1_1_1.mat,1.0,0.509,Loaded,,False,load outside 4.53-4.63 kips; setting vector differs from specimen modal vector
+L2S11,L2S11_1_1_2.mat,1.0,1.004,Loaded,,False,load outside 4.53-4.63 kips; setting vector differs from specimen modal vector
+L2S11,L2S11_1_1_3.mat,1.0,1.503,Loaded,,False,load outside 4.53-4.63 kips; setting vector differs from specimen modal vector
+L2S11,L2S11_1_1_4.mat,1.0,2.008,Loaded,,False,load outside 4.53-4.63 kips; setting vector differs from specimen modal vector
+L2S11,L2S11_1_1_5.mat,1.0,2.503,Loaded,,False,load outside 4.53-4.63 kips; setting vector differs from specimen modal vector
+L2S11,L2S11_1_1_6.mat,1.0,3.0,Loaded,,False,load outside 4.53-4.63 kips; setting vector differs from specimen modal vector
+L2S11,L2S11_1_1_7.mat,1.0,3.503,Loaded,,False,load outside 4.53-4.63 kips; setting vector differs from specimen modal vector
+L2S11,L2S11_1_1_8.mat,1.0,4.001,Loaded,,False,load outside 4.53-4.63 kips; setting vector differs from specimen modal vector
+L2S11,L2S11_1_1_9.mat,1.0,4.503,Loaded,,False,load outside 4.53-4.63 kips; setting vector differs from specimen modal vector
+L2S11,L2S11_1_2_1.mat,1.0,0.001,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips; setting vector differs from specimen modal vector
+L2S11,L2S11_1_3_1.mat,1.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips; setting vector differs from specimen modal vector
+L2S11,L2S11_200000_1_1.mat,200000.0,4.573,Loaded,,True,
+L2S11,L2S11_200000_1_2.mat,200000.0,4.576,Loaded,,True,
+L2S11,L2S11_200000_2_1.mat,200000.0,0.0,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_200000_2_2.mat,200000.0,-0.001,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_200000_3_1.mat,200000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_200000_3_2.mat,200000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_20000_1_1.mat,20000.0,4.582,Loaded,,True,
+L2S11,L2S11_20000_1_2.mat,20000.0,4.574,Loaded,,True,
+L2S11,L2S11_20000_2_1.mat,20000.0,0.0,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_20000_2_2.mat,20000.0,0.001,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_20000_3_1.mat,20000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_20000_3_2.mat,20000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_207000_1_1.mat,207000.0,4.587,Loaded,,True,
+L2S11,L2S11_207000_2_1.mat,207000.0,0.0,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_207000_3_1.mat,207000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_2_1_1.mat,2.0,0.5,Loaded,,False,load outside 4.53-4.63 kips
+L2S11,L2S11_2_1_10.mat,2.0,5.001,loaded,,False,load outside 4.53-4.63 kips
+L2S11,L2S11_2_1_11.mat,2.0,5.498,loaded,,False,load outside 4.53-4.63 kips
+L2S11,L2S11_2_1_12.mat,2.0,5.996,loaded,,False,load outside 4.53-4.63 kips
+L2S11,L2S11_2_1_13.mat,2.0,6.499,loaded,,False,load outside 4.53-4.63 kips
+L2S11,L2S11_2_1_14.mat,2.0,6.999,Loaded,,False,load outside 4.53-4.63 kips
+L2S11,L2S11_2_1_15.mat,2.0,7.503,Loaded,,False,load outside 4.53-4.63 kips
+L2S11,L2S11_2_1_16.mat,2.0,8.003,Loaded,,False,load outside 4.53-4.63 kips
+L2S11,L2S11_2_1_2.mat,2.0,1.002,loaded,,False,load outside 4.53-4.63 kips
+L2S11,L2S11_2_1_3.mat,2.0,1.501,loaded,,False,load outside 4.53-4.63 kips
+L2S11,L2S11_2_1_4.mat,2.0,2.003,loaded,,False,load outside 4.53-4.63 kips
+L2S11,L2S11_2_1_5.mat,2.0,2.5,loaded,,False,load outside 4.53-4.63 kips
+L2S11,L2S11_2_1_6.mat,2.0,3.0,loaded,,False,load outside 4.53-4.63 kips
+L2S11,L2S11_2_1_7.mat,2.0,3.5,loaded,,False,load outside 4.53-4.63 kips
+L2S11,L2S11_2_1_8.mat,2.0,4.007,loaded,,False,load outside 4.53-4.63 kips
+L2S11,L2S11_2_1_9.mat,2.0,4.511,loaded,,False,load outside 4.53-4.63 kips
+L2S11,L2S11_2_2_1.mat,2.0,0.0,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_30000_1_1.mat,30000.0,4.58,Loaded,,True,
+L2S11,L2S11_30000_1_2.mat,30000.0,4.577,Loaded,,True,
+L2S11,L2S11_30000_2_1.mat,30000.0,0.001,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_30000_2_2.mat,30000.0,0.001,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_30000_3_1.mat,30000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_30000_3_2.mat,30000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_3_1_1.mat,3.0,4.576,Loaded,,True,
+L2S11,L2S11_3_1_2.mat,3.0,4.577,Loaded,,True,
+L2S11,L2S11_3_2_1.mat,3.0,0.008,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_3_2_2.mat,3.0,0.001,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_3_2_3.mat,3.0,0.0,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_3_3_1.mat,3.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_3_3_2.mat,3.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_40000_1_1.mat,40000.0,4.585,Loaded,,True,
+L2S11,L2S11_40000_1_2.mat,40000.0,4.574,Loaded,,True,
+L2S11,L2S11_40000_2_1.mat,40000.0,0.0,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_40000_2_2.mat,40000.0,0.001,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_40000_3_1.mat,40000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_40000_3_2.mat,40000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_50000_1_1.mat,50000.0,4.574,Loaded,,True,
+L2S11,L2S11_50000_1_2.mat,50000.0,4.575,Loaded,,True,
+L2S11,L2S11_50000_2_1.mat,50000.0,0.0,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_50000_2_2.mat,50000.0,0.0,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_50000_3_1.mat,50000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_50000_3_2.mat,50000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_60000_1_1.mat,60000.0,4.572,Loaded,,True,
+L2S11,L2S11_60000_1_2.mat,60000.0,4.577,Loaded,,True,
+L2S11,L2S11_60000_2_1.mat,60000.0,0.001,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_60000_2_2.mat,60000.0,0.0,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_60000_3_1.mat,60000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_60000_3_2.mat,60000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_70000_1_1.mat,70000.0,4.576,Loaded,,True,
+L2S11,L2S11_70000_1_2.mat,70000.0,4.575,Loaded,,True,
+L2S11,L2S11_70000_2_1.mat,70000.0,0.0,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_70000_2_2.mat,70000.0,-0.001,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_70000_3_1.mat,70000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_70000_3_2.mat,70000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_80000_1_1.mat,80000.0,4.585,Loaded,,True,
+L2S11,L2S11_80000_1_2.mat,80000.0,4.573,Loaded,,True,
+L2S11,L2S11_80000_2_1.mat,80000.0,0.0,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_80000_2_2.mat,80000.0,0.001,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_80000_3_1.mat,80000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_80000_3_2.mat,80000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_90000_1_1.mat,90000.0,4.588,Loaded,,True,
+L2S11,L2S11_90000_1_2.mat,90000.0,4.573,Loaded,,True,
+L2S11,L2S11_90000_2_1.mat,90000.0,0.001,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_90000_2_2.mat,90000.0,0.003,Clamped,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_90000_3_1.mat,90000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips
+L2S11,L2S11_90000_3_2.mat,90000.0,0.0,Traction Free,,False,condition is not loaded; load outside 4.53-4.63 kips

@@ -1,0 +1,109 @@
+{
+  "scored_utc": "2026-10-11T12:01:25.140982+00:00",
+  "git_commit": "52169abf30373b09beba527b97c0318b83072e6c",
+  "reference": {
+    "specimen": "L2S11",
+    "cycles": 3,
+    "filenames": "L2S11_3_1_1.mat; L2S11_3_1_2.mat",
+    "rms_denominator": 615.9629864720177,
+    "ptp_denominator": 5226.0452880859375
+  },
+  "scored_cycles": [
+    10,
+    1000,
+    10000,
+    20000,
+    30000,
+    40000,
+    50000,
+    60000
+  ],
+  "scored_n": 8,
+  "expected_scored_n": 8,
+  "unlabelled_non_reference_cycles": [
+    110,
+    70000,
+    80000,
+    90000,
+    100000,
+    150000,
+    200000,
+    207000
+  ],
+  "cycle_1_label_reported_not_scored": [
+    -0.012213572
+  ],
+  "metrics": [
+    {
+      "role": "frozen",
+      "model": "LinearRegression",
+      "input_set": "single_path_1_7",
+      "n": 8,
+      "MAE": 0.03735840711640884,
+      "RMSE": 0.04421391436349251,
+      "R2": -2.2708788875929082,
+      "mean_residual": -0.03735840711640884,
+      "min_prediction": -0.008983256587166338,
+      "max_prediction": 0.006703978847650005
+    },
+    {
+      "role": "log_cycle_OLS",
+      "model": "log_cycle_OLS",
+      "input_set": "none",
+      "n": 8,
+      "MAE": 0.0945748091130729,
+      "RMSE": 0.1013756290026723,
+      "R2": -16.195454363909445,
+      "mean_residual": 0.0945748091130729,
+      "min_prediction": 0.01753806674863792,
+      "max_prediction": 0.16723462510693998
+    },
+    {
+      "role": "DummyRegressor",
+      "model": "DummyRegressor",
+      "input_set": "none",
+      "n": 8,
+      "MAE": 0.101531310885,
+      "RMSE": 0.1044330699328993,
+      "R2": -17.248308807737715,
+      "mean_residual": 0.101531310885,
+      "min_prediction": 0.13770020076,
+      "max_prediction": 0.13770020076
+    }
+  ],
+  "frozen_beats_control": {
+    "log_cycle_OLS": true,
+    "DummyRegressor": true
+  },
+  "coverage": {
+    "scored_outside": 8,
+    "scored_total": 8,
+    "all_outside": 16,
+    "all_total": 16,
+    "outside_scored_cycles": [
+      10,
+      1000,
+      10000,
+      20000,
+      30000,
+      40000,
+      50000,
+      60000
+    ],
+    "tolerance_sweep": [
+      {
+        "tolerance": 1e-12,
+        "evaluation_outside": 16
+      },
+      {
+        "tolerance": 1e-10,
+        "evaluation_outside": 16
+      },
+      {
+        "tolerance": 1e-08,
+        "evaluation_outside": 16
+      }
+    ]
+  },
+  "completed_utc": "2026-10-11T12:01:27.955146+00:00"
+}

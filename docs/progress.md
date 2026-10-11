@@ -95,3 +95,18 @@ Newest entries last. Every Claude session (Claude Code in VS Code or claude.ai) 
   overlap between specimens. Selection frozen in `results/protocol_v2/selection.json`; details in
   `results/protocol_v2/validation/README.md`. Disclosure for the report: single-path scores were
   known (v1) when the rule was written. Tests: 63/63 pass. Next: Sans reviews (★), then step 4.
+- 2026-10-11 (Claude Code, VS Code): Plan step 4, single L2S11 test (commit 52169ab, clean tree).
+  Before the run, the script was smoke-tested on a scratch copy with L1S12 standing in for L2S11
+  (disclosed: this precomputed the L2S11-independent sanity outcome). Frozen LinearRegression
+  (single path 1→7, refit on 25 pooled checkpoints): reference cycle 3, 8 scored checkpoints,
+  cycle-1 −0.012 reported not scored. L2S11 MAE 0.0374 (RMSE 0.0442, R² −2.27, every residual
+  negative) versus log-cycle 0.0946 and Dummy 0.1015, so it beats both controls by the predeclared
+  rule. Coverage: all 16 non-reference L2S11 checkpoints outside the pooled training hull. L1S11
+  sanity check FAILS on C1 (late mean 0.083 < 0.114 at 100k); C2/C3 pass; predictions drop at 177k.
+  Post hoc (`scripts/post_hoc_step4.py`, labelled as such): a constant-zero predictor has MAE
+  0.0362 (< 0.0374); Spearman(prediction, label) 0.19; L2S11 path 1→7 ratios stay within
+  0.985–1.018 (RMS) and 1.001–1.015 (PTP); L1S11 ratios jump beyond the training range at 177k.
+  Conclusion for the report: no demonstrated transfer to L2S11; the specimen-specific
+  amplitude-to-damage mapping is the main limitation. Details in
+  `results/protocol_v2/test_L2S11/README.md`. Tests: 66/66 pass. Next: Sans reviews (★), then
+  steps 5–6.
