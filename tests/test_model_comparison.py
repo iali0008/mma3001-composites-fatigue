@@ -14,14 +14,12 @@ sys.path.insert(0, str(ROOT / 'scripts'))
 from model_comparison import (
     CONFIG,
     MODEL_NAMES,
-    acquisition_eligible,
     build_model,
     fit_direction,
     fitted_parts,
     matrix,
     select_reference_candidates,
     split_rows,
-    scores,
 )
 from reproduce_results import read_checkpoints
 from repeat_sensitivity import read_csv, digest

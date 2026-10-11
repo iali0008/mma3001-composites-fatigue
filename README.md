@@ -142,9 +142,11 @@ The no-data replay and most tests need no download.
 
 ## Reproduce everything
 
-Run from the repository root (`$D` = `"data/2.+Composites/2. Composites"`). Every workflow writes to
-a new folder under the git-ignored `results/rebuilt/` by default and refuses to overwrite recorded
-results.
+Run from the repository root (`$D` = `"data/2.+Composites/2. Composites"`). In the table,
+`python` means the project environment's interpreter: `.\.venv\Scripts\python.exe` on Windows or
+`.venv/bin/python` on Linux/macOS (or activate the venv first). Do not use a global Python, whose
+package versions differ from the lock. Every workflow writes to a new folder under the git-ignored
+`results/rebuilt/` by default and refuses to overwrite recorded results.
 
 | Step | Command | Output |
 |---|---|---|
@@ -172,7 +174,12 @@ recorded repository.
 .\.venv\Scripts\python.exe -m pytest                       # 66 tests
 .\.venv\Scripts\python.exe -m pytest --junitxml=results/test_report/junit.xml --html=results/test_report/report.html --self-contained-html
 .\.venv\Scripts\python.exe scripts/build_docs.py           # HTML API docs into docs/html
+.\.venv\Scripts\python.exe -m black --check scripts tests    # formatting (settings in pyproject.toml)
+.\.venv\Scripts\python.exe -m pyflakes scripts tests         # static checks
 ```
+
+All tools (pytest, pytest-html, pdoc, black, pyflakes) come from `requirements-dev.txt` and are
+pinned in `requirements-lock.txt`; nothing relies on a global installation.
 
 - **Tests.** They cover features on known signals, every eligibility rule, the label-blind
   reference, leakage (changing evaluation or reference targets cannot change predictions),
