@@ -63,3 +63,11 @@ Newest entries last. Every Claude session (Claude Code in VS Code or claude.ai) 
   single path), pooled L1S11+L1S12 final model, one guarded L2S11 run with log-cycle/Dummy
   controls, L1S11 125k–227k sanity criteria C1–C3. No v2 score computed. Tests: 23/23 pass
   (unittest, Windows, Python 3.13.3). Next: Sans reviews protocol (★), then step 2 code fixes.
+- 2026-10-11 (Claude Code, VS Code): Sans approved protocol v2. Decisions: (1) log-cycle OLS and
+  Dummy stay in the single L2S11 run as fixed, non-selectable reference points; no code reads
+  L2S11 labels before step 4. (2) No time-window amendment; report the path 1→7 crosstalk-like
+  finding in limitations/discussion, noting that relative PTP on crosstalk-dominated paths mostly
+  tracks crosstalk (v1 L1S11 non-reference relative PTP 0.879–1.029, from
+  `results/baseline/checkpoint_features.csv`). (3) Brief PDF git-ignored, never committed. (4) L2S11
+  scores 8 checkpoints (10, 1,000, 10,000, 20,000–60,000 cycles). Recorded as approval notes in
+  `docs/protocol_v2.md` (frozen settings and `config/protocol_v2.json` unchanged) and in CLAUDE.md.

@@ -234,3 +234,22 @@ Stop and report, without changing rules, if any of these occurs:
 
 Integrity checks use `require()`, not `assert`. Raw NASA files are read-only and never committed.
 New outputs go to `results/protocol_v2/`, and earlier results stay unchanged.
+
+## Approval notes (2026-10-11, Sans)
+
+These notes record the review decision. They do not change any frozen setting in this document or
+in `config/protocol_v2.json`.
+
+1. **Controls on L2S11.** Approved as written: log-cycle OLS and the training-mean Dummy are fixed,
+   non-selectable reference points in the single L2S11 run. L2S11 stays frozen and separate. No
+   code reads its labels before step 4, and it is scored exactly once, after the final model is
+   frozen and committed.
+2. **Time window.** No amendment; both input sets keep the full window. The path 1→7 crosstalk-like
+   finding goes into the limitations and discussion. For interpretation only: PTP is set by the
+   largest swing, so on crosstalk-dominated paths relative PTP mostly tracks the crosstalk. This
+   may explain why v1 L1S11 PTP ratios stay near 1 and why PTP behaves inconsistently across
+   specimens.
+3. **Project brief.** The brief PDF is git-ignored, so the scoring guard's clean-tree check is not
+   affected by it.
+4. **L2S11 scored set.** Under these eligibility rules the test scores 8 checkpoints: 10, 1,000,
+   10,000 and 20,000–60,000 cycles. Cycle 10 has a single eligible recording.

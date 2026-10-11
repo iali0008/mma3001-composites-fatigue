@@ -52,3 +52,6 @@ results/sensitivity/
 site/
 htmlcov/
 .coverage
+
+# Course material kept locally, never committed.
+MMA3001_2026_Project_Brief.pdf

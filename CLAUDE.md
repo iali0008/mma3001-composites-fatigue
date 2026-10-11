@@ -29,9 +29,13 @@ Recorded 2026-10-11.
   specimens hold placeholder zeros or have no strain gauges). **L1S18 and L1S19 are not used at all.**
 - Split: L1S11 and L1S12 remain the train/validation pair (train on one, validate on the other,
   both directions, as now). **L2S11 is the held-out test set** (9 labelled checkpoints, cycles
-  1–60,000, includes a negative value −0.012 at cycle 1). It is cross-layup and its labels were
-  seen in the earlier audit, so describe it as "held out from model development", not "untouched".
-  Score it exactly once, after all choices are frozen and committed.
+  1–60,000, includes a negative value −0.012 at cycle 1). Under the protocol v2 eligibility rules
+  **8 checkpoints are scored**: 10, 1,000, 10,000 and 20,000–60,000 cycles (cycle 10 has a single
+  eligible recording). Cycle 1 is a load ramp outside the 4.53–4.63 kip window, so −0.012 is
+  never scored; the reference is cycle 3. It is cross-layup and its labels were seen in the earlier
+  audit, so describe it as "held out from model development", not "untouched". No code reads
+  L2S11 labels before step 4; score it exactly once, after the final model is frozen and committed,
+  with log-cycle OLS and Dummy as fixed, non-selectable reference points in the same run.
 - Add multi-path sensor features as better inputs (not as extra rows).
 - Add an unlabelled sanity check on L1S11 checkpoints after 100,000 cycles (plausibility only).
 - Never multiply sample size by paths, repeats or boundary conditions as if they were independent
@@ -67,6 +71,16 @@ Recorded 2026-10-11.
    repeat spread at a checkpoint reaches 13% (L1S11) and 29% (L1S12); a ±5% reference change
    moves linear MAE by ~±0.006, comparable to the reverse-direction MLP–linear gap (0.008).
 5. All 23 existing tests passed on Linux (Python 3.13.16, NumPy 2.5.3, scikit-learn 1.9.1).
+
+## Protocol v2 (approved 2026-10-11)
+
+`docs/protocol_v2.md` and `config/protocol_v2.json` were committed (47b9047) before any v2 score
+and approved by Sans. Full 0–1,999 sample window for both input sets, no time-window amendment.
+Path 1→7 shows a fixed early (crosstalk-like) peak in all three specimens; report it in
+limitations/discussion. PTP is set by the largest swing, so on crosstalk-dominated paths relative
+PTP mostly tracks crosstalk; this may explain why v1 L1S11 PTP ratios stay near 1 (0.88–1.03) and
+why PTP behaves inconsistently across specimens (interpretation only, no design change).
+`MMA3001_2026_Project_Brief.pdf` (repo root) is git-ignored and never committed.
 
 ## Code issues to fix (from the 2026-10-11 review)
 
