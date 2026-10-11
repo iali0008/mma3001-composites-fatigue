@@ -109,7 +109,8 @@ not by themselves explain residual magnitude, prove a model's extrapolation
 ability, or establish a causal reason for the directional ranking difference.
 This geometric diagnostic does not change the exploratory validation status.
 
-Reproduce with `python scripts/feature_coverage.py` from the repository root.
+Reproduce with `python scripts/feature_coverage.py` from the repository root; since
+2026-10-11 it writes to `results/rebuilt/coverage` and refuses this recorded folder.
 The script reads exported features and preprocessing provenance; it does not read
 or modify the original NASA files. Focused tests cover known interior/boundary/
 exterior points, training-only scaling, duplicate training points and the saved
@@ -129,7 +130,8 @@ All preprocessing was fitted on non-reference training checkpoints only.
 SVR/MLP target scaling was inverted before scoring. Every fitted scaler's moments,
 sample counts and training/evaluation cycle identities are recorded in
 `preprocessing_audit.json`. Both sklearn linear models reproduce historical OLS
-predictions at rtol 1e-9, atol 1e-10. The 19 focused/reproduction tests pass,
+predictions at rtol 1e-9, atol 1e-10. The 19 focused/reproduction tests passed at the time (49 since the
+2026-10-11 code fixes, all passing),
 including target/feature leakage perturbations and independent score calculations.
 Raw files remain ignored, with no tracked/staged originals. Previous baseline and
 repeat-sensitivity artifacts are hash-preserved; source metadata and the 254

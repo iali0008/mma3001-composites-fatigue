@@ -7,7 +7,7 @@ This is a consolidated record of work reported in the project conversation and u
 - Completed the Week 5 four-family comparison on 2026-09-25 under a protocol/configuration written before new scores (`docs/model_comparison_protocol.md`, `config/model_comparison.json`). Used identical median features, targets, checkpoints and specimen splits, plus log-cycle OLS and training-mean Dummy controls. No evaluation-specimen tuning or best-seed selection.
 - Corrected reference auditing to use acquisition/waveform criteria independently of target availability; both original cycle-1 references and exact denominators are preserved. Input/target preprocessing is training-only, with predictions returned to published-index units.
 - LinearRegression has the lowest evaluation MAE in L1S11 -> L1S12 (0.050532); the three-unit MLP has the lowest in reverse for all five seeds (median 0.020942; range 0.020936--0.021264). There is no single winner across directions. No convergence warnings occurred. Full train/evaluation MAE, RMSE, R², residuals, plots and timings are in `results/model_comparison/`.
-- All 19 scientific/reproduction tests passed. Sklearn linear/log-cycle predictions match recorded OLS within tolerance. All four plot images were visually checked. Historical baseline/sensitivity artifact hashes and surveyed original MAT hashes remain unchanged; original raw files remain ignored and untracked/unstaged.
+- All 19 scientific/reproduction tests passed (49 since the 2026-10-11 code fixes). Sklearn linear/log-cycle predictions match recorded OLS within tolerance. All four plot images were visually checked. Historical baseline/sensitivity artifact hashes and surveyed original MAT hashes remain unchanged; original raw files remain ignored and untracked/unstaged.
 - Measured model fit and batch-prediction runtime with one warm-up, 15 repetitions and 100 prediction calls per repetition. Separately profiled the raw workflow: MAT decoding was the largest self-time cost. Added bounded ordered four-thread prefetch (`--workers 4`, serial default). Three alternating unprofiled pairs showed median 12.769 s serial versus 7.771 s prefetch (1.643x), with every output file byte-identical. Memory usage was not profiled.
 
 - Chose an existing public composites dataset; no new experimental data collection.
@@ -71,3 +71,16 @@ Newest entries last. Every Claude session (Claude Code in VS Code or claude.ai) 
   `results/baseline/checkpoint_features.csv`). (3) Brief PDF git-ignored, never committed. (4) L2S11
   scores 8 checkpoints (10, 1,000, 10,000, 20,000–60,000 cycles). Recorded as approval notes in
   `docs/protocol_v2.md` (frozen settings and `config/protocol_v2.json` unchanged) and in CLAUDE.md.
+- 2026-10-11 (Claude Code, VS Code): Plan step 2, code fixes a–d on branch `code-fixes`.
+  (a) The extractor chooses the reference label-blind (earliest acquisition-eligible checkpoint).
+  (b) `exploratory_regression.py` refactored into documented functions plus `main()`; new
+  `tests/test_extraction.py` (sine RMS/PTP, eligibility rules, label-blind reference, missing
+  labels, integrity checks, guards). (c) `require()` in `scripts/common.py` replaces asserts; tests
+  pass under `python -O`. (d) Constants moved to `config/experiment_v1.json`. All workflow scripts
+  take `--output`, default to git-ignored `results/rebuilt/`, and refuse recorded folders.
+  `scripts/verify_reproduction.py` reran baseline, repeat sensitivity, model comparison and
+  coverage: 50 files byte-identical, 4 equal in content (CRLF line endings or timestamps), 2 timing
+  files skipped (`results/reproduction_check/report.json`). Profile and benchmark scripts also ran
+  and passed their baseline-equivalence gates (timings not recorded). Updated test counts (e) in
+  methodology, INTERPRETATION and progress. Tests: 49/49 pass (unittest, Windows, Python 3.13.3,
+  NumPy 2.3.0, scikit-learn 1.9.0). Note: `pyflakes` was used locally for linting only.

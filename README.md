@@ -124,6 +124,14 @@ Raw-workflow profiling and unprofiled serial/prefetch measurements are separate 
 .\.venv\Scripts\python.exe scripts/benchmark_raw_workflow.py --data-root "data/2.+Composites/2. Composites"
 ```
 
+**Output folders (since 2026-10-11).** Every workflow script writes to a new folder under the git-ignored `results/rebuilt/` by default, and refuses to overwrite recorded results. To confirm that the recorded results still reproduce, run:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/verify_reproduction.py --data-root "data/2.+Composites/2. Composites"
+```
+
+The report is written to `results/reproduction_check/report.json`. The test suite has 49 tests.
+
 MAT parsing was the measured bottleneck. A bounded ordered prefetch option is available as `--workers 4` on `scripts/exploratory_regression.py`; default `--workers 1` preserves serial execution. All original hash/selection checks remain enabled. Timing results are local observations, not general hardware benchmarks.
 
 ## Limitations

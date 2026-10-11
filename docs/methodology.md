@@ -100,10 +100,37 @@ MAE is the primary comparison. RMSE weights larger residuals more heavily; R² u
 
 Linear regression ranks first by evaluation MAE and RMSE in L1S11 -> L1S12 (0.050532/0.058254). MLP ranks first in the reverse direction for every declared seed (median 0.020942/0.023866), ahead of linear (0.029357/0.035001). Thus no single family wins both directions. Training errors for tree/SVR are small but their forward evaluation errors are large; the plots show substantial underestimation of late L1S12, beyond the L1S11 training target range. The reverse linear fit retains its negative prediction and R²=-0.911314. MLP's reverse R² is modest (median 0.111339), with persistent underestimation rather than an established deployment-quality model. Detailed tables and residual interpretation are in `results/model_comparison/INTERPRETATION.md`.
 
-Verification includes sklearn linear/log-cycle prediction agreement with recorded OLS at rtol 1e-9, atol 1e-10; specimen/reference separation; exact training-only scaler moments; target inverse-transform checks; invariance to altered evaluation/reference targets and evaluation-feature changes during fitting; target-blind reference candidate selection; every predeclared MLP seed; independent recalculation of exported scores. All 19 tests passed. No convergence warnings arose in reported, warm-up or timed fits. The four saved plot images were visually inspected for common scales, unclipped marks/labels, negative predictions and all-seed display.
+Verification includes sklearn linear/log-cycle prediction agreement with recorded OLS at rtol 1e-9, atol 1e-10; specimen/reference separation; exact training-only scaler moments; target inverse-transform checks; invariance to altered evaluation/reference targets and evaluation-feature changes during fitting; target-blind reference candidate selection; every predeclared MLP seed; independent recalculation of exported scores. All 19 tests passed at the time; since the 2026-10-11 code fixes the suite has 49 tests, all passing. No convergence warnings arose in reported, warm-up or timed fits. The four saved plot images were visually inspected for common scales, unclipped marks/labels, negative predictions and all-seed display.
 
 ### Runtime measurement versus profiling
 
 Model timings use one untimed warm-up and 15 fresh-estimator fits for each model/direction/seed with numerical-library threads limited to one. Fit timing includes input/target preprocessing but excludes construction, loading, scoring and plotting. Prediction timing averages 100 calls on the complete held-out batch per repetition. Raw samples and medians/25th/75th percentiles are retained. On this machine linear fits take about 1.9 ms, tree 1.1--1.4 ms, SVR 3.4 ms, MLP 9.9--18.2 ms across seeds/directions, log-cycle 1.8 ms and Dummy 0.5 ms. Prediction batch medians range about 0.045--0.659 ms. These are local warm-process observations with small batches, not universal speed rankings.
 
 Separately, cProfile instruments the original raw extraction/regression/plot workflow. Its self-time table identifies SciPy MAT array decoding (7.745 s self time) as the largest individual cost, with 254 loadmat calls accumulating 10.121 s. Cumulative times overlap and are not additive; profiled times include instrumentation overhead. Bounded ordered four-thread MAT prefetch targets that measured cost while leaving numerical extraction, selection and source hashes unchanged. The unprofiled benchmark uses fresh processes, one warm-up per mode and three alternating measured pairs, including imports, hashing, fitting and plotting; OS caches are not flushed. It verifies all CSV contents/source hashes against baseline and all serial/prefetch output file hashes, including the plot. Exact timing and equivalence evidence are saved separately under `raw_profile/` and `raw_benchmark/`.
+
+## Code maintenance without changing results (2026-10-11)
+
+Four review findings were fixed before any protocol v2 score was computed.
+
+- **Label-blind reference in the extraction.** `scripts/exploratory_regression.py` now chooses the
+  reference as the earliest checkpoint with an acquisition-eligible recording, without reading
+  labels or label availability. Previously, unlabelled recordings were dropped before the earliest
+  checkpoint was chosen, and only `model_comparison.py` audited the label-blind choice. For L1S11
+  and L1S12 both rules select the same cycle-1 recordings, so the denominators are unchanged.
+- **Testable functions.** The extractor is now a set of documented functions plus `main()`, and
+  importing it has no side effects. `tests/test_extraction.py` checks the features on sampled sines
+  (RMS = A/√2, PTP = 2A), each eligibility rule, the label-blind reference, missing-label
+  handling, the integrity checks and the output guards.
+- **`require()` instead of `assert`.** Integrity checks raise `ValueError` through
+  `scripts/common.py`, so they still run under `python -O`.
+- **Constants in configuration.** Specimen gain/excitation, load window, path, expected checkpoint
+  counts (13/12), coverage counts (12/11) and the retained 0.233175942 jump value moved to
+  `config/experiment_v1.json`.
+
+Workflow scripts now refuse to write into recorded results folders. Their default outputs are under
+the git-ignored `results/rebuilt/`. `scripts/verify_reproduction.py` reruns the baseline,
+repeat-sensitivity, model-comparison and coverage workflows into a scratch folder and compares
+every output with the recorded files. Its report is `results/reproduction_check/report.json`.
+Every deterministic output matched byte-for-byte or in content. Content-only matches were line
+endings or timestamps; timing samples are nondeterministic and were not compared.
+

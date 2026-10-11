@@ -84,6 +84,9 @@ why PTP behaves inconsistently across specimens (interpretation only, no design 
 
 ## Code issues to fix (from the 2026-10-11 review)
 
+Status 2026-10-11: a–d fixed on branch `code-fixes` (historical results verified by
+`scripts/verify_reproduction.py`; 49 tests pass); e updated for test counts; f, g remain (step 6).
+
 a. `scripts/exploratory_regression.py` still selects the reference from LABELLED checkpoints
    (unlabelled recordings are dropped before the earliest checkpoint is chosen);
    `model_comparison.py` only audits that a label-blind rule gives the same result. Make reference
