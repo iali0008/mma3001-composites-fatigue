@@ -1,0 +1,17 @@
+{
+  "started_utc": "2026-10-11T11:46:37.591703+00:00",
+  "git": {
+    "commit": "6ccee92d93b463e021a36f2f37b854c0d71be581",
+    "clean": true
+  },
+  "protocol_config_sha256": "d5b8ef07e875dbdfe3f719d88a0d94e0fe5df7234c356b14305cbb300a65de18",
+  "protocol_doc_sha256": "78f9b08ef7b7997d38c3a80ed7ef09911f4c9f583a29dc80fb2e087ff860ab61",
+  "specimens_read": [
+    "L1S11",
+    "L1S12"
+  ],
+  "held_out_specimen_read": false,
+  "python": "3.13.3",
+  "numpy": "2.3.0",
+  "sklearn": "1.9.0"
+}

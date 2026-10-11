@@ -84,3 +84,14 @@ Newest entries last. Every Claude session (Claude Code in VS Code or claude.ai) 
   and passed their baseline-equivalence gates (timings not recorded). Updated test counts (e) in
   methodology, INTERPRETATION and progress. Tests: 49/49 pass (unittest, Windows, Python 3.13.3,
   NumPy 2.3.0, scikit-learn 1.9.0). Note: `pyflakes` was used locally for linting only.
+- 2026-10-11 (Claude Code, VS Code): Plan step 3, protocol v2 validation on L1S11 ↔ L1S12 (L2S11
+  not opened). A feature-only check first confirmed that v2 single-path features equal the v1
+  baseline exactly. `scripts/protocol_v2_validation.py` (commit 6ccee92) then fitted the six v1
+  comparators on both input sets. Reproduction gate: 500/500 single-path predictions equal the
+  recorded v1 values (max difference 0.0). Worst-direction validation MAE: single-path linear
+  0.0505 (selected), single-path MLP 0.0782, multi-path MLP 0.0888, multi-path linear 0.0903; no
+  tie. Multi-path improved reverse-direction MAE for tree, SVR and MLP (MLP 0.0113) but not the
+  worst direction; multi-path linear extrapolates to −0.275 because multi-path ratios barely
+  overlap between specimens. Selection frozen in `results/protocol_v2/selection.json`; details in
+  `results/protocol_v2/validation/README.md`. Disclosure for the report: single-path scores were
+  known (v1) when the rule was written. Tests: 63/63 pass. Next: Sans reviews (★), then step 4.

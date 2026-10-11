@@ -1,0 +1,114 @@
+{
+  "rule": {
+    "candidates": "4 model families (LinearRegression, DecisionTreeRegressor, SVR, MLPRegressor) x 2 input sets = 8 candidates",
+    "controls_selectable": false,
+    "criterion": "lowest worst-direction validation MAE, where worst-direction MAE = max(MAE L1S11->L1S12, MAE L1S12->L1S11); MLP uses its five-seed median MAE in each direction",
+    "tie_tolerance_mae": 0.0005,
+    "tie_break_order": {
+      "model": [
+        "LinearRegression",
+        "DecisionTreeRegressor",
+        "SVR",
+        "MLPRegressor"
+      ],
+      "input_set": [
+        "single_path_1_7",
+        "multi_path_36"
+      ],
+      "rule": "within the tolerance of the minimum, choose the earliest model in the order; if still tied, the earliest input set"
+    },
+    "freeze": "the selection, the rule output and the commit hash are committed before L2S11 is touched"
+  },
+  "candidates": [
+    {
+      "model": "LinearRegression",
+      "input_set": "single_path_1_7",
+      "MAE_L1S11_to_L1S12": 0.05053185291164209,
+      "MAE_L1S12_to_L1S11": 0.02935699038052229,
+      "worst_direction_MAE": 0.05053185291164209,
+      "mean_direction_MAE": 0.03994442164608219
+    },
+    {
+      "model": "LinearRegression",
+      "input_set": "multi_path_36",
+      "MAE_L1S11_to_L1S12": 0.09031969535866445,
+      "MAE_L1S12_to_L1S11": 0.0687767550304406,
+      "worst_direction_MAE": 0.09031969535866445,
+      "mean_direction_MAE": 0.07954822519455253
+    },
+    {
+      "model": "DecisionTreeRegressor",
+      "input_set": "single_path_1_7",
+      "MAE_L1S11_to_L1S12": 0.10515790516269842,
+      "MAE_L1S12_to_L1S11": 0.04580261274358975,
+      "worst_direction_MAE": 0.10515790516269842,
+      "mean_direction_MAE": 0.07548025895314409
+    },
+    {
+      "model": "DecisionTreeRegressor",
+      "input_set": "multi_path_36",
+      "MAE_L1S11_to_L1S12": 0.09065549381944445,
+      "MAE_L1S12_to_L1S11": 0.03927028134615385,
+      "worst_direction_MAE": 0.09065549381944445,
+      "mean_direction_MAE": 0.06496288758279915
+    },
+    {
+      "model": "SVR",
+      "input_set": "single_path_1_7",
+      "MAE_L1S11_to_L1S12": 0.11119281139891679,
+      "MAE_L1S12_to_L1S11": 0.056256839674467374,
+      "worst_direction_MAE": 0.11119281139891679,
+      "mean_direction_MAE": 0.08372482553669208
+    },
+    {
+      "model": "SVR",
+      "input_set": "multi_path_36",
+      "MAE_L1S11_to_L1S12": 0.09631237631263849,
+      "MAE_L1S12_to_L1S11": 0.030107077613411488,
+      "worst_direction_MAE": 0.09631237631263849,
+      "mean_direction_MAE": 0.06320972696302499
+    },
+    {
+      "model": "MLPRegressor",
+      "input_set": "single_path_1_7",
+      "MAE_L1S11_to_L1S12": 0.07819312737129731,
+      "MAE_L1S12_to_L1S11": 0.020941915621374443,
+      "worst_direction_MAE": 0.07819312737129731,
+      "mean_direction_MAE": 0.04956752149633588
+    },
+    {
+      "model": "MLPRegressor",
+      "input_set": "multi_path_36",
+      "MAE_L1S11_to_L1S12": 0.08876021445088268,
+      "MAE_L1S12_to_L1S11": 0.011333082837268053,
+      "worst_direction_MAE": 0.08876021445088268,
+      "mean_direction_MAE": 0.05004664864407537
+    }
+  ],
+  "minimum_worst_direction_MAE": 0.05053185291164209,
+  "tied_within_tolerance": [
+    [
+      "LinearRegression",
+      "single_path_1_7"
+    ]
+  ],
+  "selected": {
+    "model": "LinearRegression",
+    "input_set": "single_path_1_7"
+  },
+  "final_model_training": {
+    "training_data": "all non-reference labelled checkpoints of L1S11 and L1S12 pooled (expected 25), equal checkpoint weights, each specimen normalised by its own reference",
+    "settings": "selected model and input set, unchanged hyperparameters",
+    "mlp": "if MLP is selected, fit all five seeds; report each seed and the seed-median MAE; no seed selection, no ensemble"
+  },
+  "convergence_warnings": 0,
+  "reproduction_gate": {
+    "compared_predictions": 500,
+    "max_abs_difference": 0.0,
+    "rtol": 1e-09,
+    "atol": 1e-10
+  },
+  "validation_git_commit": "6ccee92d93b463e021a36f2f37b854c0d71be581",
+  "decided_utc": "2026-10-11T11:46:51.069876+00:00",
+  "status": "frozen: L2S11 has not been opened; commit this file before step 4"
+}
