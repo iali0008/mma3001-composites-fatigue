@@ -19,6 +19,7 @@ Example
 -------
 ``python scripts/verify_reproduction.py --data-root "data/2.+Composites/2. Composites"``
 """
+
 from __future__ import annotations
 
 import argparse
@@ -35,8 +36,12 @@ import matplotlib
 from common import ROOT, load_json, require, save_json
 
 RESULTS = ROOT / 'results'
-VOLATILE_KEYS = {'started_utc', 'completed_utc', 'historical_outputs_hashes_unchanged',
-                 'existing_artifact_hashes_unchanged'}
+VOLATILE_KEYS = {
+    'started_utc',
+    'completed_utc',
+    'historical_outputs_hashes_unchanged',
+    'existing_artifact_hashes_unchanged',
+}
 TIMING_FILES = {'timing_samples.csv', 'timing_summary.csv'}
 
 
@@ -133,8 +138,11 @@ def run(script, *args):
     *args : str
         Command-line arguments.
     """
-    subprocess.run([sys.executable, str(ROOT / 'scripts' / script), *args], check=True,
-                   stdout=subprocess.DEVNULL)
+    subprocess.run(
+        [sys.executable, str(ROOT / 'scripts' / script), *args],
+        check=True,
+        stdout=subprocess.DEVNULL,
+    )
 
 
 def main(argv=None):
@@ -152,15 +160,23 @@ def main(argv=None):
     """
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument('--data-root', required=True, type=Path)
-    parser.add_argument('--work', type=Path, default=RESULTS / 'rebuilt' / 'verification',
-                        help='Scratch folder for regenerated outputs (replaced on each run).')
-    parser.add_argument('--report', type=Path, default=RESULTS / 'reproduction_check' / 'report.json')
+    parser.add_argument(
+        '--work',
+        type=Path,
+        default=RESULTS / 'rebuilt' / 'verification',
+        help='Scratch folder for regenerated outputs (replaced on each run).',
+    )
+    parser.add_argument(
+        '--report', type=Path, default=RESULTS / 'reproduction_check' / 'report.json'
+    )
     args = parser.parse_args(argv)
     work = args.work.resolve()
     for recorded in ('baseline', 'repeat_sensitivity', 'model_comparison', 'protocol_v2_audit'):
         folder = RESULTS / recorded
-        require(work != folder and folder not in work.parents and work not in folder.parents,
-                'The work folder must not overlap recorded results')
+        require(
+            work != folder and folder not in work.parents and work not in folder.parents,
+            'The work folder must not overlap recorded results',
+        )
     if work.exists():
         shutil.rmtree(work)
     work.mkdir(parents=True)
@@ -177,26 +193,39 @@ def main(argv=None):
     # same-environment rebuild recorded inside results/repeat_sensitivity.
     plot = RESULTS / 'repeat_sensitivity' / 'median_rebuild' / 'predicted_vs_observed.png'
     sections = {
-        'baseline': compare_folder(work / 'baseline', RESULTS / 'baseline', same_plots,
-                                   {'predicted_vs_observed.png': plot}),
-        'repeat_sensitivity': compare_folder(work / 'repeat_sensitivity',
-                                             RESULTS / 'repeat_sensitivity', same_plots),
+        'baseline': compare_folder(
+            work / 'baseline', RESULTS / 'baseline', same_plots, {'predicted_vs_observed.png': plot}
+        ),
+        'repeat_sensitivity': compare_folder(
+            work / 'repeat_sensitivity', RESULTS / 'repeat_sensitivity', same_plots
+        ),
         'model_comparison': compare_folder(
-            work / 'model_comparison', RESULTS / 'model_comparison', same_plots,
-            exclude=('coverage', 'raw_benchmark', 'raw_profile', 'INTERPRETATION.md')),
-        'coverage': compare_folder(work / 'coverage', RESULTS / 'model_comparison' / 'coverage',
-                                   same_plots),
+            work / 'model_comparison',
+            RESULTS / 'model_comparison',
+            same_plots,
+            exclude=('coverage', 'raw_benchmark', 'raw_profile', 'INTERPRETATION.md'),
+        ),
+        'coverage': compare_folder(
+            work / 'coverage', RESULTS / 'model_comparison' / 'coverage', same_plots
+        ),
     }
     counts = {}
     for statuses in sections.values():
         for value in statuses.values():
             counts[value] = counts.get(value, 0) + 1
-    report = dict(checked_utc=datetime.now(timezone.utc).isoformat(),
-                  python=platform.python_version(), matplotlib=matplotlib.__version__,
-                  recorded_matplotlib=recorded_env['matplotlib'],
-                  plots_compared=same_plots, counts=counts, files=sections,
-                  not_rerun=['raw_profile and raw_benchmark (timing evidence; rerun separately)',
-                             'INTERPRETATION.md (hand-written)'])
+    report = dict(
+        checked_utc=datetime.now(timezone.utc).isoformat(),
+        python=platform.python_version(),
+        matplotlib=matplotlib.__version__,
+        recorded_matplotlib=recorded_env['matplotlib'],
+        plots_compared=same_plots,
+        counts=counts,
+        files=sections,
+        not_rerun=[
+            'raw_profile and raw_benchmark (timing evidence; rerun separately)',
+            'INTERPRETATION.md (hand-written)',
+        ],
+    )
     args.report.parent.mkdir(parents=True, exist_ok=True)
     save_json(args.report, report)
     print(json.dumps(dict(counts=counts, report=str(args.report)), indent=2))

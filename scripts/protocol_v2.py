@@ -13,6 +13,7 @@ Labels are read only when ``read_labels=True``. With ``read_labels=False`` the
 label field is deleted from each MAT structure as soon as it is loaded, so the
 held-out specimen can be processed without exposing its labels.
 """
+
 from __future__ import annotations
 
 from collections import Counter, defaultdict
@@ -108,12 +109,17 @@ def summarise_file(coupon, specimen, filename, protocol, read_labels):
             continue
         pair = (scalar(p.get('actuator', [])), scalar(p.get('sensor', [])))
         counts[pair] += 1
-        settings[pair] = (scalar(p.get('gain', [])), scalar(p.get('amplitude', [])),
-                          scalar(p.get('sampling_rate', [])))
+        settings[pair] = (
+            scalar(p.get('gain', [])),
+            scalar(p.get('amplitude', [])),
+            scalar(p.get('sampling_rate', [])),
+        )
         a = np.asarray(p.get('signal_actuator', []), dtype=float).ravel()
         x = np.asarray(p.get('signal_sensor', []), dtype=float).ravel()
-        ok = all(len(s) == rules['signal_length_samples'] and np.isfinite(s).all() and np.ptp(s) > 0
-                 for s in (a, x))
+        ok = all(
+            len(s) == rules['signal_length_samples'] and np.isfinite(s).all() and np.ptp(s) > 0
+            for s in (a, x)
+        )
         if ok:
             rms[pair], ptp[pair] = waveform_features(x)
         else:
@@ -121,10 +127,19 @@ def summarise_file(coupon, specimen, filename, protocol, read_labels):
     label = None
     if read_labels:
         label = scalar(coupon.get('straingage_data', {}).get('stiffness_degradation', []))
-    return dict(specimen=specimen, filename=filename, cycles=scalar(coupon.get('cycles', [])),
-                load_kips=scalar(coupon.get('load', [])),
-                condition=str(coupon.get('condition', '')).strip(), published_index=label,
-                pair_counts=counts, settings=settings, rms=rms, ptp=ptp, bad_pairs=bad)
+    return dict(
+        specimen=specimen,
+        filename=filename,
+        cycles=scalar(coupon.get('cycles', [])),
+        load_kips=scalar(coupon.get('load', [])),
+        condition=str(coupon.get('condition', '')).strip(),
+        published_index=label,
+        pair_counts=counts,
+        settings=settings,
+        rms=rms,
+        ptp=ptp,
+        bad_pairs=bad,
+    )
 
 
 def setting_vector(summary, protocol):
@@ -178,10 +193,14 @@ def eligibility_reasons(summary, specimen_rules, modal_vector, protocol):
     base = (rules['baseline_path']['actuator'], rules['baseline_path']['sensor'])
     if summary['pair_counts'].get(base, 0) != 1:
         reasons.append('baseline path missing or ambiguous')
-    elif summary['settings'][base][:2] != (specimen_rules['baseline_gain'],
-                                          specimen_rules['baseline_amplitude']):
+    elif summary['settings'][base][:2] != (
+        specimen_rules['baseline_gain'],
+        specimen_rules['baseline_amplitude'],
+    ):
         reasons.append('baseline gain/amplitude mismatch')
-    if any(summary['settings'].get(p, (None,) * 3)[2] != rules['stored_sampling_rate'] for p in grid):
+    if any(
+        summary['settings'].get(p, (None,) * 3)[2] != rules['stored_sampling_rate'] for p in grid
+    ):
         reasons.append('stored sampling rate mismatch')
     if setting_vector(summary, protocol) != modal_vector:
         reasons.append('setting vector differs from specimen modal vector')
@@ -263,18 +282,29 @@ def build_checkpoints(summaries, protocol):
     for s in eligible:
         groups[s['cycles']].append(s)
     grid = pairs(protocol)
-    base = (protocol['eligibility']['baseline_path']['actuator'],
-            protocol['eligibility']['baseline_path']['sensor'])
+    base = (
+        protocol['eligibility']['baseline_path']['actuator'],
+        protocol['eligibility']['baseline_path']['sensor'],
+    )
     medians = {}
     for cycle, group in groups.items():
-        medians[cycle] = {p: (float(np.median([s['rms'][p] for s in group])),
-                              float(np.median([s['ptp'][p] for s in group]))) for p in grid}
+        medians[cycle] = {
+            p: (
+                float(np.median([s['rms'][p] for s in group])),
+                float(np.median([s['ptp'][p] for s in group])),
+            )
+            for p in grid
+        }
     ref_cycle = min(groups)  # earliest eligible checkpoint; labels never consulted
     ref = medians[ref_cycle]
     require(all(v > 0 for p in grid for v in ref[p]), 'Invalid reference denominator')
-    reference = dict(specimen=specimen, cycles=int(ref_cycle),
-                     filenames='; '.join(s['filename'] for s in groups[ref_cycle]),
-                     rms_denominator=ref[base][0], ptp_denominator=ref[base][1])
+    reference = dict(
+        specimen=specimen,
+        cycles=int(ref_cycle),
+        filenames='; '.join(s['filename'] for s in groups[ref_cycle]),
+        rms_denominator=ref[base][0],
+        ptp_denominator=ref[base][1],
+    )
     checkpoints, pair_ratios = [], []
     for cycle in sorted(groups):
         group = groups[cycle]
@@ -282,21 +312,37 @@ def build_checkpoints(summaries, protocol):
         require(len(labels) <= 1, f'Conflicting published labels: {specimen}, {cycle}')
         rms_ratio = {p: medians[cycle][p][0] / ref[p][0] for p in grid}
         ptp_ratio = {p: medians[cycle][p][1] / ref[p][1] for p in grid}
-        checkpoints.append(dict(
-            specimen=specimen, cycles=int(cycle), published_index=labels.pop() if labels else None,
-            eligible_repeats=len(group), filenames='; '.join(s['filename'] for s in group),
-            load_min_kips=min(s['load_kips'] for s in group),
-            load_max_kips=max(s['load_kips'] for s in group),
-            is_reference=cycle == ref_cycle, reference_cycles=int(ref_cycle),
-            mean_centred_rms=medians[cycle][base][0], peak_to_peak=medians[cycle][base][1],
-            relative_rms=medians[cycle][base][0] / ref[base][0],
-            relative_ptp=medians[cycle][base][1] / ref[base][1],
-            mp_relative_rms=float(np.median(list(rms_ratio.values()))),
-            mp_relative_ptp=float(np.median(list(ptp_ratio.values()))),
-            log10_cycles=float(np.log10(cycle))))
+        checkpoints.append(
+            dict(
+                specimen=specimen,
+                cycles=int(cycle),
+                published_index=labels.pop() if labels else None,
+                eligible_repeats=len(group),
+                filenames='; '.join(s['filename'] for s in group),
+                load_min_kips=min(s['load_kips'] for s in group),
+                load_max_kips=max(s['load_kips'] for s in group),
+                is_reference=cycle == ref_cycle,
+                reference_cycles=int(ref_cycle),
+                mean_centred_rms=medians[cycle][base][0],
+                peak_to_peak=medians[cycle][base][1],
+                relative_rms=medians[cycle][base][0] / ref[base][0],
+                relative_ptp=medians[cycle][base][1] / ref[base][1],
+                mp_relative_rms=float(np.median(list(rms_ratio.values()))),
+                mp_relative_ptp=float(np.median(list(ptp_ratio.values()))),
+                log10_cycles=float(np.log10(cycle)),
+            )
+        )
         for p in grid:
-            pair_ratios.append(dict(specimen=specimen, cycles=int(cycle), actuator=int(p[0]),
-                                    sensor=int(p[1]), rms_ratio=rms_ratio[p], ptp_ratio=ptp_ratio[p]))
+            pair_ratios.append(
+                dict(
+                    specimen=specimen,
+                    cycles=int(cycle),
+                    actuator=int(p[0]),
+                    sensor=int(p[1]),
+                    rms_ratio=rms_ratio[p],
+                    ptp_ratio=ptp_ratio[p],
+                )
+            )
     return checkpoints, pair_ratios, reference
 
 
@@ -351,13 +397,17 @@ def select_final(candidates, protocol):
     'LinearRegression'
     """
     rule = protocol['selection_rule']
-    require(sorted((c['model'], c['input_set']) for c in candidates) ==
-            sorted((m, i) for m in FAMILIES for i in INPUT_SETS), 'Unexpected candidate set')
+    require(
+        sorted((c['model'], c['input_set']) for c in candidates)
+        == sorted((m, i) for m in FAMILIES for i in INPUT_SETS),
+        'Unexpected candidate set',
+    )
     best = min(c['worst_direction_MAE'] for c in candidates)
     order_m, order_i = rule['tie_break_order']['model'], rule['tie_break_order']['input_set']
-    tied = sorted([c for c in candidates
-                   if c['worst_direction_MAE'] - best <= rule['tie_tolerance_mae']],
-                  key=lambda c: (order_m.index(c['model']), order_i.index(c['input_set'])))
+    tied = sorted(
+        [c for c in candidates if c['worst_direction_MAE'] - best <= rule['tie_tolerance_mae']],
+        key=lambda c: (order_m.index(c['model']), order_i.index(c['input_set'])),
+    )
     return dict(selected=tied[0], minimum=best, tied=tied)
 
 
@@ -385,9 +435,13 @@ def read_published_labels(data_root, specimen, protocol, workers=1):
     """
     folder = protocol['specimens'][specimen]['folder']
     files = sorted((data_root / folder / 'PZT-data').glob(specimen + '_*.mat'))
-    return {path.name: (scalar(c.get('cycles', [])),
-                        scalar(c.get('straingage_data', {}).get('stiffness_degradation', [])))
-            for path, _, c in iter_coupons(files, workers)}
+    return {
+        path.name: (
+            scalar(c.get('cycles', [])),
+            scalar(c.get('straingage_data', {}).get('stiffness_degradation', [])),
+        )
+        for path, _, c in iter_coupons(files, workers)
+    }
 
 
 def attach_labels(checkpoints, labels):
@@ -451,10 +505,22 @@ def sanity_criteria(late_predictions, prediction_at_100k, training_targets, prot
     low, high = min(training_targets), max(training_targets)
     width = high - low
     bounds = (low - 0.5 * width, high + 0.5 * width)
-    c1 = dict(mean_late_prediction=float(np.mean(late)), prediction_at_100k=float(prediction_at_100k),
-              **{'pass': bool(np.mean(late) >= prediction_at_100k)})
-    c2 = dict(bounds=[-0.05, 1.0], min=min(late), max=max(late),
-              **{'pass': all(-0.05 <= v <= 1.0 for v in late)})
-    c3 = dict(bounds=list(bounds), training_target_range=[low, high], min=min(late), max=max(late),
-              **{'pass': all(bounds[0] <= v <= bounds[1] for v in late)})
+    c1 = dict(
+        mean_late_prediction=float(np.mean(late)),
+        prediction_at_100k=float(prediction_at_100k),
+        **{'pass': bool(np.mean(late) >= prediction_at_100k)},
+    )
+    c2 = dict(
+        bounds=[-0.05, 1.0],
+        min=min(late),
+        max=max(late),
+        **{'pass': all(-0.05 <= v <= 1.0 for v in late)},
+    )
+    c3 = dict(
+        bounds=list(bounds),
+        training_target_range=[low, high],
+        min=min(late),
+        max=max(late),
+        **{'pass': all(bounds[0] <= v <= bounds[1] for v in late)},
+    )
     return dict(C1=c1, C2=c2, C3=c3, **{'pass': c1['pass'] and c2['pass'] and c3['pass']})

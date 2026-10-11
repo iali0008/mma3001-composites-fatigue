@@ -4,6 +4,7 @@ Reference features are permitted at deployment. Their targets are never used
 for model fitting or scoring. The recorded experiment is exploratory, not an
 independent estimate of population-level performance.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -24,7 +25,25 @@ MODELS = {
 
 
 def read_checkpoints(path: Path) -> list[dict]:
-    """Load a checkpoint table and reject ambiguous or malformed observations."""
+    """Load a checkpoint table and reject ambiguous or malformed observations.
+
+    Parameters
+    ----------
+    path : pathlib.Path
+        CSV with ``specimen``, ``cycles``, ``published_index``, ``relative_rms``,
+        ``relative_ptp``, ``log10_cycles`` and ``is_reference`` columns.
+
+    Returns
+    -------
+    list of dict
+        Rows sorted by specimen and cycle, with numeric fields converted.
+
+    Raises
+    ------
+    ValueError
+        For missing columns, nonfinite values, non-integer or nonpositive cycles,
+        duplicate checkpoints, a wrong specimen set, or an invalid reference.
+    """
     with path.open(encoding='utf-8-sig', newline='') as stream:
         reader = csv.DictReader(stream)
         numeric = ('cycles', 'published_index', 'relative_rms', 'relative_ptp', 'log10_cycles')
@@ -59,16 +78,35 @@ def read_checkpoints(path: Path) -> list[dict]:
             raise ValueError('Each specimen must have one earliest-checkpoint reference.')
         if not np.allclose([refs[0]['relative_rms'], refs[0]['relative_ptp']], 1):
             raise ValueError('Reference feature ratios must equal one.')
-        if not np.allclose([r['log10_cycles'] for r in local], np.log10([r['cycles'] for r in local])):
+        if not np.allclose(
+            [r['log10_cycles'] for r in local], np.log10([r['cycles'] for r in local])
+        ):
             raise ValueError('log10_cycles disagrees with cycle counts.')
     return sorted(rows, key=lambda r: (r['specimen'], r['cycles']))
 
 
 def evaluate(rows: list[dict]) -> tuple[list[dict], list[dict], list[dict]]:
-    """Fit each direction independently; use training-only centering and scaling.
+    """Fit each OLS model on one specimen and score the other, both directions.
 
-    Centered QR is numerically equivalent to OLS with an intercept, and provides
-    a separate calculation from the original unscaled least-squares script.
+    Uses training-only centring and scaling with a QR solve, which is
+    numerically equivalent to OLS with an intercept and independent of the
+    original unscaled least-squares script.
+
+    Parameters
+    ----------
+    rows : list of dict
+        Output of :func:`read_checkpoints`.
+
+    Returns
+    -------
+    metrics, predictions, coefficients : list of dict
+        Held-out MAE/RMSE, per-checkpoint predictions and coefficients in
+        original feature units.
+
+    Raises
+    ------
+    ValueError
+        If a specimen lacks non-reference checkpoints or a design is degenerate.
     """
     metrics, predictions, coefficients = [], [], []
     for train_name, test_name in EXPERIMENT['directions']:
@@ -84,46 +122,81 @@ def evaluate(rows: list[dict]) -> tuple[list[dict], list[dict], list[dict]]:
             center, scale = x.mean(axis=0), x.std(axis=0)
             if (scale == 0).any():
                 raise ValueError(f'Constant training feature: {model}')
-            z = (x-center)/scale
+            z = (x - center) / scale
             if np.linalg.matrix_rank(z) != len(fields):
                 raise ValueError(f'Rank-deficient training features: {model}')
             q, upper = np.linalg.qr(z, mode='reduced')
-            slopes = np.linalg.solve(upper, q.T @ (y-y.mean())) / scale
+            slopes = np.linalg.solve(upper, q.T @ (y - y.mean())) / scale
             intercept = float(y.mean() - center @ slopes)
             estimated = intercept + xt @ slopes
-            residual = estimated-observed
-            metrics.append(dict(train_specimen=train_name, test_specimen=test_name,
-                                model=model, train_checkpoints=len(train), test_checkpoints=len(test),
-                                MAE=float(np.abs(residual).mean()),
-                                RMSE=float(np.sqrt(np.mean(residual**2)))))
-            coefficients.append(dict(train_specimen=train_name, test_specimen=test_name,
-                                     model=model, intercept=intercept, terms='; '.join(fields),
-                                     slopes='; '.join(format(v, '.17g') for v in slopes)))
+            residual = estimated - observed
+            metrics.append(
+                dict(
+                    train_specimen=train_name,
+                    test_specimen=test_name,
+                    model=model,
+                    train_checkpoints=len(train),
+                    test_checkpoints=len(test),
+                    MAE=float(np.abs(residual).mean()),
+                    RMSE=float(np.sqrt(np.mean(residual**2))),
+                )
+            )
+            coefficients.append(
+                dict(
+                    train_specimen=train_name,
+                    test_specimen=test_name,
+                    model=model,
+                    intercept=intercept,
+                    terms='; '.join(fields),
+                    slopes='; '.join(format(v, '.17g') for v in slopes),
+                )
+            )
             for row, value, error in zip(test, estimated, residual):
-                predictions.append(dict(train_specimen=train_name, test_specimen=test_name,
-                                        model=model, cycles=row['cycles'],
-                                        observed_index=row['published_index'],
-                                        predicted_index=float(value), residual=float(error)))
+                predictions.append(
+                    dict(
+                        train_specimen=train_name,
+                        test_specimen=test_name,
+                        model=model,
+                        cycles=row['cycles'],
+                        observed_index=row['published_index'],
+                        predicted_index=float(value),
+                        residual=float(error),
+                    )
+                )
     return metrics, predictions, coefficients
 
 
-def main() -> None:
+def main(argv=None) -> None:
+    """Refit the exported baseline features and write metrics and predictions.
+
+    Parameters
+    ----------
+    argv : list of str, optional
+        Command-line arguments; defaults to ``sys.argv[1:]``.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--features', type=Path, default=ROOT/'results/baseline/checkpoint_features.csv')
-    parser.add_argument('--output', type=Path, default=ROOT/'results/reproduced')
-    args = parser.parse_args()
+    parser.add_argument(
+        '--features', type=Path, default=ROOT / 'results/baseline/checkpoint_features.csv'
+    )
+    parser.add_argument('--output', type=Path, default=ROOT / 'results/reproduced')
+    args = parser.parse_args(argv)
     output = args.output.resolve()
-    baseline = ROOT/'results/baseline'
+    baseline = ROOT / 'results/baseline'
     if output == baseline or baseline in output.parents:
         parser.error('Preserve the recorded baseline; choose a different output folder.')
     metrics, predictions, coefficients = evaluate(read_checkpoints(args.features))
     output.mkdir(parents=True, exist_ok=True)
-    for filename, values in [('metrics.csv', metrics), ('predictions.csv', predictions),
-                             ('coefficients.csv', coefficients)]:
-        write_csv(output/filename, values)
+    for filename, values in [
+        ('metrics.csv', metrics),
+        ('predictions.csv', predictions),
+        ('coefficients.csv', coefficients),
+    ]:
+        write_csv(output / filename, values)
     for row in metrics:
-        print(f"{row['train_specimen']} -> {row['test_specimen']} | {row['model']}: "
-              f"MAE {row['MAE']:.6f}; RMSE {row['RMSE']:.6f}")
+        print(
+            f"{row['train_specimen']} -> {row['test_specimen']} | {row['model']}: "
+            f"MAE {row['MAE']:.6f}; RMSE {row['RMSE']:.6f}"
+        )
     print(f'Outputs: {output}')
 
 

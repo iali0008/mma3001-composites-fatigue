@@ -16,6 +16,7 @@ Example
 -------
 ``python scripts/dataset_facts.py --data-root "data/2.+Composites/2. Composites"``
 """
+
 from __future__ import annotations
 
 import argparse
@@ -109,10 +110,12 @@ def main(argv=None):
         for f in strain_files:
             variables[', '.join(sorted(v[0] for v in whosmat(f)))] += 1
         facts['specimens'][specimen] = dict(
-            labelled_pzt_files=n_labelled, label_links_examples=links[:3] + links[-2:],
+            labelled_pzt_files=n_labelled,
+            label_links_examples=links[:3] + links[-2:],
             files_with_linked_strain=sum(bool(l['strain_files']) for l in links),
             converted_strain_mat_files=len(strain_files),
-            strain_file_variable_sets=dict(variables))
+            strain_file_variable_sets=dict(variables),
+        )
     facts['sampling_rate']['stored_values_all_paths'] = {str(k): v for k, v in stored_rates.items()}
     per_freq = {}
     for freq, rows in sorted(spectra.items()):
@@ -120,15 +123,21 @@ def main(argv=None):
         bins = Counter(r[1] for r in rows)
         k = bins.most_common(1)[0][0]
         per_freq[str(freq)] = dict(
-            signals=len(rows), n_samples=n, peak_bin_counts=dict(bins), modal_peak_bin=k,
+            signals=len(rows),
+            n_samples=n,
+            peak_bin_counts=dict(bins),
+            modal_peak_bin=k,
             samples_per_period=n / k,
             peak_frequency_if_stored_rate_hz=k * 1.2e6 / n,
             implied_sampling_rate_hz=freq * 1e3 * n / k,
-            median_burst_span_samples=float(np.median([r[2] for r in rows])))
+            median_burst_span_samples=float(np.median([r[2] for r in rows])),
+        )
     facts['sampling_rate']['actuator_pair_1_7'] = per_freq
-    facts['sampling_rate']['note'] = ('Stored rate written as a constant by NEWFILEDEF.m line 102 '
-                                      '(Technical Report PDF p. 8); FFT bins have resolution '
-                                      'fs/n, so implied rates are approximate.')
+    facts['sampling_rate']['note'] = (
+        'Stored rate written as a constant by NEWFILEDEF.m line 102 '
+        '(Technical Report PDF p. 8); FFT bins have resolution '
+        'fs/n, so implied rates are approximate.'
+    )
     OUT.mkdir(parents=True, exist_ok=True)
     save_json(OUT / 'facts.json', facts)
     print(per_freq)

@@ -7,6 +7,7 @@ as predeclared or used to choose a model.
 
 Outputs ``results/protocol_v2/post_hoc_step4/summary.json``.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -27,11 +28,15 @@ def main():
     validation = read_csv(BASE / 'validation' / 'checkpoint_features.csv')
     ranges = {}
     for specimen in ('L1S11', 'L1S12'):
-        local = [r for r in validation if r['specimen'] == specimen and r['is_reference'] == 'False'
-                 and r['published_index']]
-        ranges[specimen] = {f: [min(float(r[f]) for r in local), max(float(r[f]) for r in local)]
-                            for f in ('relative_rms', 'relative_ptp', 'mp_relative_rms',
-                                      'mp_relative_ptp')}
+        local = [
+            r
+            for r in validation
+            if r['specimen'] == specimen and r['is_reference'] == 'False' and r['published_index']
+        ]
+        ranges[specimen] = {
+            f: [min(float(r[f]) for r in local), max(float(r[f]) for r in local)]
+            for f in ('relative_rms', 'relative_ptp', 'mp_relative_rms', 'mp_relative_ptp')
+        }
     summary = dict(
         status='POST HOC: computed after the single L2S11 test; descriptive only',
         l2s11_scored_n=len(obs),
@@ -45,7 +50,8 @@ def main():
         pearson_prediction_vs_observed=float(pearsonr(pred, obs).statistic),
         l2s11_path_1_7_relative_rms_range=[float(rms.min()), float(rms.max())],
         l2s11_path_1_7_relative_ptp_range=[float(ptp.min()), float(ptp.max())],
-        development_feature_ranges_non_reference_labelled=ranges)
+        development_feature_ranges_non_reference_labelled=ranges,
+    )
     out = BASE / 'post_hoc_step4'
     out.mkdir(exist_ok=True)
     save_json(out / 'summary.json', summary)

@@ -1,4 +1,5 @@
 """Unit tests for protocol v2 eligibility, aggregation, label isolation and selection."""
+
 import copy
 from pathlib import Path
 import sys
@@ -7,9 +8,18 @@ import unittest
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT/'scripts'))
-from protocol_v2 import (FAMILIES, INPUT_SETS, build_checkpoints, eligibility_reasons, load_protocol,
-                         pairs, select_final, setting_vector, summarise_file)
+sys.path.insert(0, str(ROOT / 'scripts'))
+from protocol_v2 import (
+    FAMILIES,
+    INPUT_SETS,
+    build_checkpoints,
+    eligibility_reasons,
+    load_protocol,
+    pairs,
+    select_final,
+    setting_vector,
+    summarise_file,
+)
 
 PROTOCOL = load_protocol()
 L1S11 = PROTOCOL['specimens']['L1S11']
@@ -20,8 +30,18 @@ def sine(amplitude, n=2000, periods=25):
     return amplitude * np.sin(2 * np.pi * periods * t)
 
 
-def coupon(cycles=10.0, load=4.0, condition='Loaded', label=0.1, scale=1.0, gain=33, amplitude=65,
-           drop=None, extra=None, bad=None):
+def coupon(
+    cycles=10.0,
+    load=4.0,
+    condition='Loaded',
+    label=0.1,
+    scale=1.0,
+    gain=33,
+    amplitude=65,
+    drop=None,
+    extra=None,
+    bad=None,
+):
     """Synthetic coupon with the full 36-pair grid at 150 kHz plus one 300 kHz record.
 
     Pair (a, s) has receiver amplitude ``scale * (a + s)``; 1 -> 7 uses the
@@ -34,14 +54,39 @@ def coupon(cycles=10.0, load=4.0, condition='Loaded', label=0.1, scale=1.0, gain
         x = sine(scale * (a + s))
         if (a, s) == bad:
             x = np.zeros(2000)
-        records.append(dict(actuator=a, sensor=s, frequency=150, gain=gain, amplitude=amplitude,
-                            sampling_rate=1200000, signal_actuator=sine(1.0), signal_sensor=x))
+        records.append(
+            dict(
+                actuator=a,
+                sensor=s,
+                frequency=150,
+                gain=gain,
+                amplitude=amplitude,
+                sampling_rate=1200000,
+                signal_actuator=sine(1.0),
+                signal_sensor=x,
+            )
+        )
     if extra:
         records.append(copy.deepcopy(records[0]))
-    records.append(dict(actuator=1, sensor=7, frequency=300, gain=1, amplitude=1, sampling_rate=1,
-                        signal_actuator=np.zeros(5), signal_sensor=np.zeros(5)))
-    return dict(cycles=cycles, load=load, condition=condition, path_data=records,
-                straingage_data=dict(stiffness_degradation=[] if label is None else label))
+    records.append(
+        dict(
+            actuator=1,
+            sensor=7,
+            frequency=300,
+            gain=1,
+            amplitude=1,
+            sampling_rate=1,
+            signal_actuator=np.zeros(5),
+            signal_sensor=np.zeros(5),
+        )
+    )
+    return dict(
+        cycles=cycles,
+        load=load,
+        condition=condition,
+        path_data=records,
+        straingage_data=dict(stiffness_degradation=[] if label is None else label),
+    )
 
 
 def summary(name='f.mat', read_labels=True, **kwargs):
@@ -61,14 +106,16 @@ class EligibilityTests(unittest.TestCase):
         self.assertEqual(screened([summary()])[0]['exclusion_reasons'], '')
 
     def test_each_rule_excludes(self):
-        cases = {'not a positive-cycle checkpoint': dict(cycles=0.0),
-                 'condition is not loaded': dict(condition='Traction Free'),
-                 'load outside 3.95-4.05 kips': dict(load=4.58),
-                 '36-pair grid incomplete or duplicated': dict(drop=(3, 10)),
-                 'baseline path missing or ambiguous': dict(drop=(1, 7)),
-                 'baseline gain/amplitude mismatch': dict(gain=35),
-                 'setting vector differs from specimen modal vector': dict(amplitude=50),
-                 'invalid signal (length, nonfinite or constant)': dict(bad=(2, 9))}
+        cases = {
+            'not a positive-cycle checkpoint': dict(cycles=0.0),
+            'condition is not loaded': dict(condition='Traction Free'),
+            'load outside 3.95-4.05 kips': dict(load=4.58),
+            '36-pair grid incomplete or duplicated': dict(drop=(3, 10)),
+            'baseline path missing or ambiguous': dict(drop=(1, 7)),
+            'baseline gain/amplitude mismatch': dict(gain=35),
+            'setting vector differs from specimen modal vector': dict(amplitude=50),
+            'invalid signal (length, nonfinite or constant)': dict(bad=(2, 9)),
+        }
         for reason, kwargs in cases.items():
             with self.subTest(reason=reason):
                 s = screened([summary(**kwargs)])[0]
@@ -84,16 +131,20 @@ class EligibilityTests(unittest.TestCase):
 
     def test_label_does_not_change_eligibility(self):
         a, b = screened([summary(label=None), summary(label=0.2)])
-        self.assertEqual((a['eligible'], a['exclusion_reasons']), (b['eligible'], b['exclusion_reasons']))
+        self.assertEqual(
+            (a['eligible'], a['exclusion_reasons']), (b['eligible'], b['exclusion_reasons'])
+        )
 
 
 class AggregationTests(unittest.TestCase):
     def build(self, first_label=None):
-        files = [summary('a.mat', cycles=1.0, label=first_label, scale=1.0),
-                 summary('b.mat', cycles=10.0, label=0.05, scale=0.8),
-                 summary('c.mat', cycles=10.0, label=0.05, scale=0.9),
-                 summary('d.mat', cycles=100.0, label=None, scale=0.5),
-                 summary('e.mat', cycles=0.5, label=0.0, condition='Clamped')]
+        files = [
+            summary('a.mat', cycles=1.0, label=first_label, scale=1.0),
+            summary('b.mat', cycles=10.0, label=0.05, scale=0.8),
+            summary('c.mat', cycles=10.0, label=0.05, scale=0.9),
+            summary('d.mat', cycles=100.0, label=None, scale=0.5),
+            summary('e.mat', cycles=0.5, label=0.0, condition='Clamped'),
+        ]
         return build_checkpoints(screened(files), PROTOCOL)
 
     def test_reference_is_earliest_eligible_even_if_unlabelled(self):
@@ -134,16 +185,24 @@ class AggregationTests(unittest.TestCase):
         self.assertEqual(a['mp_relative_ptp'], b['mp_relative_ptp'])
 
     def test_conflicting_labels_rejected(self):
-        files = screened([summary('a.mat', cycles=1.0), summary('b.mat', cycles=10.0, label=0.1),
-                          summary('c.mat', cycles=10.0, label=0.2)])
+        files = screened(
+            [
+                summary('a.mat', cycles=1.0),
+                summary('b.mat', cycles=10.0, label=0.1),
+                summary('c.mat', cycles=10.0, label=0.2),
+            ]
+        )
         with self.assertRaisesRegex(ValueError, 'Conflicting'):
             build_checkpoints(files, PROTOCOL)
 
 
 class SelectionTests(unittest.TestCase):
     def rows(self, values):
-        return [dict(model=m, input_set=i, worst_direction_MAE=values.get((m, i), 0.2))
-                for m in FAMILIES for i in INPUT_SETS]
+        return [
+            dict(model=m, input_set=i, worst_direction_MAE=values.get((m, i), 0.2))
+            for m in FAMILIES
+            for i in INPUT_SETS
+        ]
 
     def test_lowest_worst_direction_mae_wins(self):
         result = select_final(self.rows({('SVR', 'multi_path_36'): 0.05}), PROTOCOL)
@@ -151,18 +210,41 @@ class SelectionTests(unittest.TestCase):
         self.assertEqual(result['selected']['input_set'], 'multi_path_36')
 
     def test_ties_prefer_simpler_model_then_single_path(self):
-        result = select_final(self.rows({('MLPRegressor', 'multi_path_36'): 0.0500,
-                                         ('LinearRegression', 'multi_path_36'): 0.0504,
-                                         ('LinearRegression', 'single_path_1_7'): 0.0506}), PROTOCOL)
-        self.assertEqual((result['selected']['model'], result['selected']['input_set']),
-                         ('LinearRegression', 'multi_path_36'))
-        result = select_final(self.rows({('DecisionTreeRegressor', 'multi_path_36'): 0.05,
-                                         ('DecisionTreeRegressor', 'single_path_1_7'): 0.05}), PROTOCOL)
+        result = select_final(
+            self.rows(
+                {
+                    ('MLPRegressor', 'multi_path_36'): 0.0500,
+                    ('LinearRegression', 'multi_path_36'): 0.0504,
+                    ('LinearRegression', 'single_path_1_7'): 0.0506,
+                }
+            ),
+            PROTOCOL,
+        )
+        self.assertEqual(
+            (result['selected']['model'], result['selected']['input_set']),
+            ('LinearRegression', 'multi_path_36'),
+        )
+        result = select_final(
+            self.rows(
+                {
+                    ('DecisionTreeRegressor', 'multi_path_36'): 0.05,
+                    ('DecisionTreeRegressor', 'single_path_1_7'): 0.05,
+                }
+            ),
+            PROTOCOL,
+        )
         self.assertEqual(result['selected']['input_set'], 'single_path_1_7')
 
     def test_outside_tolerance_is_not_a_tie(self):
-        result = select_final(self.rows({('MLPRegressor', 'single_path_1_7'): 0.0500,
-                                         ('LinearRegression', 'single_path_1_7'): 0.0506}), PROTOCOL)
+        result = select_final(
+            self.rows(
+                {
+                    ('MLPRegressor', 'single_path_1_7'): 0.0500,
+                    ('LinearRegression', 'single_path_1_7'): 0.0506,
+                }
+            ),
+            PROTOCOL,
+        )
         self.assertEqual(result['selected']['model'], 'MLPRegressor')
 
     def test_candidate_set_must_be_complete(self):
@@ -183,10 +265,17 @@ class TestStageHelpers(unittest.TestCase):
 
     def test_attach_labels_uses_eligible_files_and_keeps_missing(self):
         from protocol_v2 import attach_labels
-        cps = [dict(cycles=3, filenames='a.mat; b.mat', published_index=None),
-               dict(cycles=10, filenames='c.mat', published_index=None)]
-        labels = {'a.mat': (3.0, None), 'b.mat': (3.0, None), 'c.mat': (10.0, 0.04),
-                  'z.mat': (1.0, -0.012)}
+
+        cps = [
+            dict(cycles=3, filenames='a.mat; b.mat', published_index=None),
+            dict(cycles=10, filenames='c.mat', published_index=None),
+        ]
+        labels = {
+            'a.mat': (3.0, None),
+            'b.mat': (3.0, None),
+            'c.mat': (10.0, 0.04),
+            'z.mat': (1.0, -0.012),
+        }
         out = attach_labels(cps, labels)
         self.assertIsNone(out[0]['published_index'])
         self.assertEqual(out[1]['published_index'], 0.04)
@@ -194,6 +283,7 @@ class TestStageHelpers(unittest.TestCase):
 
     def test_attach_labels_rejects_conflicts_and_unknown_files(self):
         from protocol_v2 import attach_labels
+
         cp = [dict(cycles=10, filenames='a.mat; b.mat', published_index=None)]
         with self.assertRaisesRegex(ValueError, 'Conflicting'):
             attach_labels(cp, {'a.mat': (10.0, 0.1), 'b.mat': (10.0, 0.2)})
@@ -202,6 +292,7 @@ class TestStageHelpers(unittest.TestCase):
 
     def test_sanity_criteria(self):
         from protocol_v2 import sanity_criteria
+
         ok = sanity_criteria([0.20, 0.22], 0.19, [0.04, 0.25], PROTOCOL)
         self.assertTrue(ok['pass'])
         self.assertEqual(ok['C3']['bounds'], [0.04 - 0.105, 0.25 + 0.105])

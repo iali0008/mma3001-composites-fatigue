@@ -4,6 +4,7 @@ Every workflow script imports these instead of redefining them, so integrity
 checks behave identically everywhere and survive ``python -O`` (unlike
 ``assert`` statements, which the optimiser removes).
 """
+
 from __future__ import annotations
 
 import csv
@@ -81,8 +82,13 @@ def snapshot(paths, base):
         ``{relative_posix_path: {'bytes': int, 'mtime_ns': int}}``. Comparing two
         snapshots detects changed metadata; it is not a content hash.
     """
-    return {p.relative_to(base).as_posix(): {'bytes': p.stat().st_size,
-            'mtime_ns': p.stat().st_mtime_ns} for p in paths}
+    return {
+        p.relative_to(base).as_posix(): {
+            'bytes': p.stat().st_size,
+            'mtime_ns': p.stat().st_mtime_ns,
+        }
+        for p in paths
+    }
 
 
 def read_csv(path):
@@ -176,8 +182,10 @@ def load_experiment_v1(path=EXPERIMENT_V1_PATH):
         If the file does not declare exactly the two development specimens.
     """
     config = load_json(path)
-    require(set(config['specimens']) == {'L1S11', 'L1S12'},
-            'experiment_v1 must declare exactly L1S11 and L1S12')
+    require(
+        set(config['specimens']) == {'L1S11', 'L1S12'},
+        'experiment_v1 must declare exactly L1S11 and L1S12',
+    )
     return config
 
 
@@ -237,4 +245,4 @@ def waveform_features(x):
     (2.12132, 6.0)
     """
     x = np.asarray(x, dtype=float)
-    return float(np.sqrt(np.mean((x - x.mean())**2))), float(np.ptp(x))
+    return float(np.sqrt(np.mean((x - x.mean()) ** 2))), float(np.ptp(x))

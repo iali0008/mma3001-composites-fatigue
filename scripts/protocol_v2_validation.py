@@ -16,6 +16,7 @@ Example
 -------
 ``python scripts/protocol_v2_validation.py --data-root "data/2.+Composites/2. Composites"``
 """
+
 from __future__ import annotations
 
 import argparse
@@ -27,6 +28,7 @@ import subprocess
 import warnings
 
 import matplotlib
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
@@ -36,9 +38,18 @@ from threadpoolctl import threadpool_limits
 
 from common import ROOT, digest, read_csv, require, save_json, write_csv
 from model_comparison import build_model
-from protocol_v2 import (CONTROLS, FAMILIES, INPUT_SETS, PROTOCOL_DOC, PROTOCOL_PATH,
-                         build_checkpoints, extract_specimen, input_columns, load_protocol,
-                         select_final)
+from protocol_v2 import (
+    CONTROLS,
+    FAMILIES,
+    INPUT_SETS,
+    PROTOCOL_DOC,
+    PROTOCOL_PATH,
+    build_checkpoints,
+    extract_specimen,
+    input_columns,
+    load_protocol,
+    select_final,
+)
 
 OUT = ROOT / 'results' / 'protocol_v2' / 'validation'
 SELECTION = ROOT / 'results' / 'protocol_v2' / 'selection.json'
@@ -111,9 +122,11 @@ def fit_predict(model, seed, input_set, train, evaluation, protocol):
     with warnings.catch_warnings(record=True) as caught:
         warnings.simplefilter('always')
         estimator.fit(design(train, model, input_set, protocol), y)
-    return (estimator.predict(design(train, model, input_set, protocol)),
-            estimator.predict(design(evaluation, model, input_set, protocol)),
-            sum(issubclass(w.category, ConvergenceWarning) for w in caught))
+    return (
+        estimator.predict(design(train, model, input_set, protocol)),
+        estimator.predict(design(evaluation, model, input_set, protocol)),
+        sum(issubclass(w.category, ConvergenceWarning) for w in caught),
+    )
 
 
 def scores(y, predicted):
@@ -130,9 +143,12 @@ def scores(y, predicted):
         Metric values as floats.
     """
     residual = predicted - y
-    return dict(MAE=float(np.mean(np.abs(residual))), RMSE=float(np.sqrt(np.mean(residual**2))),
-                R2=float(1 - np.sum(residual**2) / np.sum((y - y.mean())**2)),
-                mean_residual=float(residual.mean()))
+    return dict(
+        MAE=float(np.mean(np.abs(residual))),
+        RMSE=float(np.sqrt(np.mean(residual**2))),
+        R2=float(1 - np.sum(residual**2) / np.sum((y - y.mean()) ** 2)),
+        mean_residual=float(residual.mean()),
+    )
 
 
 def reproduction_gate(predictions):
@@ -153,15 +169,21 @@ def reproduction_gate(predictions):
     ValueError
         If any prediction differs beyond rtol 1e-9, atol 1e-10, or rows are missing.
     """
-    recorded = {(r['train_specimen'], r['model'], r['seed'], r['split'], int(r['cycles'])):
-                float(r['predicted']) for r in read_csv(V1_PREDICTIONS)}
+    recorded = {
+        (r['train_specimen'], r['model'], r['seed'], r['split'], int(r['cycles'])): float(
+            r['predicted']
+        )
+        for r in read_csv(V1_PREDICTIONS)
+    }
     compared, worst = 0, 0.0
     for p in predictions:
         key = (p['train_specimen'], p['model'], str(p['seed']), p['split'], p['cycles'])
         require(key in recorded, f'No recorded v1 prediction for {key}')
         expected = recorded[key]
-        require(np.isclose(p['predicted'], expected, rtol=1e-9, atol=1e-10),
-                f'Reproduction gate failed for {key}: {p["predicted"]} != {expected}')
+        require(
+            np.isclose(p['predicted'], expected, rtol=1e-9, atol=1e-10),
+            f'Reproduction gate failed for {key}: {p["predicted"]} != {expected}',
+        )
         worst = max(worst, abs(p['predicted'] - expected))
         compared += 1
     require(compared == len(recorded), 'Not every recorded v1 prediction was reproduced')
@@ -180,8 +202,12 @@ def plot_direction(predictions, train_name, evaluation_name, path):
     path : pathlib.Path
         Destination PNG.
     """
-    rows = [p for p in predictions if p['train_specimen'] == train_name and p['split'] == 'evaluation']
-    values = [p[k] for p in predictions if p['split'] == 'evaluation' for k in ('observed', 'predicted')]
+    rows = [
+        p for p in predictions if p['train_specimen'] == train_name and p['split'] == 'evaluation'
+    ]
+    values = [
+        p[k] for p in predictions if p['split'] == 'evaluation' for k in ('observed', 'predicted')
+    ]
     span = max(values) - min(values)
     limits = (min(values) - 0.06 * span, max(values) + 0.06 * span)
     plt.rcParams.update({'font.size': 10, 'axes.spines.top': False, 'axes.spines.right': False})
@@ -192,20 +218,38 @@ def plot_direction(predictions, train_name, evaluation_name, path):
         for group in groups:
             input_set = 'single_path_1_7' if group == 'control' else group
             ps = [p for p in rows if p['model'] == model and p['input_set'] == input_set]
-            label = {'control': 'control (no PZT input)', 'single_path_1_7': 'single path 1→7',
-                     'multi_path_36': 'multi-path (36 pairs)'}[group]
-            ax.scatter([p['observed'] for p in ps], [p['predicted'] for p in ps], s=36,
-                       marker=MARKERS[group], color=COLOURS[group], edgecolors='white',
-                       linewidths=0.8, alpha=0.75 if model == 'MLPRegressor' else 1.0,
-                       label=label + (' (all 5 seeds)' if model == 'MLPRegressor' else ''))
-        ax.set(xlim=limits, ylim=limits, title=model, xlabel='Observed published index',
-               ylabel='Predicted index')
+            label = {
+                'control': 'control (no PZT input)',
+                'single_path_1_7': 'single path 1→7',
+                'multi_path_36': 'multi-path (36 pairs)',
+            }[group]
+            ax.scatter(
+                [p['observed'] for p in ps],
+                [p['predicted'] for p in ps],
+                s=36,
+                marker=MARKERS[group],
+                color=COLOURS[group],
+                edgecolors='white',
+                linewidths=0.8,
+                alpha=0.75 if model == 'MLPRegressor' else 1.0,
+                label=label + (' (all 5 seeds)' if model == 'MLPRegressor' else ''),
+            )
+        ax.set(
+            xlim=limits,
+            ylim=limits,
+            title=model,
+            xlabel='Observed published index',
+            ylabel='Predicted index',
+        )
         ax.set_aspect('equal', adjustable='box')
         ax.grid(True, color='#e3e3e3', lw=0.5)
         ax.legend(fontsize=8, loc='upper left', frameon=False)
-    fig.suptitle(f'Protocol v2 validation, {train_name} → {evaluation_name}: evaluation '
-                 'checkpoints only\nReference checkpoints excluded; dashed line = perfect agreement; '
-                 'no clipping', fontsize=12)
+    fig.suptitle(
+        f'Protocol v2 validation, {train_name} → {evaluation_name}: evaluation '
+        'checkpoints only\nReference checkpoints excluded; dashed line = perfect agreement; '
+        'no clipping',
+        fontsize=12,
+    )
     fig.savefig(path, dpi=150)
     plt.close(fig)
 
@@ -232,24 +276,38 @@ def main(argv=None):
     protocol = load_protocol()
     state = git_state()
     require(state['clean'], 'Commit all changes first so the receipt identifies the code')
-    require(not OUT.exists() and not SELECTION.exists(),
-            'Protocol v2 validation outputs already exist; they are not overwritten')
+    require(
+        not OUT.exists() and not SELECTION.exists(),
+        'Protocol v2 validation outputs already exist; they are not overwritten',
+    )
     OUT.mkdir(parents=True)
     development = [s for s, v in protocol['specimens'].items() if v['role'] == 'development']
     require(development == ['L1S11', 'L1S12'], 'Validation uses exactly L1S11 and L1S12')
-    save_json(OUT / 'receipt.json', dict(
-        started_utc=datetime.now(timezone.utc).isoformat(), git=state,
-        protocol_config_sha256=digest(PROTOCOL_PATH), protocol_doc_sha256=digest(PROTOCOL_DOC),
-        specimens_read=development, held_out_specimen_read=False,
-        python=platform.python_version(), numpy=np.__version__, sklearn=sklearn.__version__))
+    save_json(
+        OUT / 'receipt.json',
+        dict(
+            started_utc=datetime.now(timezone.utc).isoformat(),
+            git=state,
+            protocol_config_sha256=digest(PROTOCOL_PATH),
+            protocol_doc_sha256=digest(PROTOCOL_DOC),
+            specimens_read=development,
+            held_out_specimen_read=False,
+            python=platform.python_version(),
+            numpy=np.__version__,
+            sklearn=sklearn.__version__,
+        ),
+    )
 
     summaries, checkpoints, ratios, references, hashes = [], [], [], [], {}
     for specimen in development:
-        local, local_hashes = extract_specimen(data_root, specimen, protocol, read_labels=True,
-                                               workers=args.workers)
+        local, local_hashes = extract_specimen(
+            data_root, specimen, protocol, read_labels=True, workers=args.workers
+        )
         cps, pair_rows, reference = build_checkpoints(local, protocol)
-        require(reference['cycles'] == protocol['reference']['expected_from_audit'][specimen],
-                f'Reference for {specimen} differs from the audit expectation')
+        require(
+            reference['cycles'] == protocol['reference']['expected_from_audit'][specimen],
+            f'Reference for {specimen} differs from the audit expectation',
+        )
         summaries += local
         checkpoints += cps
         ratios += pair_rows
@@ -258,8 +316,14 @@ def main(argv=None):
     for file, value in hashes.items():
         require(digest(data_root / file) == value, f'Source file changed: {file}')
 
-    usable = {s: [r for r in checkpoints if r['specimen'] == s and not r['is_reference']
-                  and r['published_index'] is not None] for s in development}
+    usable = {
+        s: [
+            r
+            for r in checkpoints
+            if r['specimen'] == s and not r['is_reference'] and r['published_index'] is not None
+        ]
+        for s in development
+    }
     expected = protocol['validation']['expected_counts_from_v1']
     require(all(len(usable[s]) == expected[s] for s in development), 'Checkpoint counts changed')
 
@@ -274,23 +338,42 @@ def main(argv=None):
                         continue  # controls do not use PZT inputs; fit once per direction
                     for seed in (seeds if model == 'MLPRegressor' else ['']):
                         train_pred, eval_pred, warned = fit_predict(
-                            model, seed or None, input_set, train, evaluation, protocol)
+                            model, seed or None, input_set, train, evaluation, protocol
+                        )
                         convergence += warned
-                        info = dict(train_specimen=train_name, evaluation_specimen=evaluation_name,
-                                    input_set='none' if model in CONTROLS else input_set,
-                                    model=model, seed=seed)
-                        for split, rows, predicted in (('training', train, train_pred),
-                                                       ('evaluation', evaluation, eval_pred)):
+                        info = dict(
+                            train_specimen=train_name,
+                            evaluation_specimen=evaluation_name,
+                            input_set='none' if model in CONTROLS else input_set,
+                            model=model,
+                            seed=seed,
+                        )
+                        for split, rows, predicted in (
+                            ('training', train, train_pred),
+                            ('evaluation', evaluation, eval_pred),
+                        ):
                             y = np.array([r['published_index'] for r in rows])
-                            metrics.append(dict(**info, split=split, n=len(rows), **scores(y, predicted)))
+                            metrics.append(
+                                dict(**info, split=split, n=len(rows), **scores(y, predicted))
+                            )
                             for r, value in zip(rows, predicted):
-                                predictions.append(dict(**info, split=split, specimen=r['specimen'],
-                                                        cycles=r['cycles'], observed=r['published_index'],
-                                                        predicted=float(value),
-                                                        residual=float(value - r['published_index'])))
+                                predictions.append(
+                                    dict(
+                                        **info,
+                                        split=split,
+                                        specimen=r['specimen'],
+                                        cycles=r['cycles'],
+                                        observed=r['published_index'],
+                                        predicted=float(value),
+                                        residual=float(value - r['published_index']),
+                                    )
+                                )
 
-    gate_rows = [dict(p, input_set='single_path_1_7') for p in predictions
-                 if p['input_set'] in ('single_path_1_7', 'none')]
+    gate_rows = [
+        dict(p, input_set='single_path_1_7')
+        for p in predictions
+        if p['input_set'] in ('single_path_1_7', 'none')
+    ]
     gate = reproduction_gate(gate_rows)
     save_json(OUT / 'reproduction_gate.json', gate)
     for p in predictions:  # plotting label: controls drawn once
@@ -301,49 +384,107 @@ def main(argv=None):
         for input_set in INPUT_SETS + ('none',):
             for model in (CONTROLS if input_set == 'none' else FAMILIES):
                 for split in ('training', 'evaluation'):
-                    group = [m for m in metrics if m['train_specimen'] == train_name and
-                             m['input_set'] == input_set and m['model'] == model and m['split'] == split]
-                    row = dict(train_specimen=train_name, evaluation_specimen=evaluation_name,
-                               input_set=input_set, model=model, split=split, fits=len(group))
+                    group = [
+                        m
+                        for m in metrics
+                        if m['train_specimen'] == train_name
+                        and m['input_set'] == input_set
+                        and m['model'] == model
+                        and m['split'] == split
+                    ]
+                    row = dict(
+                        train_specimen=train_name,
+                        evaluation_specimen=evaluation_name,
+                        input_set=input_set,
+                        model=model,
+                        split=split,
+                        fits=len(group),
+                    )
                     for field in ('MAE', 'RMSE', 'R2', 'mean_residual'):
                         values = [g[field] for g in group]
                         row[field], row[field + '_min'], row[field + '_max'] = (
-                            float(np.median(values)), min(values), max(values))
+                            float(np.median(values)),
+                            min(values),
+                            max(values),
+                        )
                     summary.append(row)
 
     candidates = []
     for model in FAMILIES:
         for input_set in INPUT_SETS:
-            mae = {r['train_specimen']: r['MAE'] for r in summary if r['model'] == model and
-                   r['input_set'] == input_set and r['split'] == 'evaluation'}
-            candidates.append(dict(model=model, input_set=input_set,
-                                   MAE_L1S11_to_L1S12=mae['L1S11'], MAE_L1S12_to_L1S11=mae['L1S12'],
-                                   worst_direction_MAE=max(mae.values()),
-                                   mean_direction_MAE=float(np.mean(list(mae.values())))))
+            mae = {
+                r['train_specimen']: r['MAE']
+                for r in summary
+                if r['model'] == model
+                and r['input_set'] == input_set
+                and r['split'] == 'evaluation'
+            }
+            candidates.append(
+                dict(
+                    model=model,
+                    input_set=input_set,
+                    MAE_L1S11_to_L1S12=mae['L1S11'],
+                    MAE_L1S12_to_L1S11=mae['L1S12'],
+                    worst_direction_MAE=max(mae.values()),
+                    mean_direction_MAE=float(np.mean(list(mae.values()))),
+                )
+            )
     decision = select_final(candidates, protocol)
 
-    flat = [{k: v for k, v in s.items() if k not in ('pair_counts', 'settings', 'rms', 'ptp',
-                                                     'bad_pairs')} for s in summaries]
-    for name, rows in [('recordings.csv', flat), ('checkpoint_features.csv', checkpoints),
-                       ('pair_ratios.csv', ratios), ('references.csv', references),
-                       ('metrics.csv', metrics), ('summary.csv', summary),
-                       ('predictions.csv', predictions), ('candidates.csv', candidates)]:
+    flat = [
+        {
+            k: v
+            for k, v in s.items()
+            if k not in ('pair_counts', 'settings', 'rms', 'ptp', 'bad_pairs')
+        }
+        for s in summaries
+    ]
+    for name, rows in [
+        ('recordings.csv', flat),
+        ('checkpoint_features.csv', checkpoints),
+        ('pair_ratios.csv', ratios),
+        ('references.csv', references),
+        ('metrics.csv', metrics),
+        ('summary.csv', summary),
+        ('predictions.csv', predictions),
+        ('candidates.csv', candidates),
+    ]:
         write_csv(OUT / name, rows, list(dict.fromkeys(k for r in rows for k in r)))
     save_json(OUT / 'source_hashes.json', hashes)
     for train_name, evaluation_name in protocol['validation']['directions']:
-        plot_direction(predictions, train_name, evaluation_name,
-                       OUT / f'predictions_{train_name}_to_{evaluation_name}.png')
+        plot_direction(
+            predictions,
+            train_name,
+            evaluation_name,
+            OUT / f'predictions_{train_name}_to_{evaluation_name}.png',
+        )
     selection = dict(
-        rule=protocol['selection_rule'], candidates=candidates, minimum_worst_direction_MAE=decision['minimum'],
+        rule=protocol['selection_rule'],
+        candidates=candidates,
+        minimum_worst_direction_MAE=decision['minimum'],
         tied_within_tolerance=[(c['model'], c['input_set']) for c in decision['tied']],
-        selected=dict(model=decision['selected']['model'], input_set=decision['selected']['input_set']),
-        final_model_training=protocol['final_model'], convergence_warnings=convergence,
-        reproduction_gate=gate, validation_git_commit=state['commit'],
+        selected=dict(
+            model=decision['selected']['model'], input_set=decision['selected']['input_set']
+        ),
+        final_model_training=protocol['final_model'],
+        convergence_warnings=convergence,
+        reproduction_gate=gate,
+        validation_git_commit=state['commit'],
         decided_utc=datetime.now(timezone.utc).isoformat(),
-        status='frozen: L2S11 has not been opened; commit this file before step 4')
+        status='frozen: L2S11 has not been opened; commit this file before step 4',
+    )
     save_json(SELECTION, selection)
-    print(json.dumps(dict(selected=selection['selected'], candidates=candidates,
-                          gate=gate, convergence_warnings=convergence), indent=2))
+    print(
+        json.dumps(
+            dict(
+                selected=selection['selected'],
+                candidates=candidates,
+                gate=gate,
+                convergence_warnings=convergence,
+            ),
+            indent=2,
+        )
+    )
 
 
 if __name__ == '__main__':
