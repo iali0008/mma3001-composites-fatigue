@@ -1,6 +1,6 @@
 # Local dataset (excluded from Git)
 
-Use the composites fatigue dataset distributed through the [NASA Prognostics Center of Excellence repository](https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/). Retain the citation and provenance in the downloaded documentation. The exact download URL/release identifier should be recorded by the student from the original download; none is invented here.
+Use the composites fatigue dataset distributed through the [NASA Prognostics Center of Excellence repository](https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/). The repository page (accessed 2026-10-11) lists the archive `https://phm-datasets.s3.amazonaws.com/NASA/2.+Composites.zip`, whose name matches this local folder; the download date of the local copy was not recorded. Cite it as: Abhinav Saxena, Kai Goebel, Cecilia C. Larrosa, and Fu-Kuo Chang, "CFRP Composites Data Set", NASA Prognostics Data Repository, NASA Ames Research Center, Moffett Field, CA. No licence is named; see [docs/dataset.md](../docs/dataset.md) for the repository's terms, the label definition and the sampling-rate check.
 
 The download has been moved into this repository. Directory inspection confirmed that all three layups are directly under:
 

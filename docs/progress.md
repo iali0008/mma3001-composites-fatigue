@@ -120,3 +120,14 @@ Newest entries last. Every Claude session (Claude Code in VS Code or claude.ai) 
   timestamp (historical result unchanged). (2) Prediction hash: not regenerated; the LF-normalised
   hash (`9cc12f55…`) is recorded beside the original CRLF hash (`4ac9647b…`). Report framing,
   recommendations and the predict-zero lesson recorded in CLAUDE.md and the step 4 README.
+- 2026-10-11 (Claude Code, VS Code): Plan step 5. New `docs/dataset.md` resolves the open dataset
+  questions with page/line citations, backed by `scripts/dataset_facts.py` →
+  `results/dataset_facts/facts.json`. Index: hand-typed STM tables copied by cycle (Technical Report
+  PDF p. 7 lines 25–57; p. 8 lines 108, 133; §3.1 step 4.3 p. 5); T22 jump 0.118→0.247 at 90k;
+  best interpretation 1 − E/E₀ (not stated anywhere); paper [4] defines D = E_eff/E₀ (p. 3 eq. 6),
+  D_max 0.88 (p. 6). Strain files hold only strain1–4 (80/57/69 files), so labels cannot be
+  recomputed. Sampling rate: stored 1.2e6 is a constant (line 102); FFT at all 7 frequencies
+  implies 11.69–12.00 MHz; 150 kHz burst median 366 samples. Units: raw, unknown; ratios
+  dimensionless. Provenance: NASA PCoE repository citation and download URL recorded (accessed
+  2026-10-11); no licence named, acknowledge-and-own-risk terms only; data.nasa.gov entries are
+  paper records with "License not specified". `data/README.md` updated.
