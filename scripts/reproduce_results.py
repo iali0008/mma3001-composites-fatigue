@@ -12,7 +12,10 @@ from pathlib import Path
 
 import numpy as np
 
-ROOT = Path(__file__).resolve().parents[1]
+from common import ROOT, load_experiment_v1, write_csv
+
+EXPERIMENT = load_experiment_v1()
+SPECIMENS = tuple(EXPERIMENT['specimens'])
 MODELS = {
     'log10_cycles': ('log10_cycles',),
     'relative_rms': ('relative_rms',),
@@ -47,9 +50,9 @@ def read_checkpoints(path: Path) -> list[dict]:
                 raise ValueError('is_reference must be True or False.')
             row['is_reference'] = flag == 'true'
             rows.append(row)
-    if {r['specimen'] for r in rows} != {'L1S11', 'L1S12'}:
+    if {r['specimen'] for r in rows} != set(SPECIMENS):
         raise ValueError('This experiment requires exactly L1S11 and L1S12.')
-    for specimen in ('L1S11', 'L1S12'):
+    for specimen in SPECIMENS:
         local = [r for r in rows if r['specimen'] == specimen]
         refs = [r for r in local if r['is_reference']]
         if len(refs) != 1 or refs[0]['cycles'] != min(r['cycles'] for r in local):
@@ -68,7 +71,7 @@ def evaluate(rows: list[dict]) -> tuple[list[dict], list[dict], list[dict]]:
     a separate calculation from the original unscaled least-squares script.
     """
     metrics, predictions, coefficients = [], [], []
-    for train_name, test_name in (('L1S11', 'L1S12'), ('L1S12', 'L1S11')):
+    for train_name, test_name in EXPERIMENT['directions']:
         train = [r for r in rows if r['specimen'] == train_name and not r['is_reference']]
         test = [r for r in rows if r['specimen'] == test_name and not r['is_reference']]
         if not train or not test:
@@ -102,13 +105,6 @@ def evaluate(rows: list[dict]) -> tuple[list[dict], list[dict], list[dict]]:
                                         observed_index=row['published_index'],
                                         predicted_index=float(value), residual=float(error)))
     return metrics, predictions, coefficients
-
-
-def write_csv(path: Path, rows: list[dict]) -> None:
-    with path.open('w', encoding='utf-8', newline='') as stream:
-        writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
-        writer.writeheader()
-        writer.writerows(rows)
 
 
 def main() -> None:

@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import argparse
-import csv
 from datetime import datetime, timezone
 import json
 from pathlib import Path
@@ -29,42 +28,34 @@ from sklearn.svm import SVR
 from sklearn.tree import DecisionTreeRegressor
 from threadpoolctl import threadpool_info, threadpool_limits
 
+from common import (ROOT, digest, load_experiment_v1, read_csv, require, save_json, snapshot,
+                    write_csv as save_csv)
 from reproduce_results import read_checkpoints
-from repeat_sensitivity import digest, read_csv, require, snapshot, verify_git_exclusions
+from repeat_sensitivity import verify_git_exclusions
 
-ROOT = Path(__file__).resolve().parents[1]
 BASELINE = ROOT/'results/baseline'
+RECORDED = ROOT/'results/model_comparison'
 CONFIG_PATH = ROOT/'config/model_comparison.json'
 PROTOCOL_PATH = ROOT/'docs/model_comparison_protocol.md'
 CONFIG = json.loads(CONFIG_PATH.read_text())
-OUT = ROOT/'results/model_comparison'
+EXPERIMENT = load_experiment_v1()
 MODEL_NAMES = tuple(CONFIG['models'])
-
-
-def save_csv(path, rows, fields=None):
-    with path.open('w', newline='', encoding='utf-8') as stream:
-        writer = csv.DictWriter(stream, fieldnames=fields or list(rows[0]))
-        writer.writeheader()
-        writer.writerows(rows)
-
-
-def save_json(path, value):
-    path.write_text(json.dumps(value, indent=2, default=str)+'\n', encoding='utf-8')
 
 
 def acquisition_eligible(record):
     """Reference gate deliberately never accesses target or target eligibility."""
-    settings = {'L1S11': (33, 65), 'L1S12': (35, 50)}
-    gain, amplitude = settings[record['specimen']]
+    settings = EXPERIMENT['specimens'][record['specimen']]
+    low, high = EXPERIMENT['load_window_kips']
     try:
         valid = (float(record['cycles']) > 0 and
-                 record['condition'].strip().casefold() == 'loaded' and
-                 3.95 <= float(record['load_kips']) <= 4.05 and
-                 float(record['gain']) == gain and float(record['amplitude']) == amplitude and
-                 float(record['sampling_rate']) == 1200000)
+                 record['condition'].strip().casefold() == EXPERIMENT['condition'] and
+                 low <= float(record['load_kips']) <= high and
+                 float(record['gain']) == settings['gain'] and
+                 float(record['amplitude']) == settings['amplitude'] and
+                 float(record['sampling_rate']) == EXPERIMENT['sampling_rate'])
         # These fields in the original inventory describe the unique requested 1/7/150 path.
         for channel in ('signal_actuator', 'signal_sensor'):
-            valid = valid and float(record[channel+'_length']) == 2000
+            valid = valid and float(record[channel+'_length']) == EXPERIMENT['signal_length']
             valid = valid and str(record[channel+'_nonfinite']) == 'False'
             valid = valid and str(record[channel+'_constant']) == 'False'
         return bool(valid)
@@ -75,7 +66,7 @@ def acquisition_eligible(record):
 def select_reference_candidates(recordings):
     candidates = [r for r in recordings if acquisition_eligible(r)]
     references = {}
-    for specimen in ('L1S11', 'L1S12'):
+    for specimen in EXPERIMENT['specimens']:
         local = [r for r in candidates if r['specimen'] == specimen]
         require(bool(local), f'No acquisition-eligible reference: {specimen}')
         earliest = min(float(r['cycles']) for r in local)
@@ -92,23 +83,27 @@ def audit_references(data_root, output):
     refs = {r['specimen']: r for r in read_csv(BASELINE/'references.csv')}
     for specimen, group in selected.items():
         features = []
-        folder = {'L1S11': 'L1_S11_F', 'L1S12': 'L1_S12_F'}[specimen]
+        folder = EXPERIMENT['specimens'][specimen]['folder']
+        path_rule = EXPERIMENT['path']
+        wanted = (path_rule['actuator'], path_rule['sensor'], path_rule['frequency'])
+        low, high = EXPERIMENT['load_window_kips']
         for r in group:
-            coupon = loadmat(data_root/'Layup1'/folder/'PZT-data'/r['filename'], simplify_cells=True)['coupon']
+            coupon = loadmat(data_root/folder/'PZT-data'/r['filename'], simplify_cells=True)['coupon']
             paths = coupon['path_data']
             if isinstance(paths, dict):
                 paths = [paths]
-            matches = [p for p in paths if (p['actuator'], p['sensor'], p['frequency']) == (1, 7, 150)]
+            matches = [p for p in paths if (p['actuator'], p['sensor'], p['frequency']) == wanted]
             require(len(matches) == 1, 'Ambiguous reference path')
             p = matches[0]
             require(float(coupon['cycles']) == float(r['cycles']) and
-                    str(coupon['condition']).strip().casefold() == 'loaded' and
-                    3.95 <= float(coupon['load']) <= 4.05, 'Reference acquisition mismatch')
+                    str(coupon['condition']).strip().casefold() == EXPERIMENT['condition'] and
+                    low <= float(coupon['load']) <= high, 'Reference acquisition mismatch')
             require(all(float(p[f]) == float(r[f]) for f in ('gain', 'amplitude', 'sampling_rate')),
                     'Reference settings mismatch')
             for channel in ('signal_actuator', 'signal_sensor'):
                 x = np.asarray(p[channel], dtype=float).ravel()
-                require(len(x) == 2000 and np.isfinite(x).all() and np.ptp(x) > 0,
+                require(len(x) == EXPERIMENT['signal_length'] and np.isfinite(x).all()
+                        and np.ptp(x) > 0,
                         'Invalid reference waveform')
             x = np.asarray(p['signal_sensor'], dtype=float).ravel()
             features.append([float(np.sqrt(np.mean((x-x.mean())**2))), float(np.ptp(x))])
@@ -148,11 +143,13 @@ def build_model(name, seed=None):
 
 def split_rows(rows, train_name, evaluation_name):
     require(train_name != evaluation_name, 'Training and evaluation specimens must differ')
-    require({r['specimen'] for r in rows} == {'L1S11', 'L1S12'}, 'Unexpected specimen set')
+    specimens = EXPERIMENT['specimens']
+    require({r['specimen'] for r in rows} == set(specimens), 'Unexpected specimen set')
     train = [r for r in rows if r['specimen'] == train_name and not r['is_reference']]
     evaluation = [r for r in rows if r['specimen'] == evaluation_name and not r['is_reference']]
-    require(len(train) == {'L1S11': 13, 'L1S12': 12}[train_name] and
-            len(evaluation) == {'L1S11': 13, 'L1S12': 12}[evaluation_name], 'Checkpoint count changed')
+    require(len(train) == specimens[train_name]['non_reference_checkpoints'] and
+            len(evaluation) == specimens[evaluation_name]['non_reference_checkpoints'],
+            'Checkpoint count changed')
     return train, evaluation
 
 
@@ -265,15 +262,32 @@ def plot_results(predictions, output):
             plt.close(fig)
 
 
-def main():
+def main(argv=None):
+    """Run the reference audit, all predeclared fits, timings, plots and exports.
+
+    Parameters
+    ----------
+    argv : list of str, optional
+        Command-line arguments; defaults to ``sys.argv[1:]``.
+
+    Raises
+    ------
+    ValueError
+        If any integrity, reproduction or preservation check fails.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--data-root', type=Path, required=True)
-    args = parser.parse_args()
+    parser.add_argument('--output', type=Path, default=ROOT/'results/rebuilt/model_comparison',
+                        help='New output folder; recorded results folders are refused.')
+    args = parser.parse_args(argv)
     data_root = args.data_root.resolve()
+    out = args.output.resolve()
     require(all((data_root/p).is_dir() for p in ('Layup1', 'Layup2', 'Layup3')), 'Invalid data root')
-    OUT.mkdir(parents=True, exist_ok=True)
-    protected = [p for directory in (BASELINE, ROOT/'results/repeat_sensitivity')
-                 for p in directory.rglob('*') if p.is_file()]
+    recorded = [BASELINE, ROOT/'results/repeat_sensitivity', RECORDED]
+    require(not any(out == d or d in out.parents or out in d.parents for d in recorded) and
+            data_root not in out.parents, 'Choose a new output folder outside recorded results and data')
+    out.mkdir(parents=True, exist_ok=True)
+    protected = [p for directory in recorded for p in directory.rglob('*') if p.is_file()]
     preserved = {p.relative_to(ROOT).as_posix(): digest(p) for p in protected}
     scope = data_root.parent
     source_paths = sorted(p for p in scope.rglob('*') if p.is_file())
@@ -286,10 +300,10 @@ def main():
                    protocol_sha256=digest(PROTOCOL_PATH), config_sha256=digest(CONFIG_PATH),
                    checkpoint_table_sha256=digest(BASELINE/'checkpoint_features.csv'),
                    recorded_references_sha256=digest(BASELINE/'references.csv'), configuration=CONFIG)
-    save_json(OUT/'protocol_receipt.json', receipt)  # Before any model fit or score.
+    save_json(out/'protocol_receipt.json', receipt)  # Before any model fit or score.
     source_hashes = json.loads((BASELINE/'source_hashes.json').read_text())
     require(all(digest(data_root/p) == h for p, h in source_hashes.items()), 'Source MAT hashes changed')
-    reference_audit = audit_references(data_root, OUT)
+    reference_audit = audit_references(data_root, out)
     print('Target-independent references match baseline. Starting predeclared model fits.', flush=True)
     rows = read_checkpoints(BASELINE/'checkpoint_features.csv')
     old_predictions = read_csv(BASELINE/'predictions.csv')
@@ -357,13 +371,13 @@ def main():
     for filename, values in [('metrics.csv', metrics), ('summary.csv', summary), ('predictions.csv', predictions),
                               ('fit_diagnostics.csv', fits), ('timing_samples.csv', timing_samples),
                               ('timing_summary.csv', timing_summary)]:
-        save_csv(OUT/filename, values)
-    save_csv(OUT/'warnings.csv', notices, ['train_specimen', 'evaluation_specimen', 'model', 'seed',
+        save_csv(out/filename, values)
+    save_csv(out/'warnings.csv', notices, ['train_specimen', 'evaluation_specimen', 'model', 'seed',
              'phase', 'repetition', 'category', 'is_convergence', 'message'])
-    save_json(OUT/'preprocessing_audit.json', preprocessing)
-    save_json(OUT/'resolved_parameters.json', resolved)
-    save_json(OUT/'environment.json', environment)
-    plot_results(predictions, OUT)
+    save_json(out/'preprocessing_audit.json', preprocessing)
+    save_json(out/'resolved_parameters.json', resolved)
+    save_json(out/'environment.json', environment)
+    plot_results(predictions, out)
     require(preserved == {p.relative_to(ROOT).as_posix(): digest(p) for p in protected}, 'Historical outputs changed')
     after_paths = sorted(p for p in scope.rglob('*') if p.is_file())
     if archive.exists():
@@ -372,7 +386,7 @@ def main():
     require(all(digest(data_root/p) == h for p, h in source_hashes.items()), 'Source MAT contents changed')
     require(receipt['protocol_sha256'] == digest(PROTOCOL_PATH) and receipt['config_sha256'] == digest(CONFIG_PATH),
             'Protocol changed during execution')
-    save_json(OUT/'verification.json', dict(git_exclusions=git_checks, source_metadata_unchanged=len(inventory),
+    save_json(out/'verification.json', dict(git_exclusions=git_checks, source_metadata_unchanged=len(inventory),
         surveyed_mat_hashes_unchanged=len(source_hashes), historical_outputs_hashes_unchanged=preserved,
         target_independent_references_preserved=True, sklearn_ols_matches_baseline=True,
         convergence_warnings=sum(r['is_convergence'] for r in notices),
@@ -404,7 +418,7 @@ def main():
               'Limitations: two correlated specimen trajectories, few checkpoints, acquisition differences,',
               'unvalidated published stiffness index and prior development exposure. No evaluation-based tuning.',
               'Negative R2 or predictions are retained. Seed ranges are not confidence intervals.']
-    (OUT/'README.md').write_text('\n'.join(lines)+'\n', encoding='utf-8')
+    (out/'README.md').write_text('\n'.join(lines)+'\n', encoding='utf-8')
     print('\n'.join(lines), flush=True)
 
 

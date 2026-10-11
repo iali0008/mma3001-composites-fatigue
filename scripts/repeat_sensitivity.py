@@ -8,9 +8,7 @@ from __future__ import annotations
 
 import argparse
 import copy
-import csv
 from datetime import datetime, time
-import hashlib
 import json
 from pathlib import Path
 import platform
@@ -21,32 +19,17 @@ import numpy as np
 import openpyxl
 import scipy
 
+from common import ROOT, digest, load_experiment_v1, read_csv, require, snapshot
 from reproduce_results import MODELS, evaluate, read_checkpoints, write_csv
 
-ROOT = Path(__file__).resolve().parents[1]
 BASELINE = ROOT / 'results/baseline'
-FOLDERS = {'L1S11': 'L1_S11_F', 'L1S12': 'L1_S12_F'}
+RECORDED = ROOT / 'results/repeat_sensitivity'
+EXPERIMENT = load_experiment_v1()
+FOLDERS = {s: v['folder'] for s, v in EXPERIMENT['specimens'].items()}
 FEATURES = ('mean_centred_rms', 'peak_to_peak')
 
-
-def read_csv(path):
-    with path.open(encoding='utf-8-sig', newline='') as stream:
-        return list(csv.DictReader(stream))
-
-
-def require(condition, message):
-    if not condition:
-        raise ValueError(message)
-
-
-def digest(path):
-    with path.open('rb') as stream:
-        return hashlib.file_digest(stream, 'sha256').hexdigest()
-
-
-def snapshot(paths, base):
-    return {p.relative_to(base).as_posix(): {'bytes': p.stat().st_size,
-            'mtime_ns': p.stat().st_mtime_ns} for p in paths}
+__all__ = ['build_variants', 'check_ols_independently', 'compare_tables', 'digest', 'load_logs',
+           'order_repeats', 'read_csv', 'require', 'snapshot', 'verify_git_exclusions']
 
 
 def verify_git_exclusions(source_paths, source_scope, archive):
@@ -88,7 +71,7 @@ def compare_tables(actual, expected, keys, fields):
 def load_logs(data_root):
     logs, books = {}, []
     for specimen, folder in FOLDERS.items():
-        candidates = [p for p in (data_root/'Layup1'/folder).glob('*.xlsx')
+        candidates = [p for p in (data_root/folder).glob('*.xlsx')
                       if not p.name.startswith(('.', '~$'))]
         require(len(candidates) == 1, f'Ambiguous logbook: {specimen}')
         book = candidates[0]
@@ -185,7 +168,7 @@ def build_variants(recordings, baseline_rows, references, logs):
 
 
 def check_ols_independently(rows, predictions):
-    for train_name, test_name in (('L1S11', 'L1S12'), ('L1S12', 'L1S11')):
+    for train_name, test_name in EXPERIMENT['directions']:
         train = [r for r in rows if r['specimen'] == train_name and not r['is_reference']]
         test = [r for r in rows if r['specimen'] == test_name and not r['is_reference']]
         for model, fields in MODELS.items():
@@ -198,17 +181,30 @@ def check_ols_independently(rows, predictions):
             np.testing.assert_allclose(xt @ beta, expected, rtol=1e-9, atol=1e-10)
 
 
-def main():
+def main(argv=None):
+    """Rebuild the median experiment, then fit first/last-repeat variants.
+
+    Parameters
+    ----------
+    argv : list of str, optional
+        Command-line arguments; defaults to ``sys.argv[1:]``.
+
+    Raises
+    ------
+    ValueError
+        If the rebuild does not reproduce the recorded baseline or sources change.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--data-root', type=Path, required=True)
-    parser.add_argument('--output', type=Path, default=ROOT/'results/repeat_sensitivity')
-    args = parser.parse_args()
+    parser.add_argument('--output', type=Path, default=ROOT/'results/rebuilt/repeat_sensitivity',
+                        help='New output folder; the recorded results/repeat_sensitivity is refused.')
+    args = parser.parse_args(argv)
     data_root, output = args.data_root.resolve(), args.output.resolve()
     require(all((data_root/name).is_dir() for name in ('Layup1', 'Layup2', 'Layup3')),
             'data-root must directly contain Layup1, Layup2 and Layup3')
     # Protect the complete download wrapper, including supplementary files.
     source_scope = data_root.parent if data_root.parent.name == '2.+Composites' else data_root
-    for protected in (source_scope, BASELINE.resolve()):
+    for protected in (source_scope, BASELINE.resolve(), RECORDED.resolve()):
         require(output != protected and protected not in output.parents and output not in protected.parents,
                 'Output must be separate from raw sources and recorded baseline')
     source_paths = sorted(p for p in source_scope.rglob('*') if p.is_file())

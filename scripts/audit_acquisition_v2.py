@@ -23,9 +23,9 @@ from pathlib import Path
 import numpy as np
 from scipy.stats import spearmanr
 
+from common import ROOT, require, scalar
 from raw_loading import iter_coupons
 
-ROOT = Path(__file__).resolve().parents[1]
 SPECIMENS = {'L1S11': 'Layup1/L1_S11_F', 'L1S12': 'Layup1/L1_S12_F',
              'L2S11': 'Layup2/L2_S11_F'}
 ACTUATORS = range(1, 7)
@@ -33,50 +33,6 @@ SENSORS = range(7, 13)
 FREQUENCY_KHZ = 150
 EARLY_PEAK_SAMPLES = 400
 L2S11_LOAD_WINDOW = (4.53, 4.63)
-
-
-def require(condition, message):
-    """Raise ``RuntimeError`` when ``condition`` is false.
-
-    Parameters
-    ----------
-    condition : bool
-        Integrity condition that must hold.
-    message : str
-        Error message used when the condition fails.
-
-    Raises
-    ------
-    RuntimeError
-        If ``condition`` is false. Unlike ``assert``, this survives ``python -O``.
-    """
-    if not condition:
-        raise RuntimeError(message)
-
-
-def scalar(value):
-    """Return a finite float from a one-element numeric value, else ``None``.
-
-    Parameters
-    ----------
-    value : object
-        Value read from a MAT structure.
-
-    Returns
-    -------
-    float or None
-        The finite scalar, or ``None`` for empty, non-numeric or nonfinite input.
-
-    Examples
-    --------
-    >>> scalar([4.0]), scalar([]), scalar('x')
-    (4.0, None, None)
-    """
-    a = np.asarray(value)
-    if a.size != 1 or not np.issubdtype(a.dtype, np.number):
-        return None
-    v = float(a.ravel()[0])
-    return v if np.isfinite(v) else None
 
 
 def horizontal_offset(actuator, sensor):

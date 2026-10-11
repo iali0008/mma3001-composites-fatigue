@@ -3,6 +3,7 @@
 Hull half-space membership is independently checked by exhaustive triangle
 barycentric membership, which does not use Qhull or its hull vertices.
 """
+import argparse
 from itertools import combinations
 import json
 from pathlib import Path
@@ -14,12 +15,11 @@ import numpy as np
 from scipy.spatial import ConvexHull
 from sklearn.preprocessing import StandardScaler
 
-from reproduce_results import read_checkpoints, write_csv
-from repeat_sensitivity import digest, require
+from common import ROOT, digest, load_experiment_v1, require, write_csv
+from reproduce_results import read_checkpoints
 
-ROOT = Path(__file__).resolve().parents[1]
-COMPARISON = ROOT/'results/model_comparison'
-OUT = COMPARISON/'coverage'
+RECORDED = ROOT/'results/model_comparison'
+EXPERIMENT = load_experiment_v1()
 FEATURES = ('relative_rms', 'relative_ptp')
 TOLERANCE = 1e-10
 
@@ -111,20 +111,43 @@ def make_plot(directions, output, standardised=False):
     plt.close(fig)
 
 
-def main():
-    OUT.mkdir(parents=True, exist_ok=True)
+def main(argv=None):
+    """Classify checkpoints against each direction's training hull and export results.
+
+    Parameters
+    ----------
+    argv : list of str, optional
+        Command-line arguments; defaults to ``sys.argv[1:]``.
+
+    Raises
+    ------
+    ValueError
+        If the recorded scalers or counts disagree, or protected files change.
+    """
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--comparison', type=Path, default=RECORDED,
+                        help='Model-comparison folder whose preprocessing audit is checked.')
+    parser.add_argument('--output', type=Path, default=ROOT/'results/rebuilt/coverage',
+                        help='New output folder; the recorded coverage folder is refused.')
+    args = parser.parse_args(argv)
+    comparison, out = args.comparison.resolve(), args.output.resolve()
+    require(out != RECORDED/'coverage' and RECORDED/'coverage' not in out.parents,
+            'The recorded coverage folder is immutable; choose a new output folder')
+    out.mkdir(parents=True, exist_ok=True)
     # All pre-existing numerical/model artifacts remain protected. The requested
     # interpretation update is edited separately; this script never writes it.
-    protected = [p for directory in (ROOT/'results/baseline', ROOT/'results/repeat_sensitivity', COMPARISON)
-                 for p in directory.rglob('*') if p.is_file() and not p.is_relative_to(OUT)
-                 and p != COMPARISON/'INTERPRETATION.md']
+    protected = [p for directory in (ROOT/'results/baseline', ROOT/'results/repeat_sensitivity', comparison)
+                 for p in directory.rglob('*') if p.is_file() and not p.is_relative_to(out)
+                 and p != comparison/'INTERPRETATION.md']
     protected += [ROOT/'config/model_comparison.json', ROOT/'docs/model_comparison_protocol.md',
                   ROOT/'scripts/model_comparison.py']
     before = {p.relative_to(ROOT).as_posix(): digest(p) for p in protected}
     checkpoints = read_checkpoints(ROOT/'results/baseline/checkpoint_features.csv')
-    recorded_scalers = json.loads((COMPARISON/'preprocessing_audit.json').read_text())
+    recorded_scalers = json.loads((comparison/'preprocessing_audit.json').read_text())
     flags, summaries, vertices, directions = [], [], [], []
-    for train_name, evaluation_name, reported in [('L1S11', 'L1S12', 12), ('L1S12', 'L1S11', 11)]:
+    reported_counts = EXPERIMENT['coverage_reported_outside']
+    for train_name, evaluation_name in EXPERIMENT['directions']:
+        reported = reported_counts[train_name]
         train_rows = [r for r in checkpoints if r['specimen'] == train_name and not r['is_reference']]
         evaluation_rows = [r for r in checkpoints if r['specimen'] == evaluation_name and not r['is_reference']]
         train = np.array([[r[f] for f in FEATURES] for r in train_rows])
@@ -163,10 +186,10 @@ def main():
         summaries.append(summary)
         directions.append(dict(train_specimen=train_name, evaluation_specimen=evaluation_name,
                                training=train, evaluation=evaluation, **result))
-    write_csv(OUT/'checkpoint_coverage.csv', flags)
-    write_csv(OUT/'training_hull_vertices.csv', vertices)
-    make_plot(directions, OUT/'feature_coverage.png')
-    make_plot(directions, OUT/'feature_coverage_standardised.png', standardised=True)
+    write_csv(out/'checkpoint_coverage.csv', flags)
+    write_csv(out/'training_hull_vertices.csv', vertices)
+    make_plot(directions, out/'feature_coverage.png')
+    make_plot(directions, out/'feature_coverage_standardised.png', standardised=True)
     after = {p.relative_to(ROOT).as_posix(): digest(p) for p in protected}
     require(before == after, 'Existing experiment artifacts changed')
     verification = dict(directions=summaries, boundary_policy='Boundary included inside; no distances reported',
@@ -174,7 +197,7 @@ def main():
         independent_method='Exhaustive nondegenerate training triples with barycentric containment; no Qhull calls',
         halfspace_tolerance=TOLERANCE, barycentric_weight_tolerance=TOLERANCE,
         no_models_fitted=True, existing_artifact_hashes_unchanged=before)
-    (OUT/'verification.json').write_text(json.dumps(verification, indent=2)+'\n', encoding='utf-8')
+    (out/'verification.json').write_text(json.dumps(verification, indent=2)+'\n', encoding='utf-8')
     print(json.dumps(summaries, indent=2))
 
 

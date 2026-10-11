@@ -8,18 +8,20 @@ import time
 
 import numpy as np
 
+from common import ROOT, digest, require, write_csv
 from profile_raw_workflow import check_output
-from repeat_sensitivity import digest, require
-from reproduce_results import write_csv
-
-ROOT = Path(__file__).resolve().parents[1]
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--data-root', required=True, type=Path)
-    args = parser.parse_args()
-    out = ROOT/'results/model_comparison/raw_benchmark'
+    parser.add_argument('--output', type=Path, default=ROOT/'results/rebuilt/raw_benchmark',
+                        help='New output folder; the recorded results folder is refused.')
+    args = parser.parse_args(argv)
+    out = args.output.resolve()
+    recorded = ROOT/'results/model_comparison/raw_benchmark'
+    require(out != recorded and recorded not in out.parents,
+            'Recorded results are immutable; choose a new output folder')
     out.mkdir(parents=True, exist_ok=True)
     # Declared before timings: one warm-up per mode, then three alternating pairs.
     plan = [(1, -1), (4, -1), (1, 0), (4, 0), (4, 1), (1, 1), (1, 2), (4, 2)]

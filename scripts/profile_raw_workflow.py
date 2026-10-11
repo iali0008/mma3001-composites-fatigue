@@ -8,9 +8,8 @@ import pstats
 import subprocess
 import sys
 
-from repeat_sensitivity import compare_tables, read_csv, digest, require
-
-ROOT = Path(__file__).resolve().parents[1]
+from common import ROOT, digest, read_csv, require
+from repeat_sensitivity import compare_tables
 
 
 def check_output(output, baseline=ROOT/'results/baseline'):
@@ -27,11 +26,16 @@ def check_output(output, baseline=ROOT/'results/baseline'):
             json.loads((baseline/'source_hashes.json').read_text()), 'Raw hash discrepancy')
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--data-root', required=True, type=Path)
-    args = parser.parse_args()
-    out = ROOT/'results/model_comparison/raw_profile'
+    parser.add_argument('--output', type=Path, default=ROOT/'results/rebuilt/raw_profile',
+                        help='New output folder; the recorded results folder is refused.')
+    args = parser.parse_args(argv)
+    out = args.output.resolve()
+    recorded = ROOT/'results/model_comparison/raw_profile'
+    require(out != recorded and recorded not in out.parents,
+            'Recorded results are immutable; choose a new output folder')
     out.mkdir(parents=True, exist_ok=True)
     command = [sys.executable, '-m', 'cProfile', '-o', str(out/'workflow.prof'),
                str(ROOT/'scripts/exploratory_regression.py'), '--data-root', str(args.data_root),
