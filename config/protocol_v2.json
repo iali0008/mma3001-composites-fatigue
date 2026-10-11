@@ -1,0 +1,144 @@
+{
+  "protocol_version": 2,
+  "written": "2026-10-11",
+  "status": "predeclared before any v2 score was computed",
+  "protocol_document": "docs/protocol_v2.md",
+  "supersedes_nothing": "Protocol v1 (docs/model_comparison_protocol.md, config/model_comparison.json) and its results stay frozen.",
+  "v1_hashes_sha256": {
+    "docs/model_comparison_protocol.md": "640994a0ef1ddc2865f2b80f601c7f9987caeafa8d87d07258b1c6b57db8474b",
+    "config/model_comparison.json": "0cda3caddeb0b203afa047c36e176ca4b7da46c2ab65f1409dcedf1fe7c0b8d5"
+  },
+  "acquisition_audit": "results/protocol_v2_audit/summary.json",
+
+  "specimens": {
+    "L1S11": {"folder": "Layup1/L1_S11_F", "role": "development",
+              "load_window_kips": [3.95, 4.05], "baseline_gain": 33, "baseline_amplitude": 65},
+    "L1S12": {"folder": "Layup1/L1_S12_F", "role": "development",
+              "load_window_kips": [3.95, 4.05], "baseline_gain": 35, "baseline_amplitude": 50},
+    "L2S11": {"folder": "Layup2/L2_S11_F", "role": "held_out_test",
+              "load_window_kips": [4.53, 4.63], "baseline_gain": 35, "baseline_amplitude": 50}
+  },
+  "excluded_specimens": ["L1S18", "L1S19", "all other specimens"],
+
+  "eligibility": {
+    "cycles": "strictly positive",
+    "condition": "casefold(strip(condition)) == 'loaded'",
+    "load": "inclusive specimen load_window_kips",
+    "stored_sampling_rate": 1200000,
+    "signal_length_samples": 2000,
+    "frequency_khz": 150,
+    "baseline_path": {"actuator": 1, "sensor": 7, "exactly_once": true,
+                      "gain_amplitude": "specimen baseline_gain / baseline_amplitude"},
+    "multi_path_grid": {"actuators": [1, 2, 3, 4, 5, 6], "sensors": [7, 8, 9, 10, 11, 12],
+                        "each_pair_exactly_once": true,
+                        "setting_vector": "the 36-pair (gain, amplitude) vector must equal the specimen's modal vector over all its PZT files"},
+    "signals": "actuator and receiver signals finite and nonconstant for every used pair",
+    "joint": "a recording is used for BOTH input sets only if it passes every rule above",
+    "labels_consulted": false
+  },
+
+  "reference": {
+    "rule": "earliest checkpoint with at least one eligible recording; labels and label availability are never consulted",
+    "denominator": "per-feature (and per-pair for multi-path) median across the reference checkpoint's eligible recordings",
+    "reference_denominators_positive": true,
+    "reference_in_fit_or_score": false,
+    "expected_from_audit": {"L1S11": 1, "L1S12": 1, "L2S11": 3}
+  },
+
+  "features": {
+    "window_samples_inclusive": [0, 1999],
+    "rms": "sqrt(mean((x - mean(x))**2)) of the receiver signal",
+    "ptp": "max(x) - min(x) of the receiver signal",
+    "input_sets": {
+      "single_path_1_7": {
+        "description": "protocol v1 baseline: checkpoint median over repeats, divided by the reference median",
+        "columns": ["relative_rms", "relative_ptp"]
+      },
+      "multi_path_36": {
+        "description": "per pair: checkpoint median over repeats divided by that pair's reference median; then median over the 36 pairs",
+        "columns": ["mp_relative_rms", "mp_relative_ptp"],
+        "aggregation_order": ["per-pair median across eligible repeats", "per-pair ratio to the reference", "median across 36 pairs"]
+      }
+    },
+    "not_adopted": ["log-transformed features (found post hoc on v1 scores)", "time windows excluding early energy", "per-path weighting or selection"]
+  },
+
+  "models": {
+    "source": "identical to config/model_comparison.json (protocol v1); no tuning",
+    "LinearRegression": {"fit_intercept": true, "positive": false},
+    "DecisionTreeRegressor": {"criterion": "squared_error", "splitter": "best", "max_depth": 2, "min_samples_leaf": 3, "min_samples_split": 6, "max_features": null, "ccp_alpha": 0.0, "random_state": 42},
+    "SVR": {"kernel": "rbf", "C": 1.0, "epsilon": 0.1, "gamma": 0.5, "tol": 0.001, "shrinking": true, "cache_size": 200, "max_iter": -1},
+    "MLPRegressor": {"hidden_layer_sizes": [3], "activation": "tanh", "solver": "lbfgs", "alpha": 1.0, "max_iter": 2000, "max_fun": 20000, "tol": 0.000001, "early_stopping": false, "shuffle": false},
+    "log_cycle_OLS": {"fit_intercept": true, "positive": false},
+    "DummyRegressor": {"strategy": "mean"},
+    "mlp_seeds": [7, 23, 42, 71, 101],
+    "preprocessing": "as v1: StandardScaler inside the pipeline for linear/SVR/MLP/log-cycle; SVR and MLP wrapped in TransformedTargetRegressor(StandardScaler); all fitted on training checkpoints only",
+    "threads": 1
+  },
+
+  "validation": {
+    "directions": [["L1S11", "L1S12"], ["L1S12", "L1S11"]],
+    "scored_checkpoints": "every non-reference checkpoint of the evaluation specimen with an eligible recording and a finite published label",
+    "expected_counts_from_v1": {"L1S11": 13, "L1S12": 12},
+    "primary_metric": "MAE",
+    "also_reported": ["RMSE", "R2", "mean residual", "train metrics", "per-checkpoint predictions"],
+    "mlp_summary": "median across the five seeds; per-seed values also reported",
+    "reproduction_gate": "single_path_1_7 predictions must reproduce results/model_comparison/predictions.csv (rtol 1e-9, atol 1e-10) before any multi-path score is reported"
+  },
+
+  "selection_rule": {
+    "candidates": "4 model families (LinearRegression, DecisionTreeRegressor, SVR, MLPRegressor) x 2 input sets = 8 candidates",
+    "controls_selectable": false,
+    "criterion": "lowest worst-direction validation MAE, where worst-direction MAE = max(MAE L1S11->L1S12, MAE L1S12->L1S11); MLP uses its five-seed median MAE in each direction",
+    "tie_tolerance_mae": 0.0005,
+    "tie_break_order": {
+      "model": ["LinearRegression", "DecisionTreeRegressor", "SVR", "MLPRegressor"],
+      "input_set": ["single_path_1_7", "multi_path_36"],
+      "rule": "within the tolerance of the minimum, choose the earliest model in the order; if still tied, the earliest input set"
+    },
+    "freeze": "the selection, the rule output and the commit hash are committed before L2S11 is touched"
+  },
+
+  "final_model": {
+    "training_data": "all non-reference labelled checkpoints of L1S11 and L1S12 pooled (expected 25), equal checkpoint weights, each specimen normalised by its own reference",
+    "settings": "selected model and input set, unchanged hyperparameters",
+    "mlp": "if MLP is selected, fit all five seeds; report each seed and the seed-median MAE; no seed selection, no ensemble"
+  },
+
+  "test": {
+    "specimen": "L2S11",
+    "status": "held out from model development; labels were seen in the earlier audit, so not untouched",
+    "runs_allowed": 1,
+    "scored_checkpoints": "every non-reference L2S11 checkpoint with an eligible recording and a finite published label",
+    "cycle_1_label": "-0.012 at cycle 1 cannot be scored: no cycle-1 recording is inside the load window (all are a 0.5-4.5 kip ramp); it is reported, never scored or clipped",
+    "reference_expected": 3,
+    "also_scored_once_as_fixed_controls": ["log_cycle_OLS", "DummyRegressor"],
+    "controls_note": "controls are trained by the same pooled rule; they are reference points and cannot replace the frozen model",
+    "metrics": ["MAE (primary)", "RMSE", "R2", "mean residual", "per-checkpoint predictions"],
+    "success_statement_rule": "the frozen model is described as beating a control only if its L2S11 MAE is lower than that control's L2S11 MAE",
+    "coverage_diagnostic": "training-hull membership of L2S11 checkpoints in pooled-training-standardised coordinates of the selected input set, as in results/model_comparison/coverage",
+    "guard": "the scoring script refuses to run if its receipt already exists or the git working tree is dirty, and records the commit hash"
+  },
+
+  "sanity_check": {
+    "specimen": "L1S11",
+    "checkpoints_cycles": [125000, 150000, 175000, 177000, 227000],
+    "labels": "none exist; this is plausibility, not accuracy",
+    "model": "the frozen final model",
+    "criteria": {
+      "C1_not_decreasing_on_average": "mean prediction over the five late checkpoints >= the model's prediction at the L1S11 100,000-cycle checkpoint",
+      "C2_physical_range": "every late prediction within [-0.05, 1.0]",
+      "C3_no_extreme_extrapolation": "every late prediction within the pooled training-target range widened by 50% of its width on each side"
+    },
+    "pass": "C1 and C2 and C3",
+    "descriptive_only": ["least-squares slope of prediction against cycles over the five late checkpoints", "late relative features versus the training feature range"]
+  },
+
+  "halting": "if any integrity check fails or a specimen has no eligible checkpoint, stop and report; do not change rules after seeing any v2 score — a change is protocol v3 with disclosure",
+  "outputs": {
+    "validation": "results/protocol_v2/validation/",
+    "selection": "results/protocol_v2/selection.json",
+    "test": "results/protocol_v2/test_L2S11/",
+    "sanity": "results/protocol_v2/sanity_L1S11/"
+  }
+}

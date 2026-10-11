@@ -39,3 +39,27 @@ This is a consolidated record of work reported in the project conversation and u
 ## Working conventions
 
 Preserve `results/baseline` as the first recorded experiment. Put changed analyses in a separate output directory. Commit code, relevant small outputs and an explanation of each material change. Do not edit original experimental files, fill missing labels to enlarge the sample, or select a new feature based on favourable evaluation results without disclosing exploratory selection.
+
+## Session log
+
+Newest entries last. Every Claude session (Claude Code in VS Code or claude.ai) appends an entry here; `CLAUDE.md` holds the standing decisions and plan.
+
+- 2026-10-11 (claude.ai review session): Reviewed all scripts and tests; the 23 tests pass on Linux (Python 3.13.16, NumPy 2.5.3, scikit-learn 1.9.1). No errors found that change reported numbers. Confirmed from the dataset documentation that only L1S11, L1S12 and L2S11 carry stiffness labels, and that the stored 1.2e6 Hz sampling rate is a hard-coded placeholder (actual rate likely ~12 MHz). Decisions: keep the research question; L2S11 becomes the held-out test set; add multi-path features and an unlabelled L1S11 (>100k cycles) sanity check; drop L1S18/L1S19. Code issues and the full plan are recorded in `CLAUDE.md`. Next step: write and commit protocol v2 before computing any new scores.
+- 2026-10-11 (Claude Code, VS Code): Plan step 1, protocol v2. Read CLAUDE.md, this log, README,
+  methodology, v1 protocol, INTERPRETATION, ASSESSMENT and the project brief
+  (`MMA3001_2026_Project_Brief.pdf`, untracked at the repo root). Wrote
+  `scripts/audit_acquisition_v2.py`, a label-blind metadata/waveform audit (it deletes the label
+  field on load; no model or score), with outputs in `results/protocol_v2_audit/`. Findings: all 382
+  files of L1S11/L1S12/L2S11 share one path-slot order and the full 36-pair grid at 150 kHz;
+  CHANGEPATH.m moves IDs with signals; envelope-peak timing supports cross-specimen ID consistency
+  (Spearman 0.40–0.76) but cannot prove it; gain/amplitude are per pair, constant over time in
+  L1S11/L1S12, changed on 9 L2S11 pairs only at cycles 0–1; L2S11 cycles 1–2 are static load
+  ramps and its fatigue mean load is 4.571–4.588 kips; pair 1→7 (v1 baseline) peaks at a fixed early
+  sample (~292) in all three specimens, suggesting crosstalk-like early energy. Wrote
+  `docs/protocol_v2.md` and `config/protocol_v2.json`: joint label-blind eligibility, L2S11 load
+  window 4.53–4.63 kips (reference expected at cycle 3, so the −0.012 cycle-1 label is never
+  scored), multi-path input = median over 36 per-pair reference ratios, v1 models unchanged,
+  selection by lowest worst-direction validation MAE (ties within 0.0005 → simpler model, then
+  single path), pooled L1S11+L1S12 final model, one guarded L2S11 run with log-cycle/Dummy
+  controls, L1S11 125k–227k sanity criteria C1–C3. No v2 score computed. Tests: 23/23 pass
+  (unittest, Windows, Python 3.13.3). Next: Sans reviews protocol (★), then step 2 code fixes.
