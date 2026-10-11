@@ -114,7 +114,8 @@ flight, ΔPSD as in Saxena et al. 2011), add more labelled specimens, or calibra
 | `results/dataset_facts/` | Label links, strain-file contents and FFT sampling-rate check |
 | `results/reproduction_check/`, `results/test_report/` | Reproduction reports and pytest reports |
 | `archive/` | Earlier exploratory scripts and the label audit (`archive/audit/ASSESSMENT.md`) |
-| `data/README.md` | Where the raw data must be placed (raw data is never committed) |
+| `data/README.md` | Where the raw data must be placed; the raw download is git-ignored |
+| `data/audit_stiffness/`, `data/pzt_feasibility/` | Historical, unmaintained: derived label-audit and feasibility tables, figures and notebooks (raw and third-party material untracked; see [docs/dataset.md](docs/dataset.md)) |
 
 ## Setup
 
@@ -136,7 +137,9 @@ ranges. On Linux or macOS use `python3 -m venv .venv` and `.venv/bin/python`.
    (checked 2026-10-11).
 2. Extract it so that `data/2.+Composites/2. Composites/` contains `Layup1`, `Layup2` and
    `Layup3`. Any other location works if you pass it as `--data-root`.
-3. Do not modify or commit the files. `.gitignore` excludes them, and the workflows check that.
+3. Do not modify or commit the files. `.gitignore` excludes them, and the workflows check that. Raw
+   and third-party material once committed by the early audit was untracked on 2026-10-12 but
+   remains in earlier commits; see [docs/dataset.md](docs/dataset.md).
 
 The no-data replay and most tests need no download.
 

@@ -33,9 +33,21 @@ folder) and `STI_9408_1368_Final Paper.pdf`.
   repository and the data donors, and states that users employ the data at their own risk and that
   neither NASA nor the donors assume liability. The related data.nasa.gov catalogue entries
   describe the papers, hold no data files, and say "License not specified" (checked 2026-10-11).
-- **Consequence for this repository.** No raw data, logbooks, X-rays or papers are committed. The
-  MIT licence covers only this project's code and documentation. Small derived tables (features,
-  published index values, predictions) are kept for reproducibility, with the citation above.
+- **What this repository contains.** The NASA download itself (MAT files, logbooks, X-rays, PDFs,
+  archives) is git-ignored and not committed. The current tree contains only material derived from
+  it, kept for reproducibility with the citation above:
+  - feature, label and prediction tables under `results/`;
+  - the label-audit outputs under `data/audit_stiffness/`. These are derived tables and statistics,
+    including short verbatim logbook remarks in `logbook_remarks.csv` and a few truncated array
+    values in `coupon_samples.json`;
+  - the historical feasibility tables, figures and notebooks under `data/pzt_feasibility/`.
+- **Untracked on 2026-10-12.** Raw waveform excerpts (`selected_signals.npz`), a full logbook dump,
+  raw structure dumps, extracted text of the dataset documentation and papers, and a vendored copy
+  of pypdf were removed from the tree and git-ignored (review finding C2/R3; inventory in
+  `docs/review/data_inventory.md`). **They remain in earlier commits** (from `4f75752`), so a clone
+  with full history still contains them.
+- **Licence of this project.** The MIT licence covers only this project's code and documentation,
+  not the dataset, the papers or derived values of the published index.
 
 ## 2. What the published stiffness index is
 
