@@ -20,7 +20,15 @@ import numpy as np
 import openpyxl
 import scipy
 
-from common import ROOT, digest, load_experiment_v1, read_csv, require, snapshot
+from common import (
+    ROOT,
+    digest,
+    load_experiment_v1,
+    read_csv,
+    require,
+    require_not_recorded,
+    snapshot,
+)
 from reproduce_results import MODELS, evaluate, read_checkpoints, write_csv
 
 BASELINE = ROOT / 'results/baseline'
@@ -384,7 +392,7 @@ def main(argv=None):
         help='New output folder; the recorded results/repeat_sensitivity is refused.',
     )
     args = parser.parse_args(argv)
-    data_root, output = args.data_root.resolve(), args.output.resolve()
+    data_root, output = args.data_root.resolve(), require_not_recorded(args.output)
     require(
         all((data_root / name).is_dir() for name in ('Layup1', 'Layup2', 'Layup3')),
         'data-root must directly contain Layup1, Layup2 and Layup3',

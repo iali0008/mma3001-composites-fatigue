@@ -36,7 +36,7 @@ import sys
 
 import matplotlib
 
-from common import ROOT, load_json, require, save_json
+from common import RECORDED_RESULTS, ROOT, load_json, require, require_not_recorded, save_json
 
 RESULTS = ROOT / 'results'
 VOLATILE_KEYS = {
@@ -56,19 +56,6 @@ ENVIRONMENT_KEYS = {
 git-exclusion check (which reports an external data folder differently), and byte hashes of
 recorded CSV files (which change with checkout line endings while their content is equal)."""
 TIMING_FILES = {'timing_samples.csv', 'timing_summary.csv'}
-
-
-RECORDED_RESULTS = (
-    'baseline',
-    'repeat_sensitivity',
-    'model_comparison',
-    'protocol_v2',
-    'protocol_v2_audit',
-    'reproduction_check',
-    'dataset_facts',
-    'test_report',
-)
-"""Recorded results folders under ``results/`` that this script must never delete or write."""
 
 
 def _overlaps(a, b):
@@ -256,11 +243,15 @@ def main(argv=None):
         help='Scratch folder strictly inside results/rebuilt/ (deleted and recreated each run).',
     )
     parser.add_argument(
-        '--report', type=Path, default=RESULTS / 'reproduction_check' / 'report.json'
+        '--report',
+        type=Path,
+        default=RESULTS / 'rebuilt' / 'reproduction_check' / 'report.json',
+        help='Report file; never inside a recorded results folder.',
     )
     args = parser.parse_args(argv)
     # Validate the scratch path completely before the destructive rmtree below.
     work = check_work_folder(args.work, args.data_root)
+    report_path = require_not_recorded(args.report)
     if work.exists():
         shutil.rmtree(work)
     work.mkdir(parents=True)
@@ -310,9 +301,9 @@ def main(argv=None):
             'INTERPRETATION.md (hand-written)',
         ],
     )
-    args.report.parent.mkdir(parents=True, exist_ok=True)
-    save_json(args.report, report)
-    print(json.dumps(dict(counts=counts, report=str(args.report)), indent=2))
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    save_json(report_path, report)
+    print(json.dumps(dict(counts=counts, report=str(report_path)), indent=2))
     require('DIFFERENT' not in counts, 'Reproduction failed: see the report for DIFFERENT files')
 
 

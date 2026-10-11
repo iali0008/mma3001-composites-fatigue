@@ -21,7 +21,7 @@ is the feasibility finding.
 3. [Repository structure](#repository-structure)
 4. [Setup](#setup)
 5. [Data download](#data-download)
-6. [Reproduce everything](#reproduce-everything)
+6. [Reproduce](#reproduce)
 7. [Tests, documentation and checks](#tests-documentation-and-checks)
 8. [Limitations](#limitations)
 9. [Attribution, licence and AI use](#attribution-licence-and-ai-use)
@@ -100,7 +100,7 @@ flight, ΔPSD as in Saxena et al. 2011), add more labelled specimens, or calibra
 | Path | Contents |
 |---|---|
 | `scripts/` | All code: one module per workflow, plus `common.py` (shared checks and I/O) |
-| `tests/` | Unit and reproduction tests (66), run with pytest |
+| `tests/` | Unit and reproduction tests, run with pytest |
 | `config/` | Frozen settings: `experiment_v1.json`, `model_comparison.json`, `protocol_v2.json` |
 | `docs/protocol_v2.md`, `docs/model_comparison_protocol.md` | Protocols written before their scores |
 | `docs/methodology.md`, `docs/dataset.md` | Methods; dataset provenance, label definition, sampling rate, units |
@@ -143,38 +143,80 @@ ranges. On Linux or macOS use `python3 -m venv .venv` and `.venv/bin/python`.
 
 The no-data replay and most tests need no download.
 
-## Reproduce everything
+## Reproduce
 
-Run from the repository root (`$D` = `"data/2.+Composites/2. Composites"`). In the table,
-`python` means the project environment's interpreter: `.\.venv\Scripts\python.exe` on Windows or
-`.venv/bin/python` on Linux/macOS (or activate the venv first). Do not use a global Python, whose
-package versions differ from the lock. Every workflow writes to a new folder under the git-ignored
-`results/rebuilt/` by default and refuses to overwrite recorded results.
+Run everything from the repository root with the project environment's interpreter. The examples
+use PowerShell. On Linux or macOS, replace `.\.venv\Scripts\python.exe` with `.venv/bin/python`,
+and `$D` with `"$D"` after `D="data/2.+Composites/2. Composites"`.
 
-| Step | Command | Output |
+```powershell
+$D = "data/2.+Composites/2. Composites"
+$py = ".\.venv\Scripts\python.exe"
+```
+
+**What may be overwritten.** Recorded results (`results/baseline`, `repeat_sensitivity`,
+`model_comparison`, `protocol_v2`, `protocol_v2_audit`, `reproduction_check`, `dataset_facts`,
+`test_report`) are never written by any workflow script. Every output option refuses them, and the
+defaults are under the git-ignored `results/rebuilt/` (or `results/reproduced/`). Rerunning a
+command overwrites its own folder under `results/rebuilt/`. `verify_reproduction.py` deletes and
+recreates only its `--work` folder, which must lie strictly inside `results/rebuilt/`. Two documented
+commands deliberately refresh tracked files: the pytest-report command (`results/test_report/`) and
+the docs build (`docs/html/`).
+
+### (a) Verify the recorded v1 results
+
+```powershell
+& $py scripts/reproduce_results.py                                # no raw data needed
+& $py scripts/verify_reproduction.py --data-root $D
+```
+
+- **`reproduce_results.py`.** Refits the recorded baseline features with an independent QR solver
+  and writes `results/reproduced/`.
+- **`verify_reproduction.py`.** Reruns the baseline extraction, repeat sensitivity, six-model
+  comparison and coverage into `results/rebuilt/verification/`. It compares every recorded file and
+  writes a report to `results/rebuilt/reproduction_check/report.json`. It fails if any
+  deterministic output differs. Timing samples are not compared.
+- **Earlier reports.** The recorded reports from earlier runs are in `results/reproduction_check/`.
+
+### (b) Regenerate individual outputs safely
+
+| Workflow | Command | Writes to |
 |---|---|---|
-| Replay v1 OLS without raw data | `python scripts/reproduce_results.py` | `results/reproduced/` |
-| v1 extraction and OLS | `python scripts/exploratory_regression.py --data-root $D` | `results/rebuilt/` |
-| Repeat sensitivity | `python scripts/repeat_sensitivity.py --data-root $D` | `results/rebuilt/repeat_sensitivity/` |
-| v1 six-model comparison | `python scripts/model_comparison.py --data-root $D` | `results/rebuilt/model_comparison/` |
-| Coverage diagnostic | `python scripts/feature_coverage.py` | `results/rebuilt/coverage/` |
-| Profile / benchmark raw workflow | `python scripts/profile_raw_workflow.py --data-root $D`, `python scripts/benchmark_raw_workflow.py --data-root $D` | `results/rebuilt/raw_*` |
-| **Check all of the above against the record** | `python scripts/verify_reproduction.py --data-root $D` | `results/reproduction_check/report.json` |
-| Protocol v2 acquisition audit | `python scripts/audit_acquisition_v2.py --data-root $D --output <new folder>` | audit tables |
-| Dataset facts | `python scripts/dataset_facts.py --data-root $D` | `results/dataset_facts/facts.json` |
-| Protocol v2 validation (one-shot) | `python scripts/protocol_v2_validation.py --data-root $D` | `results/protocol_v2/validation/` |
-| L2S11 test and sanity check (one-shot) | `python scripts/protocol_v2_test.py --data-root $D` | `results/protocol_v2/test_L2S11/`, `sanity_L1S11/` |
-| Post hoc diagnostics | `python scripts/post_hoc_step4.py`, `python scripts/post_hoc_logbook_l1s11.py --data-root $D` | `results/protocol_v2/post_hoc_step4/` |
+| v1 extraction and OLS | `& $py scripts/exploratory_regression.py --data-root $D` | `results/rebuilt/` |
+| Repeat sensitivity | `& $py scripts/repeat_sensitivity.py --data-root $D` | `results/rebuilt/repeat_sensitivity/` |
+| v1 six-model comparison (with timings) | `& $py scripts/model_comparison.py --data-root $D` | `results/rebuilt/model_comparison/` |
+| Coverage diagnostic | `& $py scripts/feature_coverage.py` | `results/rebuilt/coverage/` |
+| cProfile of the raw workflow | `& $py scripts/profile_raw_workflow.py --data-root $D` | `results/rebuilt/raw_profile/` |
+| Serial vs prefetch benchmark | `& $py scripts/benchmark_raw_workflow.py --data-root $D` | `results/rebuilt/raw_benchmark/` |
+| Protocol v2 acquisition audit | `& $py scripts/audit_acquisition_v2.py --data-root $D` | `results/rebuilt/protocol_v2_audit/` |
+| Dataset facts (label links, sampling-rate check) | `& $py scripts/dataset_facts.py --data-root $D` | `results/rebuilt/dataset_facts/` |
+| Post hoc L2S11 summary (reads saved outputs only) | `& $py scripts/post_hoc_step4.py` | `results/rebuilt/post_hoc_step4/` |
+| Post hoc L1S11 logbook diagnostic | `& $py scripts/post_hoc_logbook_l1s11.py --data-root $D` | `results/rebuilt/post_hoc_step4/` |
 
-The two one-shot protocol v2 scripts refuse to run again while their recorded outputs exist, and
-the L2S11 test also refuses to run from uncommitted code. This enforces "scored exactly once". To
-re-execute them, work in a fresh clone and remove `results/protocol_v2/` there, never in the
-recorded repository.
+- **Comparing with the record.** Each output can be compared by hand with its recorded
+  counterpart. The audit, dataset facts and both post hoc outputs matched their recorded copies in
+  content on 2026-10-12.
+- **Timings are not reproducible numbers.** Profiling, benchmark and model-timing outputs are local
+  measurements that change with machine load and caches. The recorded 12.77 s → 7.77 s comparison
+  was measured once on the author's machine. A later rerun gave different absolute times; only the
+  byte-identical outputs of the two modes are a reproducible claim.
+
+### (c) The one-time protocol v2 scripts
+
+`protocol_v2_validation.py` and `protocol_v2_test.py` were run exactly once to produce
+`results/protocol_v2/`. Both refuse to run while their outputs exist, and the L2S11 test also
+refuses uncommitted code. A supported way to re-execute or replay them has not been added yet.
+Until then:
+
+- **Inspect the record.** Their committed receipts record the commit and protocol hashes.
+- **Check consistency.** Their saved predictions can be checked against their metrics, which the
+  test suite does for the v1 comparison.
+- **Do not rerun them in the recorded repository.** Do not delete or edit `results/protocol_v2/`.
 
 ## Tests, documentation and checks
 
 ```powershell
-.\.venv\Scripts\python.exe -m pytest                       # 66 tests
+.\.venv\Scripts\python.exe -m pytest                       # all tests
 .\.venv\Scripts\python.exe -m pytest --junitxml=results/test_report/junit.xml --html=results/test_report/report.html --self-contained-html
 .\.venv\Scripts\python.exe scripts/build_docs.py           # HTML API docs into docs/html
 .\.venv\Scripts\python.exe -m black --check scripts tests    # formatting (settings in pyproject.toml)
@@ -189,8 +231,8 @@ pinned in `requirements-lock.txt`; nothing relies on a global installation.
   training-only scaling, the selection rule, integrity checks under `python -O`, and agreement of
   recorded results with independent recalculation.
 - **Saved reports.** The latest reports are in `results/test_report/`.
-- **Reproduction check.** It reran the historical workflows and found every deterministic output
-  byte-identical or equal in content (`results/reproduction_check/`).
+- **Reproduction check.** Recorded runs found every deterministic v1 output byte-identical or
+  equal in content (`results/reproduction_check/`).
 - **Fresh-clone verification.** A fresh clone with a new virtual environment from
   `requirements-lock.txt` passed all tests and the reproduction check against the original raw
   data; see `docs/progress.md`.

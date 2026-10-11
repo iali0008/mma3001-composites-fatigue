@@ -17,7 +17,7 @@ import numpy as np
 from scipy.spatial import ConvexHull
 from sklearn.preprocessing import StandardScaler
 
-from common import ROOT, digest, load_experiment_v1, require, write_csv
+from common import ROOT, digest, load_experiment_v1, require, require_not_recorded, write_csv
 from reproduce_results import read_checkpoints
 
 RECORDED = ROOT / 'results/model_comparison'
@@ -262,7 +262,7 @@ def main(argv=None):
         help='New output folder; the recorded coverage folder is refused.',
     )
     args = parser.parse_args(argv)
-    comparison, out = args.comparison.resolve(), args.output.resolve()
+    comparison, out = args.comparison.resolve(), require_not_recorded(args.output)
     require(
         out != RECORDED / 'coverage' and RECORDED / 'coverage' not in out.parents,
         'The recorded coverage folder is immutable; choose a new output folder',

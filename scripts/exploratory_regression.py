@@ -26,7 +26,15 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
-from common import ROOT, load_experiment_v1, require, scalar, waveform_features, write_csv
+from common import (
+    ROOT,
+    load_experiment_v1,
+    require,
+    require_not_recorded,
+    scalar,
+    waveform_features,
+    write_csv,
+)
 from raw_loading import iter_coupons
 
 LABEL_REASON = 'missing/nonfinite/nonscalar published index'
@@ -735,7 +743,7 @@ def parse_args(argv=None):
         parser.error(
             'results/baseline is the recorded first experiment; choose a new output folder.'
         )
-    return data_root, out, args.workers
+    return data_root, require_not_recorded(out), args.workers
 
 
 def main(argv=None):

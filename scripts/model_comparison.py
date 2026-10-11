@@ -31,6 +31,7 @@ from sklearn.tree import DecisionTreeRegressor
 from threadpoolctl import threadpool_info, threadpool_limits
 
 from common import (
+    require_not_recorded,
     ROOT,
     digest,
     load_experiment_v1,
@@ -597,7 +598,7 @@ def main(argv=None):
     )
     args = parser.parse_args(argv)
     data_root = args.data_root.resolve()
-    out = args.output.resolve()
+    out = require_not_recorded(args.output)
     require(
         all((data_root / p).is_dir() for p in ('Layup1', 'Layup2', 'Layup3')), 'Invalid data root'
     )

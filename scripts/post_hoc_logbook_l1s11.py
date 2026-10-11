@@ -10,8 +10,9 @@ result. It reads the L1S11 logbook, the eligible Loaded L1S11 MAT files from
 * did the jump occur on path 1->7 only, or on all 36 paths?
 * did the 1->7 actuator (excitation) signal change?
 
-Outputs ``results/protocol_v2/post_hoc_step4/logbook_L1S11.json`` and
-``logbook_L1S11_rows.csv``.
+Writes ``logbook_L1S11.json`` and ``logbook_L1S11_rows.csv`` to ``--output`` (default
+``results/rebuilt/post_hoc_step4/``). The recorded copies are in
+``results/protocol_v2/post_hoc_step4/``.
 
 Example
 -------
@@ -28,9 +29,17 @@ import numpy as np
 import openpyxl
 from scipy.io import loadmat
 
-from common import ROOT, read_csv, require, save_json, write_csv, waveform_features
+from common import (
+    ROOT,
+    read_csv,
+    require,
+    require_not_recorded,
+    save_json,
+    waveform_features,
+    write_csv,
+)
 
-OUT = ROOT / 'results' / 'protocol_v2' / 'post_hoc_step4'
+OUT = ROOT / 'results' / 'rebuilt' / 'post_hoc_step4'
 LOGBOOK = 'Layup1/L1_S11_F/L1S11.xlsx'
 
 
@@ -111,7 +120,11 @@ def main(argv=None):
     """
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument('--data-root', required=True, type=Path)
+    parser.add_argument(
+        '--output', type=Path, default=OUT, help='New folder; recorded results are refused.'
+    )
     args = parser.parse_args(argv)
+    out = require_not_recorded(args.output)
     data_root = args.data_root.resolve()
     rows = logbook_rows(data_root / LOGBOOK)
     window = [r for r in rows if isinstance(r['cycles'], (int, float)) and r['cycles'] >= 100000]
@@ -206,9 +219,9 @@ def main(argv=None):
             path_1_7=change['1->7'],
         ),
     )
-    OUT.mkdir(parents=True, exist_ok=True)
-    save_json(OUT / 'logbook_L1S11.json', summary)
-    write_csv(OUT / 'logbook_L1S11_rows.csv', window)
+    out.mkdir(parents=True, exist_ok=True)
+    save_json(out / 'logbook_L1S11.json', summary)
+    write_csv(out / 'logbook_L1S11_rows.csv', window)
     print(summary)
 
 

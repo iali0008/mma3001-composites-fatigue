@@ -20,6 +20,20 @@ ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENT_V1_PATH = ROOT / 'config' / 'experiment_v1.json'
 """Frozen constants of the historical (protocol v1) experiments."""
 
+RECORDED_RESULTS = (
+    'baseline',
+    'repeat_sensitivity',
+    'model_comparison',
+    'protocol_v2',
+    'protocol_v2_audit',
+    'reproduction_check',
+    'dataset_facts',
+    'test_report',
+)
+"""Recorded folders under ``results/``; workflows must never write into them.
+
+``test_report`` is refreshed only by the documented pytest command."""
+
 
 def require(condition, message):
     """Raise ``ValueError(message)`` unless ``condition`` is true.
@@ -47,6 +61,40 @@ def require(condition, message):
     """
     if not condition:
         raise ValueError(message)
+
+
+def require_not_recorded(path, root=ROOT):
+    """Refuse an output path that is, contains or sits inside a recorded results folder.
+
+    Parameters
+    ----------
+    path : pathlib.Path
+        Output file or folder requested by the user.
+    root : pathlib.Path, optional
+        Repository root (a temporary tree in tests).
+
+    Returns
+    -------
+    pathlib.Path
+        The resolved path, when it is safe.
+
+    Raises
+    ------
+    ValueError
+        If writing there would overwrite recorded evidence.
+
+    Examples
+    --------
+    >>> require_not_recorded(ROOT / 'results' / 'rebuilt' / 'x').name
+    'x'
+    """
+    path = Path(path).resolve()
+    root = Path(root).resolve()
+    for name in RECORDED_RESULTS:
+        folder = root / 'results' / name
+        overlap = path == folder or folder in path.parents or path in folder.parents
+        require(not overlap, f'Recorded results are immutable; refusing to write to {path}')
+    return path
 
 
 def digest(path):

@@ -316,7 +316,7 @@ class GuardTests(unittest.TestCase):
             data_root = Path(temp) / '2. Composites'
             for layup in ('Layup1', 'Layup2', 'Layup3'):
                 (data_root / layup).mkdir(parents=True)
-            with self.assertRaisesRegex(ValueError, 'outside recorded results'):
+            with self.assertRaisesRegex(ValueError, 'immutable|outside recorded results'):
                 model_comparison.main(
                     [
                         '--data-root',
@@ -325,7 +325,7 @@ class GuardTests(unittest.TestCase):
                         str(ROOT / 'results/model_comparison'),
                     ]
                 )
-            with self.assertRaisesRegex(ValueError, 'separate'):
+            with self.assertRaisesRegex(ValueError, 'immutable|separate'):
                 repeat_sensitivity.main(
                     [
                         '--data-root',

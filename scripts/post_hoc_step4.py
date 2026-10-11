@@ -5,21 +5,39 @@ and validation outputs, fits nothing, and changes no recorded result. Its
 numbers help interpret the predeclared results; they must never be presented
 as predeclared or used to choose a model.
 
-Outputs ``results/protocol_v2/post_hoc_step4/summary.json``.
+Writes ``summary.json`` to ``--output`` (default ``results/rebuilt/post_hoc_step4/``). The
+recorded copy is ``results/protocol_v2/post_hoc_step4/summary.json``.
 """
 
 from __future__ import annotations
 
+import argparse
+from pathlib import Path
+
 import numpy as np
 from scipy.stats import pearsonr, spearmanr
 
-from common import ROOT, read_csv, save_json
+from common import ROOT, read_csv, require_not_recorded, save_json
 
 BASE = ROOT / 'results' / 'protocol_v2'
 
 
-def main():
-    """Compute the post hoc summaries and write them to JSON."""
+def main(argv=None):
+    """Compute the post hoc summaries and write them to JSON.
+
+    Parameters
+    ----------
+    argv : list of str, optional
+        Command-line arguments; defaults to ``sys.argv[1:]``.
+    """
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument(
+        '--output',
+        type=Path,
+        default=ROOT / 'results' / 'rebuilt' / 'post_hoc_step4',
+        help='New folder; recorded results are refused.',
+    )
+    out = require_not_recorded(parser.parse_args(argv).output)
     rows = [r for r in read_csv(BASE / 'test_L2S11' / 'predictions.csv') if r['role'] == 'frozen']
     obs = np.array([float(r['observed']) for r in rows])
     pred = np.array([float(r['predicted']) for r in rows])
@@ -52,8 +70,7 @@ def main():
         l2s11_path_1_7_relative_ptp_range=[float(ptp.min()), float(ptp.max())],
         development_feature_ranges_non_reference_labelled=ranges,
     )
-    out = BASE / 'post_hoc_step4'
-    out.mkdir(exist_ok=True)
+    out.mkdir(parents=True, exist_ok=True)
     save_json(out / 'summary.json', summary)
     print(summary)
 

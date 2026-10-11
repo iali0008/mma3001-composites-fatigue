@@ -9,7 +9,7 @@ import pstats
 import subprocess
 import sys
 
-from common import ROOT, digest, read_csv, require
+from common import ROOT, digest, read_csv, require, require_not_recorded
 from repeat_sensitivity import compare_tables
 
 
@@ -64,7 +64,7 @@ def main(argv=None):
         help='New output folder; the recorded results folder is refused.',
     )
     args = parser.parse_args(argv)
-    out = args.output.resolve()
+    out = require_not_recorded(args.output)
     recorded = ROOT / 'results/model_comparison/raw_profile'
     require(
         out != recorded and recorded not in out.parents,

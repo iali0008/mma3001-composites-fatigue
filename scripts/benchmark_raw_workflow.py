@@ -9,7 +9,7 @@ import time
 
 import numpy as np
 
-from common import ROOT, digest, require, write_csv
+from common import ROOT, digest, require, require_not_recorded, write_csv
 from profile_raw_workflow import check_output
 
 
@@ -35,7 +35,7 @@ def main(argv=None):
         help='New output folder; the recorded results folder is refused.',
     )
     args = parser.parse_args(argv)
-    out = args.output.resolve()
+    out = require_not_recorded(args.output)
     recorded = ROOT / 'results/model_comparison/raw_benchmark'
     require(
         out != recorded and recorded not in out.parents,

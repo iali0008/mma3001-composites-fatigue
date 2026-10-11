@@ -5,6 +5,7 @@ data, results or repository folders are touched.
 """
 
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -74,8 +75,70 @@ class WorkFolderGuardTests(unittest.TestCase):
         self.assertEqual((victim / 'keep.txt').read_text(), 'must survive')
 
     def test_recorded_folders_cover_every_tracked_results_folder(self):
-        tracked = {p.name for p in (ROOT / 'results').iterdir() if p.is_dir()} - {'rebuilt'}
+        listed = subprocess.check_output(['git', 'ls-files', 'results'], cwd=ROOT, text=True)
+        tracked = {line.split('/')[1] for line in listed.splitlines() if line.count('/') >= 2}
+        self.assertTrue(tracked)
         self.assertLessEqual(tracked, set(vr.RECORDED_RESULTS))
+
+
+class RecordedOutputGuardTests(unittest.TestCase):
+    """Every script with an output option refuses recorded folders before reading data (R5)."""
+
+    def test_require_not_recorded(self):
+        import common
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            ok = common.require_not_recorded(root / 'results' / 'rebuilt' / 'x', root=root)
+            self.assertEqual(ok.name, 'x')
+            for name in common.RECORDED_RESULTS:
+                for target in (root / 'results' / name, root / 'results' / name / 'f.json'):
+                    with self.subTest(target=target), self.assertRaises(ValueError):
+                        common.require_not_recorded(target, root=root)
+            with self.assertRaises(ValueError):
+                common.require_not_recorded(root / 'results', root=root)
+
+    def test_scripts_refuse_recorded_outputs(self):
+        import audit_acquisition_v2
+        import dataset_facts
+        import post_hoc_logbook_l1s11
+        import post_hoc_step4
+
+        missing = str(ROOT / 'no-such-data-root')  # never read: the guard fires first
+        results = ROOT / 'results'
+        cases = [
+            (
+                audit_acquisition_v2.main,
+                ['--data-root', missing, '--output', str(results / 'protocol_v2_audit')],
+            ),
+            (
+                dataset_facts.main,
+                ['--data-root', missing, '--output', str(results / 'dataset_facts')],
+            ),
+            (
+                post_hoc_logbook_l1s11.main,
+                [
+                    '--data-root',
+                    missing,
+                    '--output',
+                    str(results / 'protocol_v2' / 'post_hoc_step4'),
+                ],
+            ),
+            (post_hoc_step4.main, ['--output', str(results / 'protocol_v2' / 'post_hoc_step4')]),
+            (
+                vr.main,
+                [
+                    '--data-root',
+                    missing,
+                    '--report',
+                    str(results / 'reproduction_check' / 'report.json'),
+                ],
+            ),
+        ]
+        for main, argv in cases:
+            with self.subTest(script=main.__module__):
+                with self.assertRaisesRegex(ValueError, 'immutable'):
+                    main(argv)
 
 
 if __name__ == '__main__':

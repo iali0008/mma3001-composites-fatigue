@@ -13,7 +13,7 @@ from pathlib import Path
 
 import numpy as np
 
-from common import ROOT, load_experiment_v1, write_csv
+from common import ROOT, load_experiment_v1, require_not_recorded, write_csv
 
 EXPERIMENT = load_experiment_v1()
 SPECIMENS = tuple(EXPERIMENT['specimens'])
@@ -180,7 +180,7 @@ def main(argv=None) -> None:
     )
     parser.add_argument('--output', type=Path, default=ROOT / 'results/reproduced')
     args = parser.parse_args(argv)
-    output = args.output.resolve()
+    output = require_not_recorded(args.output)
     baseline = ROOT / 'results/baseline'
     if output == baseline or baseline in output.parents:
         parser.error('Preserve the recorded baseline; choose a different output folder.')

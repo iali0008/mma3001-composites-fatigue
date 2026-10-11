@@ -1,7 +1,8 @@
 """Record dataset facts used in the documentation: label links, strain files, sampling rate.
 
 Reads the three labelled specimens (L1S11, L1S12, L2S11) and writes
-``results/dataset_facts/facts.json``. It fits no model and computes no score.
+``facts.json`` in ``--output`` (default ``results/rebuilt/dataset_facts/``; the recorded copy is
+``results/dataset_facts/facts.json``). It fits no model and computes no score.
 
 * **Label provenance.** For each labelled file, the strain files named in
   ``coupon.straingage_data.file_location``; and the variables stored in every
@@ -26,10 +27,10 @@ from pathlib import Path
 import numpy as np
 from scipy.io import loadmat, whosmat
 
-from common import ROOT, save_json, scalar
+from common import ROOT, require_not_recorded, save_json, scalar
 
 SPECIMENS = {'L1S11': 'Layup1/L1_S11_F', 'L1S12': 'Layup1/L1_S12_F', 'L2S11': 'Layup2/L2_S11_F'}
-OUT = ROOT / 'results' / 'dataset_facts'
+OUT = ROOT / 'results' / 'rebuilt' / 'dataset_facts'
 
 
 def peak_bin(x):
@@ -85,7 +86,11 @@ def main(argv=None):
     """
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument('--data-root', required=True, type=Path)
+    parser.add_argument(
+        '--output', type=Path, default=OUT, help='New folder; results/dataset_facts is refused.'
+    )
     args = parser.parse_args(argv)
+    out = require_not_recorded(args.output)
     root = args.data_root.resolve()
     facts = dict(specimens={}, sampling_rate={})
     spectra = defaultdict(list)
@@ -138,8 +143,8 @@ def main(argv=None):
         '(Technical Report PDF p. 8); FFT bins have resolution '
         'fs/n, so implied rates are approximate.'
     )
-    OUT.mkdir(parents=True, exist_ok=True)
-    save_json(OUT / 'facts.json', facts)
+    out.mkdir(parents=True, exist_ok=True)
+    save_json(out / 'facts.json', facts)
     print(per_freq)
 
 

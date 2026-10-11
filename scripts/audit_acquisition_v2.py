@@ -5,7 +5,8 @@ summarises acquisition settings, path identifiers and per-path signal checks.
 It deletes ``coupon['straingage_data']`` immediately after loading, so no
 stiffness label, label availability or model score can influence protocol v2.
 
-Outputs (CSV/JSON) go to ``results/protocol_v2_audit/`` by default.
+Outputs (CSV/JSON) go to ``--output`` (default ``results/rebuilt/protocol_v2_audit/``); the
+recorded audit in ``results/protocol_v2_audit/`` is never overwritten.
 
 Example
 -------
@@ -24,7 +25,7 @@ from pathlib import Path
 import numpy as np
 from scipy.stats import spearmanr
 
-from common import ROOT, require, scalar
+from common import ROOT, require, require_not_recorded, scalar
 from raw_loading import iter_coupons
 
 SPECIMENS = {'L1S11': 'Layup1/L1_S11_F', 'L1S12': 'Layup1/L1_S12_F', 'L2S11': 'Layup2/L2_S11_F'}
@@ -393,11 +394,16 @@ def main(argv=None):
     """
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument('--data-root', required=True, type=Path)
-    parser.add_argument('--output', type=Path, default=ROOT / 'results' / 'protocol_v2_audit')
+    parser.add_argument(
+        '--output',
+        type=Path,
+        default=ROOT / 'results' / 'rebuilt' / 'protocol_v2_audit',
+        help='New output folder; the recorded results/protocol_v2_audit is refused.',
+    )
     parser.add_argument('--workers', type=int, choices=(1, 4), default=4)
     args = parser.parse_args(argv)
     data_root = args.data_root.expanduser().resolve()
-    out = args.output.expanduser().resolve()
+    out = require_not_recorded(args.output.expanduser())
     require(
         data_root not in out.parents and out != data_root,
         'Output must be outside the original dataset.',
