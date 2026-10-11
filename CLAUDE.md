@@ -82,6 +82,23 @@ PTP mostly tracks crosstalk; this may explain why v1 L1S11 PTP ratios stay near 
 why PTP behaves inconsistently across specimens (interpretation only, no design change).
 `MMA3001_2026_Project_Brief.pdf` (repo root) is git-ignored and never committed.
 
+## Step 4 outcome and required framing (Sans, 2026-10-11)
+
+- Headline everywhere: **no evidence of transfer to L2S11.** The frozen model (L2S11 MAE 0.0374)
+  beats log-cycle (0.0946) and Dummy (0.1015) only because the controls carry Layup 1's higher
+  target level; the post hoc predict-zero baseline (MAE 0.0362) is slightly better. Always state
+  the predeclared comparison and the zero baseline together.
+- Mechanism: path 1→7 barely responds (likely crosstalk); multi-path features change strongly but
+  on specimen-specific scales. Simple reference-normalised amplitude features do not transfer
+  between specimens; that is the feasibility finding.
+- Recommendations: features isolating the transmitted wave (S0 windowing, time of flight, ΔPSD as
+  in Saxena et al. 2011), more labelled specimens, or per-specimen calibration.
+- Lesson (methods and AI reflection): a "no damage" (predict-zero) baseline should have been
+  predeclared alongside the Dummy.
+- L1S11 sanity check: C1 FAIL stands. Post hoc: the 177k jump appears on all 36 paths with
+  unchanged excitation (likely global coupling/mounting change); the logbook has no remark and its
+  dates go backwards in 4 places.
+
 ## Code issues to fix (from the 2026-10-11 review)
 
 Status 2026-10-11: a–d fixed on branch `code-fixes` (historical results verified by

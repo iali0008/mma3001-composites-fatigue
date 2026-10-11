@@ -1,5 +1,15 @@
 # Protocol v2 step 4: the single L2S11 test and the L1S11 sanity check
 
+**Headline: no evidence of transfer to L2S11.** The frozen model's L2S11 MAE is 0.0374. By the
+predeclared rule it beats log-cycle OLS (0.0946) and the training-mean Dummy (0.1015), but only
+because those controls carry Layup 1's higher target level. A post hoc predict-zero baseline has
+MAE 0.0362, slightly better than the frozen model. The predeclared comparison and the zero
+baseline must always be reported together.
+
+**Mechanism.** Path 1→7 barely responds (likely crosstalk). The multi-path features change
+strongly, but on specimen-specific scales. Simple reference-normalised amplitude features do not
+transfer between specimens; that is the feasibility finding.
+
 Produced once by `scripts/protocol_v2_test.py` at commit `52169ab` (clean tree, recorded in
 `receipt.json`). The frozen model was LinearRegression on `single_path_1_7`
 (`../selection.json`), refitted on the 25 pooled L1S11 + L1S12 checkpoints. Log-cycle OLS and the
@@ -7,7 +17,7 @@ training-mean Dummy were scored in the same run as fixed, non-selectable control
 written to `predictions_before_labels.csv` (hash in `predictions_before_labels.sha256.json`)
 before any L2S11 label was read. Nothing was rerun or changed after scoring.
 
-**Disclosure.** Before this run, the script was smoke-tested on a scratch copy, with L1S12 standing
+**Disclosure (smoke test).** Before this run, the script was smoke-tested on a scratch copy, with L1S12 standing
 in for L2S11 and output to a temporary folder. The sanity check does not depend on L2S11, so that
 smoke run had already computed its outcome (C1 fail). The official run recomputed it identically.
 No L2S11 file was read before the official run.
@@ -55,6 +65,51 @@ These numbers were not predeclared and must not be presented as such.
   PTP up to 1.060). The jump happens within 2,000 cycles (175k → 177k), which suggests an
   acquisition change rather than sudden stiffness recovery. That is an interpretation; it has not
   been checked against the logbook.
+
+## Post hoc diagnostic: the L1S11 jump at 177k cycles (`../post_hoc_step4/logbook_L1S11.json`)
+
+This was computed after the sanity check, at Sans's request. **The C1 fail stands.**
+
+- **Logbook.** The L1S11 logbook (`Layup1/L1_S11_F/L1S11.xlsx`) records no re-mounting, settings,
+  cabling or load change at 175k–177k cycles. The only remark from 100k cycles on is a strain-gauge
+  note at 227k ("ch2: 0deg, balance high").
+- **The sequence suggests handling.** An extra 177,309-cycle entry has only Clamped and Traction
+  Free recordings. At 177,000 the order is Traction Free, then Clamped, then Loaded. That is the
+  reverse of the usual Loaded-first order after cycling, which is consistent with the coupon having
+  been out of the machine. No remark confirms it.
+- **Logged dates are unreliable.** The timestamp goes backwards in 4 places (for example, the
+  177,000- and 227,000-cycle rows are dated 14–15 July 2011, after 150,000 cycles on 19–20 July).
+  The date column therefore cannot establish acquisition chronology here.
+- **Every path rises together.** From 175k to 177k, the RMS ratio rises on all 36 paths
+  (median ×1.33, minimum ×1.09; ×1.29 on path 1→7). The 1→7 excitation (actuator) signal stays at
+  about 220.8 RMS throughout. A simultaneous rise on every path with unchanged excitation is more
+  consistent with a global coupling or mounting change than with damage. This is an
+  interpretation, not a confirmed cause.
+- **Side finding.** Because of the backward timestamps, the recorded repeat-sensitivity first/last
+  ordering may be reversed for the L1S11 80,000-cycle checkpoint, where `L1S11_80000_1_2.mat` is
+  dated before `L1S11_80000_1_1.mat`. That historical result is unchanged and flagged for review.
+
+## Prediction hash before labels (CRLF/LF)
+
+`predictions_before_labels.sha256.json` holds the SHA-256 of the file exactly as written on Windows,
+with CRLF line endings: `4ac9647b…d8a5ab`. The repository's `.gitattributes` stores CSV files with
+LF line endings, so the copy in git, and in any fresh clone, has different bytes and hash. The
+file was not regenerated. `predictions_before_labels.sha256_lf_normalised.json` records the hash
+with every CRLF replaced by LF, `9cc12f55…fda949`, which equals the committed blob. Use that hash
+to check a fresh clone. The content is identical; only line endings differ.
+
+## Recommendations
+
+- **Isolate the transmitted wave.** Use features such as S0-mode windowing, time of flight or
+  ΔPSD as in Saxena et al. (2011). Any timing feature must use the corrected sampling rate.
+- **Add labelled specimens.**
+- **Calibrate per specimen.**
+
+## Lesson for methods and the AI reflection
+
+A "no damage" (predict-zero) baseline should have been predeclared alongside the training-mean
+Dummy. Without it, beating the controls looked like transfer, when the controls were simply
+biased towards Layup 1's target level.
 
 ## Notes for the report (from Sans's step 4 instruction)
 

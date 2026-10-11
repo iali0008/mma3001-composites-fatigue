@@ -110,3 +110,13 @@ Newest entries last. Every Claude session (Claude Code in VS Code or claude.ai) 
   amplitude-to-damage mapping is the main limitation. Details in
   `results/protocol_v2/test_L2S11/README.md`. Tests: 66/66 pass. Next: Sans reviews (★), then
   steps 5–6.
+- 2026-10-11 (Claude Code, VS Code): Post hoc follow-ups requested after step 4 (step 4 itself
+  unchanged). (1) `scripts/post_hoc_logbook_l1s11.py`: the L1S11 logbook records no re-mounting,
+  settings, cabling or load change at 175k–177k; the 177k condition order is reversed and a
+  177,309-cycle entry exists; logged timestamps go backwards in 4 places. All 36 paths' RMS ratios
+  rise 175k→177k (median ×1.33, min ×1.09) with unchanged 1→7 excitation, suggesting a global
+  coupling/mounting change (interpretation). C1 fail stands. Side finding flagged: the recorded
+  repeat-sensitivity first/last order for L1S11 80,000 cycles may be reversed by a backward
+  timestamp (historical result unchanged). (2) Prediction hash: not regenerated; the LF-normalised
+  hash (`9cc12f55…`) is recorded beside the original CRLF hash (`4ac9647b…`). Report framing,
+  recommendations and the predict-zero lesson recorded in CLAUDE.md and the step 4 README.

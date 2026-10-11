@@ -1,0 +1,264 @@
+{
+  "status": "POST HOC diagnostic after the step-4 sanity check; the C1 fail stands",
+  "logbook": "Layup1/L1_S11_F/L1S11.xlsx",
+  "remarks_100k_onwards": [
+    {
+      "row": 143,
+      "cycles": 227000,
+      "remarks": "ch2: 0deg, balance high"
+    }
+  ],
+  "acquisition_keyword_remarks_whole_log": [
+    {
+      "row": 70,
+      "cycles": 30000,
+      "remarks": "4-8,5-8and 6-8 signals has decreased a lot due to delamination close to sensor 8"
+    },
+    {
+      "row": 78,
+      "cycles": 40000,
+      "remarks": "747 cycles before hydrolics were turned off and then testing resumed, MTS shaky - mounted off-center?, delamination heard 8000+ cycles"
+    }
+  ],
+  "rows_where_logged_timestamp_goes_backwards": 4,
+  "backwards_examples": [
+    {
+      "row": 101,
+      "previous": "2011-07-20 10:21:00",
+      "current": "2011-07-14 09:19:00"
+    },
+    {
+      "row": 131,
+      "previous": "2011-07-20 17:30:00",
+      "current": "2011-07-20 10:28:00"
+    },
+    {
+      "row": 132,
+      "previous": "2011-07-20 10:28:00",
+      "current": "2011-07-14 15:30:00"
+    },
+    {
+      "row": 141,
+      "previous": "2011-07-14 17:04:00",
+      "current": "2011-07-14 11:43:00"
+    }
+  ],
+  "sequence_175k_to_177k": [
+    {
+      "row": 128,
+      "timestamp": "2011-07-20 16:48:00",
+      "cycles": 175000,
+      "condition": "Loaded",
+      "load_kips": 4.003,
+      "file": "L1S11_175000_1_1.mat"
+    },
+    {
+      "row": 129,
+      "timestamp": "2011-07-20 17:25:00",
+      "cycles": 175000,
+      "condition": "Clamped",
+      "load_kips": 0.002,
+      "file": "L1S11_175000_1_2.mat"
+    },
+    {
+      "row": 130,
+      "timestamp": "2011-07-20 17:30:00",
+      "cycles": 175000,
+      "condition": "Traction Free",
+      "load_kips": 0,
+      "file": "L1S11_175000_3_1.mat"
+    },
+    {
+      "row": 131,
+      "timestamp": "2011-07-20 10:28:00",
+      "cycles": 175000,
+      "condition": "Traction Free",
+      "load_kips": 0,
+      "file": "L1S11_175000_3_2.mat"
+    },
+    {
+      "row": 132,
+      "timestamp": "2011-07-14 15:30:00",
+      "cycles": 177309,
+      "condition": "Clamped",
+      "load_kips": -0.001,
+      "file": "L1S11_177309_2_1.mat"
+    },
+    {
+      "row": 133,
+      "timestamp": "2011-07-14 15:33:00",
+      "cycles": 177309,
+      "condition": "Clamped",
+      "load_kips": -0.001,
+      "file": "L1S11_177309_2_2.mat"
+    },
+    {
+      "row": 134,
+      "timestamp": "2011-07-14 15:38:00",
+      "cycles": 177309,
+      "condition": "Traction Free",
+      "load_kips": 0,
+      "file": "L1S11_177309_3_1.mat"
+    },
+    {
+      "row": 135,
+      "timestamp": "2011-07-14 15:43:00",
+      "cycles": 177000,
+      "condition": "Traction Free",
+      "load_kips": 0,
+      "file": "L1S11_177000_3_1.mat"
+    },
+    {
+      "row": 136,
+      "timestamp": "2011-07-14 15:52:00",
+      "cycles": 177000,
+      "condition": "Clamped",
+      "load_kips": 0.001,
+      "file": "L1S11_177000_2_1.mat"
+    },
+    {
+      "row": 137,
+      "timestamp": "2011-07-14 15:57:00",
+      "cycles": 177000,
+      "condition": "Loaded",
+      "load_kips": 4.003,
+      "file": "L1S11_177000_1_1.mat"
+    }
+  ],
+  "path_1_7_waveforms": [
+    {
+      "cycles": 100000,
+      "filename": "L1S11_100000_1_1.mat",
+      "receiver_rms": 585.9357043591258,
+      "receiver_ptp": 5035.848876953125,
+      "actuator_rms": 220.76819486678207,
+      "actuator_ptp": 2221.0
+    },
+    {
+      "cycles": 100000,
+      "filename": "L1S11_100000_1_2.mat",
+      "receiver_rms": 600.6973755685401,
+      "receiver_ptp": 5090.42626953125,
+      "actuator_rms": 220.76580720899761,
+      "actuator_ptp": 2220.0
+    },
+    {
+      "cycles": 125000,
+      "filename": "L1S11_125000_1_1.mat",
+      "receiver_rms": 575.7895449683776,
+      "receiver_ptp": 4983.67724609375,
+      "actuator_rms": 220.80857793327954,
+      "actuator_ptp": 2223.0
+    },
+    {
+      "cycles": 125000,
+      "filename": "L1S11_125000_1_2.mat",
+      "receiver_rms": 567.7236646353448,
+      "receiver_ptp": 4929.493896484375,
+      "actuator_rms": 220.80499706926733,
+      "actuator_ptp": 2223.3333740234375
+    },
+    {
+      "cycles": 150000,
+      "filename": "L1S11_150000_1_1.mat",
+      "receiver_rms": 578.7750738649963,
+      "receiver_ptp": 5023.352783203125,
+      "actuator_rms": 220.81018626033512,
+      "actuator_ptp": 2220.6666259765625
+    },
+    {
+      "cycles": 150000,
+      "filename": "L1S11_150000_1_2.mat",
+      "receiver_rms": 572.6323570422244,
+      "receiver_ptp": 4974.7998046875,
+      "actuator_rms": 220.8064824361914,
+      "actuator_ptp": 2220.0001220703125
+    },
+    {
+      "cycles": 175000,
+      "filename": "L1S11_175000_1_1.mat",
+      "receiver_rms": 563.0635860803677,
+      "receiver_ptp": 4921.380859375,
+      "actuator_rms": 220.78273585938044,
+      "actuator_ptp": 2221.0
+    },
+    {
+      "cycles": 177000,
+      "filename": "L1S11_177000_1_1.mat",
+      "receiver_rms": 728.3860667656257,
+      "receiver_ptp": 5439.600830078125,
+      "actuator_rms": 220.74626080318401,
+      "actuator_ptp": 2220.0
+    },
+    {
+      "cycles": 227000,
+      "filename": "L1S11_227000_1_1.mat",
+      "receiver_rms": 727.3553183475883,
+      "receiver_ptp": 5440.04833984375,
+      "actuator_rms": 220.80694281634604,
+      "actuator_ptp": 2220.333251953125
+    },
+    {
+      "cycles": 227000,
+      "filename": "L1S11_227000_1_2.mat",
+      "receiver_rms": 726.4949236587295,
+      "receiver_ptp": 5442.69580078125,
+      "actuator_rms": 220.78147988864134,
+      "actuator_ptp": 2220.6666259765625
+    },
+    {
+      "cycles": 227000,
+      "filename": "L1S11_227000_1_3.mat",
+      "receiver_rms": 729.8039082378739,
+      "receiver_ptp": 5439.36669921875,
+      "actuator_rms": 220.57295198056326,
+      "actuator_ptp": 2217.0001220703125
+    }
+  ],
+  "per_pair_rms_ratio_summary": {
+    "100000": {
+      "pairs": 36,
+      "median_rms_ratio": 0.4494481443746513,
+      "pairs_with_rms_ratio_above_1": 0,
+      "path_1_7_rms_ratio": 0.8606479317417746
+    },
+    "125000": {
+      "pairs": 36,
+      "median_rms_ratio": 0.46731378884881636,
+      "pairs_with_rms_ratio_above_1": 0,
+      "path_1_7_rms_ratio": 0.8293737090363551
+    },
+    "150000": {
+      "pairs": 36,
+      "median_rms_ratio": 0.47044931261541956,
+      "pairs_with_rms_ratio_above_1": 5,
+      "path_1_7_rms_ratio": 0.8350992743795882
+    },
+    "175000": {
+      "pairs": 36,
+      "median_rms_ratio": 0.42044997033858394,
+      "pairs_with_rms_ratio_above_1": 2,
+      "path_1_7_rms_ratio": 0.8167638657582595
+    },
+    "177000": {
+      "pairs": 36,
+      "median_rms_ratio": 0.5776632111556534,
+      "pairs_with_rms_ratio_above_1": 10,
+      "path_1_7_rms_ratio": 1.0565759078780699
+    },
+    "227000": {
+      "pairs": 36,
+      "median_rms_ratio": 0.44538256664065046,
+      "pairs_with_rms_ratio_above_1": 8,
+      "path_1_7_rms_ratio": 1.0550807338278334
+    }
+  },
+  "rms_ratio_change_177k_over_175k": {
+    "median": 1.325703065575385,
+    "min": 1.0860180472021117,
+    "max": 3.571047997675443,
+    "pairs_increasing": 36,
+    "pairs": 36,
+    "path_1_7": 1.293612452966655
+  }
+}

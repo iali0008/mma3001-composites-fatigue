@@ -1,0 +1,9 @@
+{
+  "file": "predictions_before_labels.csv",
+  "original_sha256_as_written_crlf": "4ac9647b547f25feec3dc5cfe832f62a2c03a94428b54400a66c5b0001d8a5ab",
+  "original_matches_working_copy": true,
+  "crlf_line_endings": 49,
+  "lf_normalised_sha256": "9cc12f55d705d52b2bc2e923392bf8ccf3a825fd700974e6074ff2def5fda949",
+  "method": "sha256 of the file bytes with every CRLF replaced by LF; this equals the blob git stores (.gitattributes: *.csv text eol=lf), so it is the hash to check in a fresh clone",
+  "regenerated": false
+}
