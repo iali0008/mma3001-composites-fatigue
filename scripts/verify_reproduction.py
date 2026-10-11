@@ -58,6 +58,72 @@ recorded CSV files (which change with checkout line endings while their content 
 TIMING_FILES = {'timing_samples.csv', 'timing_summary.csv'}
 
 
+RECORDED_RESULTS = (
+    'baseline',
+    'repeat_sensitivity',
+    'model_comparison',
+    'protocol_v2',
+    'protocol_v2_audit',
+    'reproduction_check',
+    'dataset_facts',
+    'test_report',
+)
+"""Recorded results folders under ``results/`` that this script must never delete or write."""
+
+
+def _overlaps(a, b):
+    """Return whether path ``a`` is, contains or sits inside path ``b``."""
+    return a == b or b in a.parents or a in b.parents
+
+
+def check_work_folder(work, data_root, root=ROOT):
+    """Validate a scratch folder before anything inside it is deleted.
+
+    The folder is replaced on every run, so a wrong path would destroy data.
+    Only a folder strictly inside ``<root>/results/rebuilt/`` is accepted, and
+    it must not overlap the repository root, ``data/``, any recorded results
+    folder or the raw-data root. Symlinks are resolved first.
+
+    Parameters
+    ----------
+    work : pathlib.Path
+        Proposed scratch folder.
+    data_root : pathlib.Path
+        The raw-data root passed as ``--data-root``.
+    root : pathlib.Path, optional
+        Repository root (a temporary tree in tests).
+
+    Returns
+    -------
+    pathlib.Path
+        The resolved, accepted scratch folder.
+
+    Raises
+    ------
+    ValueError
+        If the folder is not strictly inside ``results/rebuilt/`` or overlaps a
+        protected location. Nothing has been deleted when this is raised.
+    """
+    root = Path(root).resolve()
+    work = Path(work).resolve()
+    rebuilt = root / 'results' / 'rebuilt'
+    require(
+        rebuilt in work.parents,
+        f'--work must be a folder strictly inside {rebuilt}; refusing {work}',
+    )
+    protected = [root, root / 'data', Path(data_root).resolve()]
+    protected += [root / 'results' / name for name in RECORDED_RESULTS]
+    for folder in protected:
+        # The root is always an ancestor of an accepted folder; only equality
+        # or containment of the root is dangerous.
+        if folder == root:
+            require(work != root and work not in root.parents, f'--work overlaps {root}')
+            continue
+        require(not _overlaps(work, folder), f'--work overlaps protected folder {folder}')
+    require(not work.exists() or work.is_dir(), f'--work exists and is not a folder: {work}')
+    return work
+
+
 def strip_volatile(value, extra=frozenset()):
     """Remove volatile keys from nested JSON values.
 
@@ -187,19 +253,14 @@ def main(argv=None):
         '--work',
         type=Path,
         default=RESULTS / 'rebuilt' / 'verification',
-        help='Scratch folder for regenerated outputs (replaced on each run).',
+        help='Scratch folder strictly inside results/rebuilt/ (deleted and recreated each run).',
     )
     parser.add_argument(
         '--report', type=Path, default=RESULTS / 'reproduction_check' / 'report.json'
     )
     args = parser.parse_args(argv)
-    work = args.work.resolve()
-    for recorded in ('baseline', 'repeat_sensitivity', 'model_comparison', 'protocol_v2_audit'):
-        folder = RESULTS / recorded
-        require(
-            work != folder and folder not in work.parents and work not in folder.parents,
-            'The work folder must not overlap recorded results',
-        )
+    # Validate the scratch path completely before the destructive rmtree below.
+    work = check_work_folder(args.work, args.data_root)
     if work.exists():
         shutil.rmtree(work)
     work.mkdir(parents=True)
