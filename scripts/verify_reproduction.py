@@ -8,6 +8,9 @@ workflow is rerun into ``--work`` and every output file is classified:
 * ``equal_content`` - JSON with equal content after removing volatile fields
   (timestamps, the protected-file list, the hash of an edited script) or a
   text file that differs only in line endings;
+* ``equal_except_environment`` - JSON equal once data-location, git-check and
+  checkout-dependent byte-hash fields (``ENVIRONMENT_KEYS``) are also removed;
+  expected in a fresh clone with the data outside the repository;
 * ``skipped`` - nondeterministic (timing samples) or environment-specific
   (environment description, plots rendered by a different Matplotlib);
 * ``DIFFERENT`` - a reproduction failure.
@@ -42,10 +45,20 @@ VOLATILE_KEYS = {
     'historical_outputs_hashes_unchanged',
     'existing_artifact_hashes_unchanged',
 }
+ENVIRONMENT_KEYS = {
+    'data_root',
+    'git_exclusions',
+    'baseline_hashes_unchanged',
+    'checkpoint_table_sha256',
+    'recorded_references_sha256',
+}
+"""Fields that legitimately depend on where the data and checkout live: the data path, the
+git-exclusion check (which reports an external data folder differently), and byte hashes of
+recorded CSV files (which change with checkout line endings while their content is equal)."""
 TIMING_FILES = {'timing_samples.csv', 'timing_summary.csv'}
 
 
-def strip_volatile(value):
+def strip_volatile(value, extra=frozenset()):
     """Remove volatile keys from nested JSON values.
 
     Parameters
@@ -56,12 +69,16 @@ def strip_volatile(value):
     Returns
     -------
     object
-        Copy without keys listed in ``VOLATILE_KEYS``.
+        Copy without keys listed in ``VOLATILE_KEYS`` or ``extra``.
     """
     if isinstance(value, dict):
-        return {k: strip_volatile(v) for k, v in value.items() if k not in VOLATILE_KEYS}
+        return {
+            k: strip_volatile(v, extra)
+            for k, v in value.items()
+            if k not in VOLATILE_KEYS and k not in extra
+        }
     if isinstance(value, list):
-        return [strip_volatile(v) for v in value]
+        return [strip_volatile(v, extra) for v in value]
     return value
 
 
@@ -78,7 +95,8 @@ def classify(new, recorded, same_plot_environment):
     Returns
     -------
     str
-        One of ``identical``, ``equal_content``, ``skipped`` or ``DIFFERENT``.
+        One of ``identical``, ``equal_content``, ``equal_except_environment``,
+        ``skipped`` or ``DIFFERENT``.
     """
     if not new.is_file():
         return 'DIFFERENT'
@@ -89,8 +107,13 @@ def classify(new, recorded, same_plot_environment):
     if new.suffix == '.png':
         return 'DIFFERENT' if same_plot_environment else 'skipped'
     if new.suffix == '.json':
-        same = strip_volatile(load_json(new)) == strip_volatile(load_json(recorded))
-        return 'equal_content' if same else 'DIFFERENT'
+        new_json, old_json = load_json(new), load_json(recorded)
+        if strip_volatile(new_json) == strip_volatile(old_json):
+            return 'equal_content'
+        same = strip_volatile(new_json, ENVIRONMENT_KEYS) == strip_volatile(
+            old_json, ENVIRONMENT_KEYS
+        )
+        return 'equal_except_environment' if same else 'DIFFERENT'
     if new.suffix in ('.csv', '.txt', '.md'):
         a = new.read_text(encoding='utf-8').replace('\r\n', '\n')
         b = recorded.read_text(encoding='utf-8').replace('\r\n', '\n')
