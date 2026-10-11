@@ -150,3 +150,13 @@ Newest entries last. Every Claude session (Claude Code in VS Code or claude.ai) 
   requirements resolves newer versions (e.g. NumPy 2.5.4); only the lock is verified. Dev tools
   black, pyflakes, pytest-html and pdoc were installed in the global Python. Test counts (e) updated.
   Next: step 7 report draft (★).
+- 2026-10-12 (Claude Code, VS Code): Dev tooling: black and pyflakes added to `requirements-dev.txt`
+  and the lock (with black's dependencies); README directs all commands to the project venv; two
+  unused test imports removed so pyflakes passes. A clean venv from the lock reproduces the package
+  set exactly and passes black, pyflakes and 66 tests; its docs build matches the committed
+  `docs/html` except for a pdoc show-value toggle that depends on path length. Review pack written
+  in `docs/review/` (script map, brief checklist, confidence and risks). Flagged for decision:
+  `data/audit_stiffness/` (text copies of the NASA docs and papers, vendored pypdf) and
+  `data/pzt_feasibility/selected_signals.npz` (raw waveform excerpts) are tracked since the initial
+  commit; `main` is behind the unpushed branches; CLAUDE.md fact-4 numbers lack repo outputs.
+  Not pushed. Waiting for Sans's review before step 7.
