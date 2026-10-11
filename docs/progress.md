@@ -7,7 +7,7 @@ This is a consolidated record of work reported in the project conversation and u
 - Completed the Week 5 four-family comparison on 2026-09-25 under a protocol/configuration written before new scores (`docs/model_comparison_protocol.md`, `config/model_comparison.json`). Used identical median features, targets, checkpoints and specimen splits, plus log-cycle OLS and training-mean Dummy controls. No evaluation-specimen tuning or best-seed selection.
 - Corrected reference auditing to use acquisition/waveform criteria independently of target availability; both original cycle-1 references and exact denominators are preserved. Input/target preprocessing is training-only, with predictions returned to published-index units.
 - LinearRegression has the lowest evaluation MAE in L1S11 -> L1S12 (0.050532); the three-unit MLP has the lowest in reverse for all five seeds (median 0.020942; range 0.020936--0.021264). There is no single winner across directions. No convergence warnings occurred. Full train/evaluation MAE, RMSE, R², residuals, plots and timings are in `results/model_comparison/`.
-- All 19 scientific/reproduction tests passed (49 since the 2026-10-11 code fixes). Sklearn linear/log-cycle predictions match recorded OLS within tolerance. All four plot images were visually checked. Historical baseline/sensitivity artifact hashes and surveyed original MAT hashes remain unchanged; original raw files remain ignored and untracked/unstaged.
+- All 19 scientific/reproduction tests passed (66 since the October 2026 work; see the session log). Sklearn linear/log-cycle predictions match recorded OLS within tolerance. All four plot images were visually checked. Historical baseline/sensitivity artifact hashes and surveyed original MAT hashes remain unchanged; original raw files remain ignored and untracked/unstaged.
 - Measured model fit and batch-prediction runtime with one warm-up, 15 repetitions and 100 prediction calls per repetition. Separately profiled the raw workflow: MAT decoding was the largest self-time cost. Added bounded ordered four-thread prefetch (`--workers 4`, serial default). Three alternating unprofiled pairs showed median 12.769 s serial versus 7.771 s prefetch (1.643x), with every output file byte-identical. Memory usage was not profiled.
 
 - Chose an existing public composites dataset; no new experimental data collection.
@@ -131,3 +131,22 @@ Newest entries last. Every Claude session (Claude Code in VS Code or claude.ai) 
   dimensionless. Provenance: NASA PCoE repository citation and download URL recorded (accessed
   2026-10-11); no licence named, acknowledge-and-own-risk terms only; data.nasa.gov entries are
   paper records with "License not specified". `data/README.md` updated.
+- 2026-10-11 (Claude Code, VS Code): Plan step 6, repository deliverables. (f) NumPy-style
+  docstrings on all 105 functions and every module; black (100 columns, quotes kept) applied, long
+  strings split into adjacent literals with identical values; behaviour verified unchanged (66
+  tests incl. `-O`; reproduction check 50 identical / 4 equal-content / 2 timing-skipped; v2 audit
+  and features identical). (g) `requirements-lock.txt` pins the working environment (NumPy 2.3.0,
+  SciPy 1.17.1, scikit-learn 1.9.0, Matplotlib 3.10.6, …); `requirements-dev.txt` adds pytest,
+  pytest-html, pdoc; `pyproject.toml` holds black/pytest settings. HTML API docs:
+  `scripts/build_docs.py` (pdoc, local paths scrubbed) → `docs/html/` (18 modules). Test runner is
+  now pytest; reports in `results/test_report/` (junit.xml, report.html): 66 passed. README
+  rewritten (purpose, headline, inputs/outputs, structure, setup, download, reproduction table,
+  tests/docs, limitations, attribution, AI-use pointer). Fresh-clone verification: cloned
+  `code-fixes` to a temp folder, new venv from the lock (versions match exactly), raw data from the
+  original location: replay OK, 66 tests pass, reproduction check 10 identical / 40 equal-content
+  (LF checkout vs CRLF output) / 3 equal-except-environment (data path, git check, checkout byte
+  hashes; new category added to `verify_reproduction.py`) / 3 skipped, audit identical
+  (`results/reproduction_check/fresh_clone_report.json`). Note: a fresh install from the ranged
+  requirements resolves newer versions (e.g. NumPy 2.5.4); only the lock is verified. Dev tools
+  black, pyflakes, pytest-html and pdoc were installed in the global Python. Test counts (e) updated.
+  Next: step 7 report draft (★).

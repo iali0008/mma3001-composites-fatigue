@@ -22,10 +22,10 @@ Run from the repository root after installing `requirements.txt`:
 
 ```powershell
 .\.venv\Scripts\python.exe scripts/repeat_sensitivity.py --data-root "data/2.+Composites/2. Composites"
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+.\.venv\Scripts\python.exe -m pytest
 ```
 
-The sensitivity command first runs the unchanged raw-data extractor into `results/repeat_sensitivity/median_rebuild/`, checks agreement with the recorded baseline, and then writes the median/first/last comparisons into `results/repeat_sensitivity/`. It reads the original logbooks `Layup1/L1_S11_F/L1S11.xlsx` and `Layup1/L1_S12_F/L1S12.xlsx` with openpyxl in read-only mode; AppleDouble files beginning `._` are not workbooks and are skipped. No source workbook is saved.
+The sensitivity command first runs the raw-data extractor into a `median_rebuild/` subfolder, checks agreement with the recorded baseline, and then writes the median/first/last comparisons. Since 2026-10-11 its default output is `results/rebuilt/repeat_sensitivity/`; the recorded `results/repeat_sensitivity/` is never overwritten. L2S11 (`Layup2/L2_S11_F/PZT-data/`) is read only by the protocol v2 audit and the one-shot test. It reads the original logbooks `Layup1/L1_S11_F/L1S11.xlsx` and `Layup1/L1_S12_F/L1S12.xlsx` with openpyxl in read-only mode; AppleDouble files beginning `._` are not workbooks and are skipped. No source workbook is saved.
 
 Preserve every downloaded file. Explicit `.gitignore` rules `/data/2.+Composites/` and `/data/2.+Composites.zip` exclude the entire download, including logbooks, X-rays, text, PDFs, metadata and archives. These clarify the pre-existing directory-wide exclusion. `data/README.md` stays tracked. The analysis checks every original file against Git's ignore rules and verifies that none under these raw paths is tracked or staged.
 

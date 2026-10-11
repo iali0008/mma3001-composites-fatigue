@@ -130,8 +130,8 @@ All preprocessing was fitted on non-reference training checkpoints only.
 SVR/MLP target scaling was inverted before scoring. Every fitted scaler's moments,
 sample counts and training/evaluation cycle identities are recorded in
 `preprocessing_audit.json`. Both sklearn linear models reproduce historical OLS
-predictions at rtol 1e-9, atol 1e-10. The 19 focused/reproduction tests passed at the time (49 since the
-2026-10-11 code fixes, all passing),
+predictions at rtol 1e-9, atol 1e-10. The 19 focused/reproduction tests passed at the time (66 since the
+October 2026 work, all passing),
 including target/feature leakage perturbations and independent score calculations.
 Raw files remain ignored, with no tracked/staged originals. Previous baseline and
 repeat-sensitivity artifacts are hash-preserved; source metadata and the 254

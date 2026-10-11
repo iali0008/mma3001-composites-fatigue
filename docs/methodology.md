@@ -100,7 +100,7 @@ MAE is the primary comparison. RMSE weights larger residuals more heavily; R² u
 
 Linear regression ranks first by evaluation MAE and RMSE in L1S11 -> L1S12 (0.050532/0.058254). MLP ranks first in the reverse direction for every declared seed (median 0.020942/0.023866), ahead of linear (0.029357/0.035001). Thus no single family wins both directions. Training errors for tree/SVR are small but their forward evaluation errors are large; the plots show substantial underestimation of late L1S12, beyond the L1S11 training target range. The reverse linear fit retains its negative prediction and R²=-0.911314. MLP's reverse R² is modest (median 0.111339), with persistent underestimation rather than an established deployment-quality model. Detailed tables and residual interpretation are in `results/model_comparison/INTERPRETATION.md`.
 
-Verification includes sklearn linear/log-cycle prediction agreement with recorded OLS at rtol 1e-9, atol 1e-10; specimen/reference separation; exact training-only scaler moments; target inverse-transform checks; invariance to altered evaluation/reference targets and evaluation-feature changes during fitting; target-blind reference candidate selection; every predeclared MLP seed; independent recalculation of exported scores. All 19 tests passed at the time; since the 2026-10-11 code fixes the suite has 49 tests, all passing. No convergence warnings arose in reported, warm-up or timed fits. The four saved plot images were visually inspected for common scales, unclipped marks/labels, negative predictions and all-seed display.
+Verification includes sklearn linear/log-cycle prediction agreement with recorded OLS at rtol 1e-9, atol 1e-10; specimen/reference separation; exact training-only scaler moments; target inverse-transform checks; invariance to altered evaluation/reference targets and evaluation-feature changes during fitting; target-blind reference candidate selection; every predeclared MLP seed; independent recalculation of exported scores. All 19 tests passed at the time; the suite now has 66 tests (pytest), all passing. No convergence warnings arose in reported, warm-up or timed fits. The four saved plot images were visually inspected for common scales, unclipped marks/labels, negative predictions and all-seed display.
 
 ### Runtime measurement versus profiling
 
@@ -133,4 +133,24 @@ repeat-sensitivity, model-comparison and coverage workflows into a scratch folde
 every output with the recorded files. Its report is `results/reproduction_check/report.json`.
 Every deterministic output matched byte-for-byte or in content. Content-only matches were line
 endings or timestamps; timing samples are nondeterministic and were not compared.
+
+## Protocol v2: multi-path inputs, model selection and the held-out test (2026-10-11)
+
+The full predeclared protocol is `docs/protocol_v2.md` (settings in `config/protocol_v2.json`),
+committed before any v2 score. Results and their write-ups are under `results/protocol_v2/`.
+
+- **Eligibility and reference.** Recordings are screened label-blind; both input sets use the same
+  recordings, checkpoints and reference. L2S11's load window (4.53–4.63 kips) comes from its
+  metadata, which puts its reference at cycle 3.
+- **Inputs.** Path 1→7 (v1 baseline) or the median over the 36 per-path reference ratios.
+- **Models.** The six v1 comparators, unchanged and untuned.
+- **Selection.** Lowest worst-direction validation MAE on L1S11 ↔ L1S12, with ties broken towards
+  the simpler model. It selected LinearRegression on path 1→7. The single-path scores were known
+  from v1 when the rule was written.
+- **Test.** The frozen model, refitted on the 25 pooled checkpoints, was scored once on L2S11:
+  MAE 0.0374, versus log-cycle 0.0946 and Dummy 0.1015. A post hoc predict-zero baseline scores
+  0.0362, so there is **no evidence of transfer**. The L1S11 sanity check failed C1.
+- **Lesson.** A "no damage" (predict-zero) baseline should have been predeclared alongside the
+  training-mean Dummy. A control can look beatable merely because it carries another specimen's
+  target level.
 
