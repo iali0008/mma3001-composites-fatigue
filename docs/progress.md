@@ -160,3 +160,53 @@ Newest entries last. Every Claude session (Claude Code in VS Code or claude.ai) 
   `data/pzt_feasibility/selected_signals.npz` (raw waveform excerpts) are tracked since the initial
   commit; `main` is behind the unpushed branches; CLAUDE.md fact-4 numbers lack repo outputs.
   Not pushed. Waiting for Sans's review before step 7.
+- 2026-10-12/13 (Claude Code, VS Code): Review fixes on branch `review-fixes` (off `code-fixes`,
+  not pushed or merged). Two independent reviews of `d9c7372` are committed in `docs/review/`
+  (`independent_review.md`, Codex, R1–R9; `claude_ai_review.md`, claude.ai, C1–C9). No
+  experiment was rerun, L2S11 was not rescored, and no computed file under `results/` changed.
+  Only the hand-written README notes in `results/protocol_v2/{validation,test_L2S11,sanity_L1S11}`
+  were edited, with dated review-correction notes. Sans's decisions:
+  - data inventory: untrack groups A–C, keep D–H (`docs/review/data_inventory.md`);
+  - v2 route: a validation replay only, with no L2S11 replay;
+  - fact-4 numbers: mark "do not cite"; no diagnostic script;
+  - the replay could be run once on real data.
+
+  Results:
+  - The validation replay matched the record (12 identical, 1 equal_content, 0 different; all 141
+    recorded files under `results/` unchanged).
+  - `verify_reproduction.py` after the comment pass: 49 identical, 4 equal_content, 3 skipped,
+    0 different.
+  - The syntax tree of every script is unchanged by the comment pass.
+  - Tests: 100 passed, 75 subtests (was 66).
+  - HTML docs and pytest reports rebuilt.
+
+  Corrections to commit messages (history not rewritten):
+  - `0cb4815` says "101 passed"; the correct count is 100.
+  - `b9c4934` says "about 140 short inline comments"; the correct figure is 93 comments
+    (140 comment lines added; 58 → 198).
+
+  | Finding | Outcome | Where |
+  |---|---|---|
+  | R1 `--work` could delete raw data or v2 results | fixed | `d809925` (`check_work_folder`, 7 tests) |
+  | R2 v2 gate accepted duplicate/missing rows | fixed | `0cb4815` (one-to-one keys, specimen and target checks, 7 negative tests, recorded run passes) |
+  | R3 raw excerpts and third-party text tracked | fixed (untracked; still in history from `4f75752`) | `d02cd25` |
+  | R4 timestamps treated as chronology | documented | `56320f5` ("by logged timestamp, chronology unresolved", L1S11 80k cited) |
+  | R5 reproduction section not executable | fixed | `a40e40e`, `223a76d` (sections a/b/c, write locations, `--replay`) |
+  | R6 conclusions too general/causal | fixed (wording) | `56320f5` |
+  | R7 v1 flags but does not exclude invalid signals | documented, behaviour kept | `0cb4815` (pinned by tests; 51 eligible v1 recordings unflagged) |
+  | R8 tests missing or not discriminating | fixed | `0cb4815` (gate, guard, label order, aggregation order, v2 sampling/length/load-window cases) |
+  | R9 fact-4 numbers unsupported; SVR "cannot succeed" | documented | `56320f5` ("not reproduced; do not cite"; SVR "observed to revert towards the training mean") |
+  | C1 v2 rerun route impossible | fixed | `223a76d` (validation replay; L2S11 test deliberately not rerunnable) |
+  | C2 committed material contradicts docs | fixed | `d02cd25` |
+  | C3 headline over-generalised | fixed (wording) | `56320f5` |
+  | C4 inline comments almost absent | fixed | `b9c4934` |
+  | C5 FLOPs/memory not addressed | documented | `b9c4934` (`docs/methodology.md`, memory not measured) |
+  | C6 = R9 | documented | `56320f5` |
+  | C7 controls' `input_set` label differs | documented | `56320f5` (validation README note; nothing regenerated) |
+  | C8 = R8 (guard, label order, gate) | fixed | `0cb4815` |
+  | C9 chat summary misreported multi-path effect | declined: no repo change needed | Repo files were already correct; use `candidates.csv`, not chat summaries, for the report |
+
+  Also flagged in CLAUDE.md fact 4 (beyond the request): the MLP–linear correlation, Spearman and
+  RMS-only slope numbers also have no repo output (review pack R3), so they are marked "verify
+  before citing". Next: Sans reviews `review-fixes`, merges to `main` and pushes; then step 7
+  (report draft).
