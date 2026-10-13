@@ -25,6 +25,8 @@ Select paths by stored actuator, receiver and frequency fields, not position in 
 
 For these selected specimens all retained non-reference targets are positive. The general scalar check does not establish that every numeric zero in a different specimen is a valid target. All inspected selected signals were finite and nonconstant; this is not comprehensive quality control. The original pipeline flags signal issues and fails if usable checkpoint features/reference denominators are unavailable. It does not establish clipping thresholds.
 
+**v1 screening is historical (finding R7).** v1 records `signal_*_nonfinite` and `signal_*_constant` flags for both channels but does not exclude on them. A recording with an all-NaN actuator, a constant sensor (features 0) or a nonfinite sensor (no features) remains `eligible`. Protocol v2 is stricter: it excludes any pair whose actuator or sensor signal has the wrong length, a nonfinite sample or zero range. The v1 behaviour is kept unchanged so the recorded baseline reproduces. It affects no recorded result: all 51 eligible v1 recordings in `results/baseline/recordings.csv` have all four flags false. `tests/test_extraction.py::HistoricalV1ScreeningTests` pins both facts.
+
 ## Features and reference
 
 For a receiver sequence x with n samples:

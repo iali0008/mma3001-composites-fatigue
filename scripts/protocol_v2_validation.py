@@ -166,43 +166,60 @@ def scores(y, predicted):
     )
 
 
-def reproduction_gate(predictions):
+def _gate_key(row):
+    """Return the key that identifies one v1 prediction (direction, model, seed, split, cycle)."""
+    return (row['train_specimen'], row['model'], str(row['seed']), row['split'], int(row['cycles']))
+
+
+def reproduction_gate(predictions, recorded_path=V1_PREDICTIONS):
     """Check single-path predictions against the recorded v1 model comparison.
+
+    The match must be one-to-one: every recorded row appears exactly once, no
+    extra or duplicated row is accepted, and each row has the same evaluation
+    specimen, row specimen, observed target and prediction as the record.
 
     Parameters
     ----------
     predictions : list of dict
         Prediction rows for ``single_path_1_7`` (all models, seeds and splits).
+    recorded_path : pathlib.Path, optional
+        Recorded v1 ``predictions.csv`` (a temporary copy in tests).
 
     Returns
     -------
     dict
-        Number of compared predictions and the maximum absolute difference.
+        Number of compared predictions and the maximum absolute prediction difference.
 
     Raises
     ------
     ValueError
-        If any prediction differs beyond rtol 1e-9, atol 1e-10, or rows are missing.
+        If a row is duplicated, missing or extra, if a specimen differs, or if an
+        observation or prediction differs beyond rtol 1e-9, atol 1e-10.
     """
-    recorded = {
-        (r['train_specimen'], r['model'], r['seed'], r['split'], int(r['cycles'])): float(
-            r['predicted']
-        )
-        for r in read_csv(V1_PREDICTIONS)
-    }
-    compared, worst = 0, 0.0
+    recorded = {}
+    for r in read_csv(recorded_path):
+        require(_gate_key(r) not in recorded, f'Duplicate recorded v1 row {_gate_key(r)}')
+        recorded[_gate_key(r)] = r
+    seen, worst = set(), 0.0
     for p in predictions:
-        key = (p['train_specimen'], p['model'], str(p['seed']), p['split'], p['cycles'])
+        key = _gate_key(p)
+        # Matching values alone is not enough: a duplicated row could stand in for
+        # a missing one, so each key must be used once and the key sets must agree.
+        require(key not in seen, f'Duplicate prediction row {key}')
         require(key in recorded, f'No recorded v1 prediction for {key}')
+        seen.add(key)
         expected = recorded[key]
-        require(
-            np.isclose(p['predicted'], expected, rtol=1e-9, atol=1e-10),
-            f'Reproduction gate failed for {key}: {p["predicted"]} != {expected}',
-        )
-        worst = max(worst, abs(p['predicted'] - expected))
-        compared += 1
-    require(compared == len(recorded), 'Not every recorded v1 prediction was reproduced')
-    return dict(compared_predictions=compared, max_abs_difference=worst, rtol=1e-9, atol=1e-10)
+        for field in ('evaluation_specimen', 'specimen'):
+            require(p[field] == expected[field], f'{field} differs for {key}')
+        for field in ('observed', 'predicted'):
+            require(
+                np.isclose(p[field], float(expected[field]), rtol=1e-9, atol=1e-10),
+                f'Reproduction gate failed for {key}: {field} {p[field]} != {expected[field]}',
+            )
+        worst = max(worst, abs(p['predicted'] - float(expected['predicted'])))
+    missing = set(recorded) - seen
+    require(not missing, f'{len(missing)} recorded v1 predictions were not reproduced')
+    return dict(compared_predictions=len(seen), max_abs_difference=worst, rtol=1e-9, atol=1e-10)
 
 
 def plot_direction(predictions, train_name, evaluation_name, path):

@@ -89,6 +89,51 @@ def assess(name='x.mat', specimen='L1S11', **kwargs):
     return assess_recording(coupon(**kwargs), specimen, name, EXPERIMENT)
 
 
+class HistoricalV1ScreeningTests(unittest.TestCase):
+    """Pin v1 screening as recorded (finding R7): invalid signals are flagged, not excluded.
+
+    Protocol v2 excludes nonfinite and constant signals on both channels
+    (``tests/test_protocol_v2.py``). v1 is kept unchanged so the recorded
+    baseline reproduces; no recorded result is affected because none of the 51
+    eligible v1 recordings carries a flag.
+    """
+
+    def assess_with(self, field, values):
+        c = coupon()
+        c['path_data'][0][field] = values
+        return assess_recording(c, 'L1S11', 'x.mat', EXPERIMENT)
+
+    def test_nonfinite_or_constant_actuator_is_flagged_but_eligible(self):
+        for name, values in (('nonfinite', np.full(2000, np.nan)), ('constant', np.ones(2000))):
+            with self.subTest(name=name):
+                r = self.assess_with('signal_actuator', values)
+                self.assertTrue(r[f'signal_actuator_{name}'])
+                self.assertTrue(r['eligible'])
+                self.assertIsNotNone(r['mean_centred_rms'])
+
+    def test_constant_sensor_is_flagged_but_eligible_with_zero_features(self):
+        r = self.assess_with('signal_sensor', np.full(2000, 3.0))
+        self.assertTrue(r['signal_sensor_constant'])
+        self.assertTrue(r['eligible'])
+        self.assertEqual((r['mean_centred_rms'], r['peak_to_peak']), (0.0, 0.0))
+
+    def test_nonfinite_sensor_is_flagged_but_eligible_without_features(self):
+        r = self.assess_with('signal_sensor', np.full(2000, np.nan))
+        self.assertTrue(r['signal_sensor_nonfinite'])
+        self.assertTrue(r['eligible'])
+        self.assertIsNone(r['mean_centred_rms'])
+
+    def test_no_recorded_eligible_v1_recording_is_flagged(self):
+        import csv
+
+        with (ROOT / 'results' / 'baseline' / 'recordings.csv').open(encoding='utf-8') as stream:
+            rows = [r for r in csv.DictReader(stream) if r['eligible'] == 'True']
+        self.assertEqual(len(rows), 51)
+        flags = [k for k in rows[0] if k.endswith(('_nonfinite', '_constant'))]
+        self.assertEqual(len(flags), 4)
+        self.assertFalse(any(r[k] == 'True' for r in rows for k in flags))
+
+
 class FeatureTests(unittest.TestCase):
     def test_sine_rms_and_peak_to_peak(self):
         for amplitude in (0.5, 3.0, 250.0):

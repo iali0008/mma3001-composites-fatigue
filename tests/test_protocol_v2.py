@@ -123,6 +123,50 @@ class EligibilityTests(unittest.TestCase):
                 self.assertIn(reason, s['exclusion_reasons'])
         self.assertIn('duplicated', screened([summary(extra=True)])[0]['exclusion_reasons'])
 
+    def test_sampling_rate_and_signal_length_exclude(self):
+        cases = (
+            ('sampling_rate', 12_000_000, 'stored sampling rate mismatch'),
+            ('signal_sensor', sine(1.0, n=1999), 'invalid signal'),
+            ('signal_actuator', sine(1.0, n=2001), 'invalid signal'),
+        )
+        for field, value, reason in cases:
+            c = coupon()
+            c['path_data'][5][field] = value
+            s = screened([summarise_file(c, 'L1S11', 'f.mat', PROTOCOL, True)])[0]
+            with self.subTest(field=field):
+                self.assertFalse(s['eligible'])
+                self.assertIn(reason, s['exclusion_reasons'])
+
+    def test_l2s11_load_window_bounds_are_inclusive(self):
+        rules = PROTOCOL['specimens']['L2S11']
+        self.assertEqual(rules['load_window_kips'], [4.53, 4.63])
+        make = dict(gain=35, amplitude=50)
+        modal = setting_vector(
+            summarise_file(coupon(**make), 'L2S11', 'm.mat', PROTOCOL, False), PROTOCOL
+        )
+        for load, inside in (
+            (4.53, True),
+            (4.63, True),
+            (4.529, False),
+            (4.631, False),
+            (4.0, False),
+        ):
+            s = summarise_file(coupon(load=load, **make), 'L2S11', 'f.mat', PROTOCOL, False)
+            reasons = eligibility_reasons(s, rules, modal, PROTOCOL)
+            with self.subTest(load=load):
+                self.assertEqual(reasons == [], inside, reasons)
+
+    def test_nonfinite_or_constant_signal_on_either_channel_excludes(self):
+        # Stricter than historical v1, which only flags these (test_extraction.py).
+        for field in ('signal_actuator', 'signal_sensor'):
+            for name, values in (('nonfinite', np.full(2000, np.nan)), ('constant', np.ones(2000))):
+                c = coupon()
+                c['path_data'][5][field] = values
+                s = screened([summarise_file(c, 'L1S11', 'f.mat', PROTOCOL, True)])[0]
+                with self.subTest(field=field, name=name):
+                    self.assertFalse(s['eligible'])
+                    self.assertIn('invalid signal', s['exclusion_reasons'])
+
     def test_labels_are_not_read_when_disabled(self):
         c = coupon(label=0.3)
         s = summarise_file(c, 'L1S11', 'x.mat', PROTOCOL, read_labels=False)
@@ -170,6 +214,39 @@ class AggregationTests(unittest.TestCase):
         self.assertAlmostEqual(ten['mp_relative_ptp'], 0.85, places=12)
         self.assertAlmostEqual(ten['mp_relative_rms'], 0.85, places=12)
         self.assertEqual(len([r for r in ratios if r['cycles'] == 10]), 36)
+
+    def test_aggregation_order_with_heterogeneous_pairs_and_repeats(self):
+        # Each pair has its own reference level and its own change, and the two
+        # repeats differ, so the three plausible orders give different answers.
+        rng = np.random.default_rng(7)
+        grid = pairs(PROTOCOL)
+        ref = {p: rng.uniform(1, 100) for p in grid}
+        change = {p: rng.uniform(0.3, 1.0) for p in grid}
+        repeats = [{p: ref[p] * change[p] * rng.uniform(0.8, 1.2) for p in grid} for _ in range(2)]
+        files = screened(
+            [
+                summary('r.mat', cycles=1.0),
+                summary('x.mat', cycles=10.0),
+                summary('y.mat', cycles=10.0),
+            ]
+        )
+        for s, values in zip(files, [ref] + repeats):
+            s['rms'] = dict(values)
+            s['ptp'] = {p: 2 * v for p, v in values.items()}
+        got = build_checkpoints(files, PROTOCOL)[0][1]
+
+        per_pair = [np.median([r[p] for r in repeats]) / ref[p] for p in grid]
+        declared = np.median(per_pair)  # repeat median, per-pair ratio, median over pairs
+        ratio_of_medians = np.median(
+            [np.median([r[p] for r in repeats]) for p in grid]
+        ) / np.median(list(ref.values()))
+        median_of_recordings = np.median(
+            [np.median([r[p] / ref[p] for p in grid]) for r in repeats]
+        )
+        self.assertGreater(abs(declared - ratio_of_medians), 1e-3)
+        self.assertGreater(abs(declared - median_of_recordings), 1e-4)
+        for field in ('mp_relative_rms', 'mp_relative_ptp'):
+            self.assertAlmostEqual(got[field], declared, places=12)
 
     def test_multi_path_feature_ignores_pair_labelling(self):
         files = screened([summary('a.mat', cycles=1.0), summary('b.mat', cycles=10.0, scale=0.6)])

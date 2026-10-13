@@ -48,8 +48,10 @@ specimen, so this does not show that amplitude features cannot transfer in gener
   that is best interpreted as normalised stiffness loss 1 − E/E₀. Errors are reported in index
   units; MAE is primary.
 - **Invalid or unsupported inputs.** Recordings outside the load window, with the wrong condition,
-  a missing or duplicated path, changed gain or amplitude settings, or nonfinite or constant
-  signals are excluded and counted, never repaired. Missing labels stay missing and are never
+  a missing or duplicated path, or changed gain or amplitude settings are excluded and counted,
+  never repaired. Protocol v2 also excludes nonfinite or constant signals on either channel. The
+  historical v1 screening only flags them; this does not affect any recorded result, because none
+  of the 51 eligible v1 recordings is flagged. Missing labels stay missing and are never
   interpolated. The reference checkpoint is never scored.
 - **Intended use and limits.** This is a feasibility test of transfer between specimens, not a
   validated structural-health-monitoring tool. See [docs/dataset.md](docs/dataset.md) for the
@@ -254,10 +256,18 @@ it is not a reproduction route.
 All tools (pytest, pytest-html, pdoc, black, pyflakes) come from `requirements-dev.txt` and are
 pinned in `requirements-lock.txt`; nothing relies on a global installation.
 
-- **Tests.** They cover features on known signals, every eligibility rule, the label-blind
-  reference, leakage (changing evaluation or reference targets cannot change predictions),
-  training-only scaling, the selection rule, integrity checks under `python -O`, and agreement of
-  recorded results with independent recalculation.
+- **What the tests cover.**
+  - Features on known signals, and the label-blind reference.
+  - Each v1 and v2 eligibility rule, including the v2 sampling-rate, signal-length and L2S11
+    load-window bounds. v1's flag-only handling of invalid signals is pinned as historical.
+  - The multi-path aggregation order, with pairs and repeats that differ.
+  - Leakage: changing evaluation or reference targets cannot change predictions.
+  - Training-only scaling and the selection rule.
+  - The one-to-one v2 reproduction gate, with duplicate, missing and changed rows.
+  - The L2S11 once-only guard and the order "predictions written before labels read". These use
+    mocked, synthetic data only.
+  - The scratch-folder and recorded-output guards, integrity checks under `python -O`, and
+    agreement of recorded results with independent recalculation.
 - **Saved reports.** The latest reports are in `results/test_report/`.
 - **Reproduction check.** Recorded runs found every deterministic v1 output byte-identical or
   equal in content (`results/reproduction_check/`).
