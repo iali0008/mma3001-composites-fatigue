@@ -15,7 +15,7 @@ training range there. A **post hoc** diagnostic (`../post_hoc_step4/logbook_L1S1
 - **Logbook.** It records no re-mounting, settings, cabling or load change. Its condition order at
   177k is unusual, which is consistent with the coupon having been out of the machine.
 - **Waveforms.** The RMS ratio rises on all 36 paths at once (median ×1.33), while the excitation
-  signal is unchanged. This points to a global coupling or mounting change rather than damage. It
-  is an interpretation, not a confirmed cause.
+  signal is unchanged. This is consistent with a global coupling or mounting change rather than
+  damage. It is a hypothesis, not a confirmed cause (wording tightened 2026-10-13, finding R6).
 
 See `../test_L2S11/README.md` for details.

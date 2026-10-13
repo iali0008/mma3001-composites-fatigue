@@ -71,7 +71,7 @@ Targets in late L1S12 exceed the maximum training target in L1S11. Persistent un
 
 The source root is `data/2.+Composites/2. Composites/`. The sensitivity script reruns the unchanged `scripts/exploratory_regression.py` into `results/repeat_sensitivity/median_rebuild/`. Before evaluating alternatives, it checks recording eligibility, checkpoint membership/features/targets, references, predictions and metrics against `results/baseline/` (numeric tolerance rtol 1e-9, atol 1e-10). Surveyed MAT hashes must also match the recorded baseline. The median results reproduced.
 
-Order comes from the original `Log_fatigue_testing` worksheets in `Layup1/L1_S11_F/L1S11.xlsx` and `Layup1/L1_S12_F/L1S12.xlsx`. Join by specimen and exact filename, reject duplicate entries, and cross-check cycles and normalised condition against the MAT records. Combine the logged date and time and sort within each eligible specimen/checkpoint group. All 51 eligible recordings have unique timestamps within their groups, so chronology is established for this run. No timezone is supplied. The exported `selection_provenance.csv` records timestamps, worksheet rows and selected endpoints. Missing/tied timestamps would be explicitly marked as filename-ordered selection, not chronology; worksheet or filename order is not silently substituted.
+Order comes from the original `Log_fatigue_testing` worksheets in `Layup1/L1_S11_F/L1S11.xlsx` and `Layup1/L1_S12_F/L1S12.xlsx`. Join by specimen and exact filename, reject duplicate entries, and cross-check cycles and normalised condition against the MAT records. Combine the logged date and time and sort within each eligible specimen/checkpoint group. All 51 eligible recordings have unique timestamps within their groups, so endpoints are selected by logged timestamp; the chronology is unresolved. Unique dates are not verified acquisition order: the L1S11 logbook dates go backwards in 4 places (`results/protocol_v2/post_hoc_step4/logbook_L1S11.json`), and at L1S11 80,000 cycles `L1S11_80000_1_2.mat` (row 103, 2011-07-14 09:27) is selected as first ahead of `L1S11_80000_1_1.mat` (row 98, 2011-07-20 09:53) (`results/repeat_sensitivity/selection_provenance.csv`). Neither worksheet nor filename order resolves the true order. The historical selections are kept unchanged; describe the first/last variants as endpoint selection by logged timestamp, not as earliest/latest acquisitions. No timezone is supplied. The exported `selection_provenance.csv` records timestamps, worksheet rows and selected endpoints. Missing/tied timestamps would be explicitly marked as filename-ordered selection, not chronology; worksheet or filename order is not silently substituted.
 
 For every non-reference checkpoint, use either the feature-wise median, both features from the first eligible recording, or both from the last eligible recording. Both specimens use the same variant in each fit/evaluation pair. The original cycle-1 reference recordings and exact RMS/PTP denominators are frozen for all variants. Reference targets stay excluded. Keep all 14/13 checkpoints (13/12 for fitting/scoring), published targets, acquisition and eligibility rules, model definitions and specimen-level transfer splits fixed. Fit each model anew using the existing centred-QR evaluator; independently verify predictions with unscaled least squares. The cycle-only predictions/errors are invariant. No label interpolation, prediction clipping or favourable-repeat selection is performed.
 
@@ -149,7 +149,16 @@ committed before any v2 score. Results and their write-ups are under `results/pr
   from v1 when the rule was written.
 - **Test.** The frozen model, refitted on the 25 pooled checkpoints, was scored once on L2S11:
   MAE 0.0374, versus log-cycle 0.0946 and Dummy 0.1015. A post hoc predict-zero baseline scores
-  0.0362, so there is **no evidence of transfer**. The L1S11 sanity check failed C1.
+  0.0362, so there is **no evidence that the frozen model transfers to L2S11**. The L1S11 sanity
+  check failed C1.
+- **Where it fails.** The model predicts close to zero when the features are unchanged. On L2S11,
+  path 1→7 stays within relative RMS 0.985–1.018 and relative PTP 1.001–1.015, and the frozen
+  predictions stay within −0.009 to 0.007, while the index reaches 0.084
+  (`results/protocol_v2/post_hoc_step4/summary.json`). The failure is in the feature, not the
+  regression.
+- **Scope.** Crosstalk on path 1→7, coupling or mounting changes, and specimen (layup, load)
+  effects are hypotheses consistent with the data, not established causes. One frozen model was
+  tested on one specimen; this does not show that amplitude features cannot transfer in general.
 - **Lesson.** A "no damage" (predict-zero) baseline should have been predeclared alongside the
   training-mean Dummy. A control can look beatable merely because it carries another specimen's
   target level.

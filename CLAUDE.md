@@ -64,12 +64,15 @@ Recorded 2026-10-11.
 4. **Model-choice evidence (existing results).** LinearRegression has the lowest mean and
    worst-case evaluation MAE across both directions (0.040 / 0.051 vs MLP 0.050 / 0.078); this
    aggregation was not predeclared. 8 of 12 L1S12 targets (≥30k cycles, 0.233–0.246) exceed
-   L1S11's maximum target 0.128, so bounded models (tree max prediction 0.116, RBF SVR, Dummy)
-   cannot succeed forward. MLP predictions correlate 0.95–0.99 with linear ones. The
-   feature–target relationship differs between specimens: Spearman(relative PTP, index) = +0.61 on
-   L1S11 vs −0.20 on L1S12; RMS-only slope −0.28 vs −0.74. References are single recordings;
-   repeat spread at a checkpoint reaches 13% (L1S11) and 29% (L1S12); a ±5% reference change
-   moves linear MAE by ~±0.006, comparable to the reverse-direction MLP–linear gap (0.008).
+   L1S11's maximum target 0.128, so the tree (max prediction 0.116) and Dummy cannot reach them
+   forward; RBF SVR is not bounded that way but was observed to revert towards the training mean.
+   References are single recordings.
+   **Not reproduced in the repo; do not cite** (claude.ai review, no script or output; Sans
+   declined a diagnostic, 2026-10-13): repeat spread at a checkpoint up to 13% (L1S11) and 29%
+   (L1S12); a ±5% reference change moving linear MAE by ~±0.006.
+   **No repo output either; verify before citing** (review pack R3,
+   `docs/review/confidence_and_risks.md`): MLP predictions correlate 0.95–0.99 with linear ones;
+   Spearman(relative PTP, index) +0.61 on L1S11 vs −0.20 on L1S12; RMS-only slope −0.28 vs −0.74.
 5. All 23 existing tests passed on Linux (Python 3.13.16, NumPy 2.5.3, scikit-learn 1.9.1).
 
 ## Protocol v2 (approved 2026-10-11)
@@ -84,20 +87,26 @@ why PTP behaves inconsistently across specimens (interpretation only, no design 
 
 ## Step 4 outcome and required framing (Sans, 2026-10-11)
 
-- Headline everywhere: **no evidence of transfer to L2S11.** The frozen model (L2S11 MAE 0.0374)
+- Headline everywhere (reworded 2026-10-13 after reviews C3/R6): **no evidence that the frozen
+  model transfers to L2S11.** The frozen model (L2S11 MAE 0.0374)
   beats log-cycle (0.0946) and Dummy (0.1015) only because the controls carry Layup 1's higher
   target level; the post hoc predict-zero baseline (MAE 0.0362) is slightly better. Always state
   the predeclared comparison and the zero baseline together.
-- Mechanism: path 1→7 barely responds (likely crosstalk); multi-path features change strongly but
-  on specimen-specific scales. Simple reference-normalised amplitude features do not transfer
-  between specimens; that is the feasibility finding.
+- Observations: path 1→7 barely responds on L2S11; multi-path features change strongly but on
+  specimen-specific scales. The model predicts about zero when features are unchanged, so the
+  failure is in the feature, not the regression. Crosstalk, mounting/coupling and specimen effects
+  are hypotheses consistent with the data, not established causes. Do not claim that amplitude
+  features cannot transfer in general: one frozen model was tested on one specimen.
 - Recommendations: features isolating the transmitted wave (S0 windowing, time of flight, ΔPSD as
   in Saxena et al. 2011), more labelled specimens, or per-specimen calibration.
 - Lesson (methods and AI reflection): a "no damage" (predict-zero) baseline should have been
   predeclared alongside the Dummy.
 - L1S11 sanity check: C1 FAIL stands. Post hoc: the 177k jump appears on all 36 paths with
-  unchanged excitation (likely global coupling/mounting change); the logbook has no remark and its
-  dates go backwards in 4 places.
+  unchanged excitation (consistent with a global coupling/mounting change; not confirmed); the
+  logbook has no remark and its dates go backwards in 4 places.
+- Repeat sensitivity: first/last variants are endpoint selection **by logged timestamp, chronology
+  unresolved** (e.g. L1S11 80k: `_1_2` dated 14 July is selected before `_1_1` dated 20 July).
+  Historical selections stay unchanged.
 
 ## Code issues to fix (from the 2026-10-11 review)
 

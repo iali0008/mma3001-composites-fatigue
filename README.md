@@ -5,14 +5,15 @@ An exploratory feasibility study for MMA3001 (Monash, Numerical Methods and Mach
 stiffness-degradation index of a CFRP fatigue coupon, using a regression model trained on a
 *different* coupon?
 
-**Answer from this study: not with these features.** On the held-out cross-layup specimen L2S11,
-the frozen model (linear regression on path 1→7) has MAE 0.0374. By the predeclared rule it beats
-log-cycle OLS (0.0946) and a training-mean baseline (0.1015), but only because those controls carry
-Layup 1's higher target level. A post hoc predict-zero baseline scores MAE 0.0362, slightly
-better. **There is no evidence of transfer to L2S11.** Path 1→7 barely responds (it is likely
-dominated by crosstalk). The 36-path features change strongly, but on specimen-specific scales.
-Simple reference-normalised amplitude features therefore do not transfer between specimens; that
-is the feasibility finding.
+**Answer from this study: no evidence that the frozen model transfers to L2S11.** On the
+held-out cross-layup specimen L2S11, the frozen model (linear regression on path 1→7) has MAE
+0.0374. By the predeclared rule it beats log-cycle OLS (0.0946) and a training-mean baseline
+(0.1015), but only because those controls carry Layup 1's higher target level. A post hoc
+predict-zero baseline scores MAE 0.0362, slightly better. Path 1→7 barely responds on L2S11, and
+the 36-path features change strongly but on different scales in each development specimen.
+Crosstalk on path 1→7, mounting or coupling changes, and specimen (layup, load) effects are
+hypotheses consistent with these data, not established causes. One frozen model was tested on one
+specimen, so this does not show that amplitude features cannot transfer in general.
 
 ## Contents
 
@@ -89,8 +90,8 @@ v1 when that rule was written.
 
 All 16 non-reference L2S11 checkpoints lie outside the training feature hull. The unlabelled L1S11
 sanity check (125k–227k cycles) **fails** criterion C1. A post hoc diagnostic links the failure to
-a jump at 177k cycles that appears on all 36 paths at once, which suggests a coupling or mounting
-change (`results/protocol_v2/sanity_L1S11/`).
+a jump at 177k cycles that appears on all 36 paths at once. This is consistent with a coupling
+or mounting change, but that cause is not confirmed (`results/protocol_v2/sanity_L1S11/`).
 
 **Recommendations.** Use features that isolate the transmitted wave (S0-mode windowing, time of
 flight, ΔPSD as in Saxena et al. 2011), add more labelled specimens, or calibrate per specimen.
@@ -271,9 +272,14 @@ pinned in `requirements-lock.txt`; nothing relies on a global installation.
   seen in an earlier audit, so it is "held out from model development", not untouched.
 - **Labels.** The index is copied from hand-typed tables and cannot be recomputed from the
   download, because the strain files hold no load. Its definition is inferred.
-- **Feature behaviour.** Path 1→7 appears crosstalk-dominated. Amplitude ratios also respond to
-  coupling and mounting, as the 177k jump shows. The specimen-specific mapping from amplitude to
-  damage is the main limitation, not the choice of feature.
+- **Feature behaviour.** Path 1→7 has a fixed early, crosstalk-like peak, and it barely responds
+  on L2S11. The 177k jump on all 36 L1S11 paths is consistent with a coupling or mounting change.
+  Both are hypotheses, not tested causes. The amplitude-to-index mapping differed between the
+  development specimens, but these data cannot separate specimen effects from feature choice.
+- **Repeat order.** The first/last repeat-sensitivity variants pick endpoints by logged timestamp,
+  but the chronology is unresolved. The logbook dates go backwards in places, and at L1S11
+  80,000 cycles `L1S11_80000_1_2.mat` is dated before `_1_1`
+  (`results/repeat_sensitivity/selection_provenance.csv`).
 - **Pre-registration gap.** A "no damage" (predict-zero) baseline should have been predeclared
   alongside the training-mean Dummy.
 

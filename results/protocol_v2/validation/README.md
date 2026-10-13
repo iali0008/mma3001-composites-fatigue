@@ -72,6 +72,14 @@ this configuration refitted on the 25 pooled non-reference checkpoints of L1S11 
   feasibility signal, not a population-level estimate. References are single checkpoints, so
   differences of a few thousandths should not be over-read.
 
+## Note on control labels (added 2026-10-13, finding C7)
+
+The two controls use no PZT input. `metrics.csv` and `summary.csv` label their rows
+`input_set = none`. `predictions.csv` labels the same rows `single_path_1_7`, because
+`scripts/protocol_v2_validation.py` relabels them after the reproduction gate so that the plots
+draw each control once. The values are the same fits (50 prediction rows per control); only the
+label differs. The recorded files were not regenerated.
+
 ## Files
 
 `receipt.json` (protocol hashes, commit, written before any fit), `recordings.csv`

@@ -1,14 +1,20 @@
 # Protocol v2 step 4: the single L2S11 test and the L1S11 sanity check
 
-**Headline: no evidence of transfer to L2S11.** The frozen model's L2S11 MAE is 0.0374. By the
+**Headline: no evidence that the frozen model transfers to L2S11.** The frozen model's L2S11 MAE is 0.0374. By the
 predeclared rule it beats log-cycle OLS (0.0946) and the training-mean Dummy (0.1015), but only
 because those controls carry Layup 1's higher target level. A post hoc predict-zero baseline has
 MAE 0.0362, slightly better than the frozen model. The predeclared comparison and the zero
 baseline must always be reported together.
 
-**Mechanism.** Path 1→7 barely responds (likely crosstalk). The multi-path features change
-strongly, but on specimen-specific scales. Simple reference-normalised amplitude features do not
-transfer between specimens; that is the feasibility finding.
+**Observations, not established causes.** Path 1→7 barely responds on L2S11. The multi-path
+features change strongly, but on specimen-specific scales. Crosstalk on path 1→7, coupling or
+mounting changes, and specimen (layup, load) effects are hypotheses consistent with these data.
+One frozen model was tested on one specimen, so this does not show that amplitude features cannot
+transfer in general.
+
+**Review corrections (2026-10-13, findings C3/R6, R4).** The headline, this paragraph, and the
+"Main limitation" and "Where it fails" notes below were reworded after the independent reviews
+(`docs/review/`). No number or computed file in this folder changed.
 
 Produced once by `scripts/protocol_v2_test.py` at commit `52169ab` (clean tree, recorded in
 `receipt.json`). The frozen model was LinearRegression on `single_path_1_7`
@@ -87,7 +93,8 @@ This was computed after the sanity check, at Sans's request. **The C1 fail stand
   interpretation, not a confirmed cause.
 - **Side finding.** Because of the backward timestamps, the recorded repeat-sensitivity first/last
   ordering may be reversed for the L1S11 80,000-cycle checkpoint, where `L1S11_80000_1_2.mat` is
-  dated before `L1S11_80000_1_1.mat`. That historical result is unchanged and flagged for review.
+  dated before `L1S11_80000_1_1.mat`. That historical result is unchanged. Describe the
+  first/last variants as endpoint selection by logged timestamp, with the chronology unresolved.
 
 ## Prediction hash before labels (CRLF/LF)
 
@@ -118,8 +125,12 @@ biased towards Layup 1's target level.
   This is consistent with 1→7 being crosstalk-dominated.
 - **The fall does not transfer.** The size of the multi-path fall differs between specimens
   (L1S11 0.417–0.961; L1S12 0.318–0.606), so it transfers poorly.
-- **Main limitation.** The specimen-specific mapping from amplitude to damage is the main
-  limitation, not the choice of feature.
+- **Main limitation.** The mapping from amplitude to the index differed between the development
+  specimens. These data cannot separate specimen effects from the choice of feature.
+- **Where it fails.** The model predicts close to zero when the features are unchanged. On L2S11,
+  path 1→7 stays within relative RMS 0.985–1.018 and relative PTP 1.001–1.015, and the frozen
+  predictions stay within −0.009 to 0.007, while the index reaches 0.084
+  (`../post_hoc_step4/summary.json`). The failure is in the feature, not the regression.
 
 ## Files
 
