@@ -1,0 +1,6 @@
+{
+  "compared_predictions": 500,
+  "max_abs_difference": 0.0,
+  "rtol": 1e-09,
+  "atol": 1e-10
+}

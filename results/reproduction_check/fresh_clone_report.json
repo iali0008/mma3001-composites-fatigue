@@ -1,0 +1,83 @@
+{
+  "checked_utc": "2026-10-11T12:48:59.932041+00:00",
+  "python": "3.13.3",
+  "matplotlib": "3.10.6",
+  "recorded_matplotlib": "3.10.6",
+  "plots_compared": true,
+  "counts": {
+    "equal_content": 40,
+    "identical": 10,
+    "equal_except_environment": 3,
+    "skipped": 3
+  },
+  "files": {
+    "baseline": {
+      "checkpoint_features.csv": "equal_content",
+      "coefficients.csv": "equal_content",
+      "exclusion_counts.csv": "equal_content",
+      "metrics.csv": "equal_content",
+      "predicted_vs_observed.png": "identical",
+      "predictions.csv": "equal_content",
+      "README.txt": "identical",
+      "recordings.csv": "equal_content",
+      "references.csv": "equal_content",
+      "source_hashes.json": "equal_content"
+    },
+    "repeat_sensitivity": {
+      "coefficients.csv": "equal_content",
+      "first_checkpoint_features.csv": "equal_content",
+      "last_checkpoint_features.csv": "equal_content",
+      "median_checkpoint_features.csv": "equal_content",
+      "median_rebuild/checkpoint_features.csv": "equal_content",
+      "median_rebuild/coefficients.csv": "equal_content",
+      "median_rebuild/exclusion_counts.csv": "equal_content",
+      "median_rebuild/metrics.csv": "equal_content",
+      "median_rebuild/predicted_vs_observed.png": "identical",
+      "median_rebuild/predictions.csv": "equal_content",
+      "median_rebuild/README.txt": "identical",
+      "median_rebuild/recordings.csv": "equal_content",
+      "median_rebuild/references.csv": "equal_content",
+      "median_rebuild/source_hashes.json": "equal_content",
+      "metrics.csv": "equal_content",
+      "predictions.csv": "equal_content",
+      "rankings.csv": "equal_content",
+      "README.md": "equal_content",
+      "references.csv": "equal_content",
+      "selection_provenance.csv": "equal_content",
+      "source_inventory.json": "equal_content",
+      "verification.json": "equal_except_environment"
+    },
+    "model_comparison": {
+      "environment.json": "skipped",
+      "fit_diagnostics.csv": "equal_content",
+      "metrics.csv": "equal_content",
+      "predictions.csv": "equal_content",
+      "predictions_L1S11_to_L1S12.png": "identical",
+      "predictions_L1S12_to_L1S11.png": "identical",
+      "preprocessing_audit.json": "equal_content",
+      "protocol_receipt.json": "equal_except_environment",
+      "README.md": "equal_content",
+      "reference_audit.csv": "equal_content",
+      "reference_candidates.csv": "equal_content",
+      "residuals_L1S11_to_L1S12.png": "identical",
+      "residuals_L1S12_to_L1S11.png": "identical",
+      "resolved_parameters.json": "equal_content",
+      "summary.csv": "equal_content",
+      "timing_samples.csv": "skipped",
+      "timing_summary.csv": "skipped",
+      "verification.json": "equal_except_environment",
+      "warnings.csv": "equal_content"
+    },
+    "coverage": {
+      "checkpoint_coverage.csv": "equal_content",
+      "feature_coverage.png": "identical",
+      "feature_coverage_standardised.png": "identical",
+      "training_hull_vertices.csv": "equal_content",
+      "verification.json": "equal_content"
+    }
+  },
+  "not_rerun": [
+    "raw_profile and raw_benchmark (timing evidence; rerun separately)",
+    "INTERPRETATION.md (hand-written)"
+  ]
+}

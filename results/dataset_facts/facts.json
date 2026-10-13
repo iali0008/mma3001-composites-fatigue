@@ -1,0 +1,221 @@
+{
+  "specimens": {
+    "L1S11": {
+      "labelled_pzt_files": 114,
+      "label_links_examples": [
+        {
+          "file": "L1S11_0_0.mat",
+          "cycles": 0.0,
+          "strain_files": []
+        },
+        {
+          "file": "L1S11_0_1_1.mat",
+          "cycles": 0.0,
+          "strain_files": []
+        },
+        {
+          "file": "L1S11_0_1_10.mat",
+          "cycles": 0.0,
+          "strain_files": []
+        },
+        {
+          "file": "L1S11_90000_3_1.mat",
+          "cycles": 90000.0,
+          "strain_files": []
+        },
+        {
+          "file": "L1S11_90000_3_2.mat",
+          "cycles": 90000.0,
+          "strain_files": []
+        }
+      ],
+      "files_with_linked_strain": 31,
+      "converted_strain_mat_files": 80,
+      "strain_file_variable_sets": {
+        "strain1, strain2, strain3, strain4": 80
+      }
+    },
+    "L1S12": {
+      "labelled_pzt_files": 82,
+      "label_links_examples": [
+        {
+          "file": "L1S12_0_0.mat",
+          "cycles": 0.0,
+          "strain_files": []
+        },
+        {
+          "file": "L1S12_0_2_1.mat",
+          "cycles": 0.0,
+          "strain_files": [
+            "L1_S12_S00_DAT"
+          ]
+        },
+        {
+          "file": "L1S12_100000_1_1.mat",
+          "cycles": 100000.0,
+          "strain_files": [
+            "L1_S12_F27_STRAIN_A_DAT",
+            "L1_S12_F27_STRAIN_M_DAT",
+            "L1_S12_F27_STRAIN_S_DAT"
+          ]
+        },
+        {
+          "file": "L1S12_90000_3_1.mat",
+          "cycles": 90000.0,
+          "strain_files": []
+        },
+        {
+          "file": "L1S12_90000_3_2.mat",
+          "cycles": 90000.0,
+          "strain_files": []
+        }
+      ],
+      "files_with_linked_strain": 25,
+      "converted_strain_mat_files": 57,
+      "strain_file_variable_sets": {
+        "strain1, strain2, strain3, strain4": 57
+      }
+    },
+    "L2S11": {
+      "labelled_pzt_files": 59,
+      "label_links_examples": [
+        {
+          "file": "L2S11_0_2_1.mat",
+          "cycles": 0.0,
+          "strain_files": [
+            "L2_S11_S00_DAT"
+          ]
+        },
+        {
+          "file": "L2S11_10000_1_1.mat",
+          "cycles": 10000.0,
+          "strain_files": [
+            "L2_S11_F07_STRAIN_A_DAT",
+            "L2_S11_F07_STRAIN_M_DAT",
+            "L2_S11_F07_STRAIN_S_DAT"
+          ]
+        },
+        {
+          "file": "L2S11_10000_1_2.mat",
+          "cycles": 10000.0,
+          "strain_files": [
+            "L2_S11_F08_DAT"
+          ]
+        },
+        {
+          "file": "L2S11_60000_3_1.mat",
+          "cycles": 60000.0,
+          "strain_files": []
+        },
+        {
+          "file": "L2S11_60000_3_2.mat",
+          "cycles": 60000.0,
+          "strain_files": []
+        }
+      ],
+      "files_with_linked_strain": 16,
+      "converted_strain_mat_files": 69,
+      "strain_file_variable_sets": {
+        "strain1, strain2, strain3, strain4": 69
+      }
+    }
+  },
+  "sampling_rate": {
+    "stored_values_all_paths": {
+      "1200000.0": 96264
+    },
+    "actuator_pair_1_7": {
+      "150": {
+        "signals": 382,
+        "n_samples": 2000,
+        "peak_bin_counts": {
+          "25": 382
+        },
+        "modal_peak_bin": 25,
+        "samples_per_period": 80.0,
+        "peak_frequency_if_stored_rate_hz": 15000.0,
+        "implied_sampling_rate_hz": 12000000.0,
+        "median_burst_span_samples": 366.0
+      },
+      "200": {
+        "signals": 382,
+        "n_samples": 2000,
+        "peak_bin_counts": {
+          "34": 382
+        },
+        "modal_peak_bin": 34,
+        "samples_per_period": 58.8235294117647,
+        "peak_frequency_if_stored_rate_hz": 20400.0,
+        "implied_sampling_rate_hz": 11764705.88235294,
+        "median_burst_span_samples": 277.0
+      },
+      "250": {
+        "signals": 382,
+        "n_samples": 2000,
+        "peak_bin_counts": {
+          "42": 382
+        },
+        "modal_peak_bin": 42,
+        "samples_per_period": 47.61904761904762,
+        "peak_frequency_if_stored_rate_hz": 25200.0,
+        "implied_sampling_rate_hz": 11904761.904761905,
+        "median_burst_span_samples": 223.0
+      },
+      "300": {
+        "signals": 382,
+        "n_samples": 2000,
+        "peak_bin_counts": {
+          "51": 294,
+          "52": 33,
+          "50": 55
+        },
+        "modal_peak_bin": 51,
+        "samples_per_period": 39.21568627450981,
+        "peak_frequency_if_stored_rate_hz": 30600.0,
+        "implied_sampling_rate_hz": 11764705.88235294,
+        "median_burst_span_samples": 188.0
+      },
+      "350": {
+        "signals": 382,
+        "n_samples": 2000,
+        "peak_bin_counts": {
+          "59": 271,
+          "60": 110,
+          "58": 1
+        },
+        "modal_peak_bin": 59,
+        "samples_per_period": 33.898305084745765,
+        "peak_frequency_if_stored_rate_hz": 35400.0,
+        "implied_sampling_rate_hz": 11864406.779661017,
+        "median_burst_span_samples": 163.0
+      },
+      "400": {
+        "signals": 382,
+        "n_samples": 2000,
+        "peak_bin_counts": {
+          "68": 372,
+          "67": 10
+        },
+        "modal_peak_bin": 68,
+        "samples_per_period": 29.41176470588235,
+        "peak_frequency_if_stored_rate_hz": 40800.0,
+        "implied_sampling_rate_hz": 11764705.88235294,
+        "median_burst_span_samples": 143.0
+      },
+      "450": {
+        "signals": 382,
+        "n_samples": 2000,
+        "peak_bin_counts": {
+          "77": 285,
+          "76": 97
+        },
+        "modal_peak_bin": 77,
+        "samples_per_period": 25.974025974025974,
+        "peak_frequency_if_stored_rate_hz": 46200.0,
+        "implied_sampling_rate_hz": 11688311.688311689,
+        "median_burst_span_samples": 128.0
+      }
+    },
+    "note": "Stored rate written as a constant by NEWFILEDEF.m line 102 (Technical Report PDF p. 8); FFT bins have resolution fs/n, so implied rates are approximate."
+  }
+}

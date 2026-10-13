@@ -1,0 +1,64 @@
+{
+  "status": "POST HOC: computed after the single L2S11 test; descriptive only",
+  "l2s11_scored_n": 8,
+  "l2s11_observed_range": [
+    0.008583815,
+    0.084180661
+  ],
+  "l2s11_observed_mean": 0.036168889875,
+  "constant_zero_predictor_MAE": 0.036168889875,
+  "frozen_MAE": 0.03735840711640884,
+  "frozen_prediction_range": [
+    -0.008983256587166338,
+    0.006703978847650005
+  ],
+  "all_frozen_residuals_negative": true,
+  "spearman_prediction_vs_observed": 0.19047619047619052,
+  "pearson_prediction_vs_observed": 0.25390238448913005,
+  "l2s11_path_1_7_relative_rms_range": [
+    0.9849000336455621,
+    1.0183704939030394
+  ],
+  "l2s11_path_1_7_relative_ptp_range": [
+    1.0006430709242224,
+    1.0146799607388277
+  ],
+  "development_feature_ranges_non_reference_labelled": {
+    "L1S11": {
+      "relative_rms": [
+        0.7454821923523308,
+        0.9817422713902058
+      ],
+      "relative_ptp": [
+        0.878881355713626,
+        1.0286402489138786
+      ],
+      "mp_relative_rms": [
+        0.437766077735113,
+        0.9564586490296065
+      ],
+      "mp_relative_ptp": [
+        0.4168285627273873,
+        0.9605667558778173
+      ]
+    },
+    "L1S12": {
+      "relative_rms": [
+        0.5534396145088861,
+        0.8481139187376846
+      ],
+      "relative_ptp": [
+        0.8332676690868855,
+        1.0602824233358064
+      ],
+      "mp_relative_rms": [
+        0.28060879214908097,
+        0.6210230590598804
+      ],
+      "mp_relative_ptp": [
+        0.3184367107247407,
+        0.6060069261602044
+      ]
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "description": "Frozen constants of the historical v1 experiments (baseline, repeat sensitivity, model comparison, coverage). Moved out of code unchanged; editing this file changes those experiments.",
+  "specimens": {
+    "L1S11": {"folder": "Layup1/L1_S11_F", "gain": 33, "amplitude": 65, "non_reference_checkpoints": 13},
+    "L1S12": {"folder": "Layup1/L1_S12_F", "gain": 35, "amplitude": 50, "non_reference_checkpoints": 12}
+  },
+  "directions": [["L1S11", "L1S12"], ["L1S12", "L1S11"]],
+  "condition": "loaded",
+  "load_window_kips": [3.95, 4.05],
+  "path": {"actuator": 1, "sensor": 7, "frequency": 150},
+  "sampling_rate": 1200000,
+  "signal_length": 2000,
+  "integrity": {
+    "missing_label": {"specimen": "L1S12", "cycles": 20000},
+    "retained_jump": {"specimen": "L1S12", "cycles": 30000, "published_index": 0.233175942}
+  },
+  "coverage_reported_outside": {"L1S11": 12, "L1S12": 11}
+}

@@ -1,0 +1,17 @@
+{
+  "started_utc": "2026-10-11T12:01:08.694504+00:00",
+  "git": {
+    "commit": "52169abf30373b09beba527b97c0318b83072e6c",
+    "clean": true
+  },
+  "protocol_config_sha256": "d5b8ef07e875dbdfe3f719d88a0d94e0fe5df7234c356b14305cbb300a65de18",
+  "protocol_doc_sha256": "78f9b08ef7b7997d38c3a80ed7ef09911f4c9f583a29dc80fb2e087ff860ab61",
+  "selection_sha256": "1027484c633b46657d1e11c12bdf5c7ea94948769129cb892ed5ff1766c1d8c1",
+  "frozen_model": "LinearRegression",
+  "input_set": "single_path_1_7",
+  "controls": [
+    "log_cycle_OLS",
+    "DummyRegressor"
+  ],
+  "runs_allowed": 1
+}

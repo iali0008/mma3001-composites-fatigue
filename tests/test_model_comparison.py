@@ -1,4 +1,5 @@
 """Scientific boundary checks for the predeclared specimen-held-out experiment."""
+
 import copy
 import json
 from pathlib import Path
@@ -9,21 +10,28 @@ import numpy as np
 from threadpoolctl import threadpool_limits
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT/'scripts'))
-from model_comparison import (CONFIG, MODEL_NAMES, acquisition_eligible, build_model,
-                              fit_direction, fitted_parts, matrix, select_reference_candidates,
-                              split_rows, scores)
+sys.path.insert(0, str(ROOT / 'scripts'))
+from model_comparison import (
+    CONFIG,
+    MODEL_NAMES,
+    build_model,
+    fit_direction,
+    fitted_parts,
+    matrix,
+    select_reference_candidates,
+    split_rows,
+)
 from reproduce_results import read_checkpoints
 from repeat_sensitivity import read_csv, digest
 
-BASE = ROOT/'results/baseline'
-OUT = ROOT/'results/model_comparison'
+BASE = ROOT / 'results/baseline'
+OUT = ROOT / 'results/model_comparison'
 
 
 class ModelComparisonTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.rows = read_checkpoints(BASE/'checkpoint_features.csv')
+        cls.rows = read_checkpoints(BASE / 'checkpoint_features.csv')
         cls.threads = threadpool_limits(limits=1)
 
     @classmethod
@@ -35,8 +43,8 @@ class ModelComparisonTests(unittest.TestCase):
             train, evaluation = split_rows(self.rows, train_name, eval_name)
             self.assertEqual({r['specimen'] for r in train}, {train_name})
             self.assertEqual({r['specimen'] for r in evaluation}, {eval_name})
-            self.assertFalse(any(r['is_reference'] or r['cycles'] == 1 for r in train+evaluation))
-            self.assertEqual(len(train)+len(evaluation), 25)
+            self.assertFalse(any(r['is_reference'] or r['cycles'] == 1 for r in train + evaluation))
+            self.assertEqual(len(train) + len(evaluation), 25)
         with self.assertRaisesRegex(ValueError, 'must differ'):
             split_rows(self.rows, 'L1S11', 'L1S11')
 
@@ -44,7 +52,9 @@ class ModelComparisonTests(unittest.TestCase):
         for train_name, eval_name in CONFIG['directions']:
             for name in MODEL_NAMES:
                 seed = CONFIG['mlp_seeds'][0] if name == 'MLPRegressor' else None
-                model, train, _, _, _, _ = fit_direction(self.rows, train_name, eval_name, name, seed)
+                model, train, _, _, _, _ = fit_direction(
+                    self.rows, train_name, eval_name, name, seed
+                )
                 pipeline, target = fitted_parts(model)
                 scaler = pipeline.named_steps['scale']
                 if scaler != 'passthrough':
@@ -57,7 +67,9 @@ class ModelComparisonTests(unittest.TestCase):
                     np.testing.assert_allclose(target.mean_, [y.mean()])
                     np.testing.assert_allclose(target.var_, [y.var()])
                     self.assertEqual(target.n_samples_seen_, len(train))
-                    manual = target.inverse_transform(pipeline.predict(matrix(train, name)).reshape(-1, 1)).ravel()
+                    manual = target.inverse_transform(
+                        pipeline.predict(matrix(train, name)).reshape(-1, 1)
+                    ).ravel()
                     np.testing.assert_allclose(model.predict(matrix(train, name)), manual)
 
     def test_evaluation_targets_and_reference_targets_cannot_change_predictions(self):
@@ -85,20 +97,30 @@ class ModelComparisonTests(unittest.TestCase):
             before = fit_direction(self.rows, 'L1S11', 'L1S12', name, seed)
             after = fit_direction(changed, 'L1S11', 'L1S12', name, seed)
             np.testing.assert_array_equal(before[3], after[3])
-            np.testing.assert_array_equal(fitted_parts(before[0])[0].named_steps['scale'].mean_,
-                                          fitted_parts(after[0])[0].named_steps['scale'].mean_)
+            np.testing.assert_array_equal(
+                fitted_parts(before[0])[0].named_steps['scale'].mean_,
+                fitted_parts(after[0])[0].named_steps['scale'].mean_,
+            )
 
     def test_sklearn_linear_predictions_match_existing_ols(self):
-        expected = read_csv(BASE/'predictions.csv')
+        expected = read_csv(BASE / 'predictions.csv')
         for train_name, eval_name in CONFIG['directions']:
-            for name, old_name in [('LinearRegression', 'relative_rms_and_ptp'), ('log_cycle_OLS', 'log10_cycles')]:
+            for name, old_name in [
+                ('LinearRegression', 'relative_rms_and_ptp'),
+                ('log_cycle_OLS', 'log10_cycles'),
+            ]:
                 _, _, evaluation, _, pred, _ = fit_direction(self.rows, train_name, eval_name, name)
-                lookup = {int(r['cycles']): float(r['predicted_index']) for r in expected
-                          if r['train_specimen'] == train_name and r['model'] == old_name}
-                np.testing.assert_allclose(pred, [lookup[r['cycles']] for r in evaluation], rtol=1e-9, atol=1e-10)
+                lookup = {
+                    int(r['cycles']): float(r['predicted_index'])
+                    for r in expected
+                    if r['train_specimen'] == train_name and r['model'] == old_name
+                }
+                np.testing.assert_allclose(
+                    pred, [lookup[r['cycles']] for r in evaluation], rtol=1e-9, atol=1e-10
+                )
 
     def test_reference_selection_does_not_read_targets(self):
-        records = read_csv(BASE/'recordings.csv')
+        records = read_csv(BASE / 'recordings.csv')
         original, _ = select_reference_candidates(records)
         altered = copy.deepcopy(records)
         for r in altered:
@@ -107,38 +129,60 @@ class ModelComparisonTests(unittest.TestCase):
             r.pop('exclusion_reasons')
         modified, candidates = select_reference_candidates(altered)
         for specimen in original:
-            self.assertEqual([r['filename'] for r in original[specimen]],
-                             [r['filename'] for r in modified[specimen]])
+            self.assertEqual(
+                [r['filename'] for r in original[specimen]],
+                [r['filename'] for r in modified[specimen]],
+            )
         # Unlabelled acquisition-eligible 20,000-cycle L1S12 recordings remain candidates.
-        self.assertTrue(any(r['specimen'] == 'L1S12' and float(r['cycles']) == 20000 for r in candidates))
-        # Artificial earlier unlabelled acquisition is selected, instead of silently using labelled data.
+        self.assertTrue(
+            any(r['specimen'] == 'L1S12' and float(r['cycles']) == 20000 for r in candidates)
+        )
+        # An artificial earlier unlabelled acquisition is selected, instead of
+        # silently using labelled data.
         earlier = copy.deepcopy(modified['L1S11'][0])
         earlier.update(cycles='0.5', filename='unlabelled_earlier.mat')
-        selected, _ = select_reference_candidates(altered+[earlier])
+        selected, _ = select_reference_candidates(altered + [earlier])
         self.assertEqual(selected['L1S11'][0]['filename'], 'unlabelled_earlier.mat')
 
     def test_all_declared_seeds_no_internal_split_and_saved_metrics(self):
-        metrics = read_csv(OUT/'metrics.csv')
-        predicted = read_csv(OUT/'predictions.csv')
+        metrics = read_csv(OUT / 'metrics.csv')
+        predicted = read_csv(OUT / 'predictions.csv')
         for seed in CONFIG['mlp_seeds']:
             estimator = build_model('MLPRegressor', seed).regressor.named_steps['model']
             self.assertFalse(estimator.early_stopping)
             self.assertEqual(estimator.solver, 'lbfgs')
             self.assertEqual(estimator.random_state, seed)
         for train_name, _ in CONFIG['directions']:
-            self.assertEqual({int(r['seed']) for r in metrics if r['train_specimen'] == train_name and
-                              r['model'] == 'MLPRegressor'}, set(CONFIG['mlp_seeds']))
+            self.assertEqual(
+                {
+                    int(r['seed'])
+                    for r in metrics
+                    if r['train_specimen'] == train_name and r['model'] == 'MLPRegressor'
+                },
+                set(CONFIG['mlp_seeds']),
+            )
         for metric in metrics:
-            group = [r for r in predicted if all(r[k] == metric[k] for k in ('train_specimen', 'model', 'seed', 'split'))]
+            group = [
+                r
+                for r in predicted
+                if all(r[k] == metric[k] for k in ('train_specimen', 'model', 'seed', 'split'))
+            ]
             y = np.array([float(r['observed']) for r in group])
             p = np.array([float(r['predicted']) for r in group])
-            residual = p-y
-            independent = [np.abs(residual).mean(), np.sqrt((residual**2).mean()),
-                           1-(residual**2).sum()/((y-y.mean())**2).sum()]
-            np.testing.assert_allclose([float(metric[k]) for k in ('MAE', 'RMSE', 'R2')], independent)
-        receipt = json.loads((OUT/'protocol_receipt.json').read_text())
-        self.assertEqual(receipt['protocol_sha256'], digest(ROOT/'docs/model_comparison_protocol.md'))
-        self.assertEqual(receipt['config_sha256'], digest(ROOT/'config/model_comparison.json'))
+            residual = p - y
+            independent = [
+                np.abs(residual).mean(),
+                np.sqrt((residual**2).mean()),
+                1 - (residual**2).sum() / ((y - y.mean()) ** 2).sum(),
+            ]
+            np.testing.assert_allclose(
+                [float(metric[k]) for k in ('MAE', 'RMSE', 'R2')], independent
+            )
+        receipt = json.loads((OUT / 'protocol_receipt.json').read_text())
+        self.assertEqual(
+            receipt['protocol_sha256'], digest(ROOT / 'docs/model_comparison_protocol.md')
+        )
+        self.assertEqual(receipt['config_sha256'], digest(ROOT / 'config/model_comparison.json'))
 
 
 if __name__ == '__main__':

@@ -1,144 +1,308 @@
-# MMA3001: composite fatigue and ultrasonic stiffness estimation
+# MMA3001: ultrasonic features and composite stiffness degradation
 
-An exploratory engineering project investigating whether reference-normalised ultrasonic features estimate a published stiffness-degradation index better than a cycle-count baseline.
+An exploratory feasibility study for MMA3001 (Monash, Numerical Methods and Machine Learning).
+**Question:** can simple ultrasonic (PZT Lamb-wave) amplitude features estimate the published
+stiffness-degradation index of a CFRP fatigue coupon, using a regression model trained on a
+*different* coupon?
 
-**Current stage:** the median regression, repeat sensitivity and predeclared four-family regression comparison are complete. Linear regression has the lowest evaluation MAE in L1S11 -> L1S12; the small MLP has the lowest MAE in the reverse direction. These are exploratory specimen-held-out validation results, with no untouched final test specimen.
+**Answer from this study: no evidence that the frozen model transfers to L2S11.** On the
+held-out cross-layup specimen L2S11, the frozen model (linear regression on path 1→7) has MAE
+0.0374. By the predeclared rule it beats log-cycle OLS (0.0946) and a training-mean baseline
+(0.1015), but only because those controls carry Layup 1's higher target level. A post hoc
+predict-zero baseline scores MAE 0.0362, slightly better. Path 1→7 barely responds on L2S11, and
+the 36-path features change strongly but on different scales in each development specimen.
+Crosstalk on path 1→7, mounting or coupling changes, and specimen (layup, load) effects are
+hypotheses consistent with these data, not established causes. One frozen model was tested on one
+specimen, so this does not show that amplitude features cannot transfer in general.
 
-## Question and scope
+## Contents
 
-Can a linear model using relative RMS and relative peak-to-peak amplitude from one ultrasonic path transfer between two CFRP specimens more accurately than a model using log-cycle count?
+1. [Engineering problem, inputs and outputs](#engineering-problem-inputs-and-outputs)
+2. [Results at a glance](#results-at-a-glance)
+3. [Repository structure](#repository-structure)
+4. [Setup](#setup)
+5. [Data download](#data-download)
+6. [Reproduce](#reproduce)
+7. [Tests, documentation and checks](#tests-documentation-and-checks)
+8. [Limitations](#limitations)
+9. [Attribution, licence and AI use](#attribution-licence-and-ai-use)
 
-- Dataset: NASA composites fatigue data; specimens **L1S11 and L1S12**, Layup 1.
-- Input: actuator 1 to receiver 7, nominal 150 kHz, loaded near 4 kips.
-- Target: existing `coupon.straingage_data.stiffness_degradation` values. These are published index candidates, not newly validated modulus measurements.
-- Evaluation: fit on one specimen and evaluate on the other, then reverse.
-- Deployment assumption: an early reference waveform is available for each specimen. It is not assumed undamaged, and its target is not used for calibration.
+## Engineering problem, inputs and outputs
 
-## Quick start: reproduce the regression without downloading the raw dataset
+- **Context.** CFRP laminates lose stiffness under fatigue through matrix cracking and
+  delamination. Permanently bonded PZT networks could monitor that loss without stopping a
+  structure for mechanical testing, if their signals can be mapped to stiffness loss in a way that
+  carries over from one part to another.
+- **Data.** The NASA PCoE "CFRP Composites" dataset (Saxena et al.). Notched T700G coupons in
+  tension–tension fatigue, with two 6-PZT SMART Layer strips (36 actuator–sensor paths × 7
+  frequencies). Only three coupons carry published stiffness labels: **L1S11, L1S12** (Layup 1,
+  development) and **L2S11** (Layup 2, held-out test).
+- **Inputs.**
+  - Receiver waveforms (2,000 samples, raw acquisition units) at 150 kHz, in the Loaded condition
+    at the specimen's fatigue mean load.
+  - Each feature is the checkpoint median over repeat recordings, divided by the same quantity at
+    the specimen's earliest eligible checkpoint, so it is dimensionless.
+  - Two input sets: relative RMS and relative peak-to-peak of **path 1→7**, or the **median of the
+    36 per-path ratios**.
+- **Output.** An estimate of `coupon.straingage_data.stiffness_degradation`, a published index
+  that is best interpreted as normalised stiffness loss 1 − E/E₀. Errors are reported in index
+  units; MAE is primary.
+- **Invalid or unsupported inputs.** Recordings outside the load window, with the wrong condition,
+  a missing or duplicated path, or changed gain or amplitude settings are excluded and counted,
+  never repaired. Protocol v2 also excludes nonfinite or constant signals on either channel. The
+  historical v1 screening only flags them; this does not affect any recorded result, because none
+  of the 51 eligible v1 recordings is flagged. Missing labels stay missing and are never
+  interpolated. The reference checkpoint is never scored.
+- **Intended use and limits.** This is a feasibility test of transfer between specimens, not a
+  validated structural-health-monitoring tool. See [docs/dataset.md](docs/dataset.md) for the
+  label definition, the sampling-rate correction (stored 1.2 MHz; actual about 12 MHz) and
+  amplitude units.
 
-Run these commands **from this repository**, not the folder containing the NASA data. On Windows PowerShell:
+## Results at a glance
 
-```powershell
-py -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe scripts/reproduce_results.py
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
-```
+All numbers are copied from files under `results/`.
 
-On Linux or macOS:
+**v1 comparison (predeclared, `results/model_comparison/`).** Path 1→7, train on one Layup 1
+coupon and evaluate on the other.
 
-```bash
-python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
-.venv/bin/python scripts/reproduce_results.py
-.venv/bin/python -m unittest discover -s tests -v
-```
-
-The replay reads the included checkpoint table and writes new CSVs under `results/reproduced/`. It does not alter the recorded first experiment. It reproduces regression calculations, **not extraction of features from the original waveforms**.
-
-## Rebuild from the NASA files
-
-The local download is in the ignored `data/2.+Composites/` directory. Inspection confirmed that its `2. Composites` child contains `Layup1`, `Layup2` and `Layup3`. Pass that child directory:
-
-```powershell
-.\.venv\Scripts\python.exe scripts/exploratory_regression.py --data-root "data/2.+Composites/2. Composites"
-```
-
-No re-extraction or moving the NASA files is required. Outputs go to `results/rebuilt/`. The script refuses an output directory within the original data or the recorded baseline.
-
-See [data setup](data/README.md) for the actual layout and exclusions. Raw extraction has now reproduced the recorded baseline locally. Original files remain excluded from Git, including documentation, logbooks and X-rays.
-
-## Repeat-recording sensitivity
-
-```powershell
-.\.venv\Scripts\python.exe scripts/repeat_sensitivity.py --data-root "data/2.+Composites/2. Composites"
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
-```
-
-Original logbook timestamps uniquely order all 51 eligible recordings within their checkpoints. The comparison keeps the 27 checkpoints (25 after excluding references), targets, references and denominators, eligibility, model definitions and specimen splits fixed, and refits each model for median, first and last selection.
-
-The two-feature model remains best on MAE and RMSE for first repeats in both directions and for last repeats in L1S11 -> L1S12. For last repeats in L1S12 -> L1S11, **RMS-only is best** (MAE 0.031399; RMSE 0.034864), ahead of two features (0.033315; 0.038596). Thus the original ranking is sensitive to repeat selection. Full metrics and changes are in [the sensitivity results](results/repeat_sensitivity/README.md). This is still a two-specimen exploratory study.
-
-## First experiment
-
-The original experiment below is preserved. The later model-family comparison uses the same two median signal features and data boundaries; it does not replace these recorded results.
-
-14 labelled nonzero-cycle checkpoints were retained for L1S11 and 13 for L1S12. Removing one reference per specimen leaves **13 and 12 checkpoints** for fitting/scoring. Multiple checkpoints from one specimen remain correlated.
-
-| Train → evaluate | Model inputs | MAE | RMSE |
-|---|---|---:|---:|
-| L1S11 → L1S12 | log10(cycles) | 0.090299 | 0.105431 |
-| L1S11 → L1S12 | Relative RMS | 0.071013 | 0.072705 |
-| L1S11 → L1S12 | Relative RMS + relative peak-to-peak | **0.050532** | **0.058254** |
-| L1S12 → L1S11 | log10(cycles) | 0.092013 | 0.098381 |
-| L1S12 → L1S11 | Relative RMS | 0.056906 | 0.060876 |
-| L1S12 → L1S11 | Relative RMS + relative peak-to-peak | **0.029357** | **0.035001** |
-
-Errors are in published-index units. The two-feature model reduces MAE by about 44% and 68% relative to the chosen cycle-count model. These are error reductions, not accuracy percentages. Substantial bias remains, and one two-feature prediction is negative.
-
-![Held-out predictions for the first three models](results/baseline/predicted_vs_observed.png)
-
-## Project files
-
-| Location | Purpose |
-|---|---|
-| `scripts/exploratory_regression.py` | Rebuild features, models and plots from the external MAT dataset |
-| `scripts/reproduce_results.py` | Independently refit the exported features using centred QR |
-| `docs/model_comparison_protocol.md`, `config/model_comparison.json` | Protocol and fixed settings written before running the new comparisons |
-| `scripts/model_comparison.py` | Reference audit, six-comparator evaluation, all MLP seeds, repeated timings and plots |
-| `results/model_comparison/` | Comparison scores, predictions, warnings, provenance, timing and raw-workflow profiling |
-| `results/baseline/` | Recorded first experiment: features, references, predictions, metrics and plot |
-| `tests/` | Scientific-result reproduction and checks against target leakage |
-| `docs/methodology.md` | Selection rules, equations and validation design |
-| `docs/progress.md` | Completed work and remaining tasks |
-| `docs/ai-use.md` | Record of AI assistance, for student review |
-| `docs/github-setup.md` | Creating the private GitHub remote and normal commit workflow |
-| `archive/` | Earlier exploratory scripts, figures and audit summaries |
-
-## Week 5 model-family comparison
-
-Install the updated requirements (including scikit-learn and threadpoolctl), then run:
-
-```powershell
-.\.venv\Scripts\python.exe scripts/model_comparison.py --data-root "data/2.+Composites/2. Composites"
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
-```
-
-MAE is primary; RMSE and residual patterns support interpretation. All four families use checkpoint-median relative RMS and relative peak-to-peak. The log-cycle OLS and training-mean Dummy are controls. Input scaling is learned on the training specimen only; SVR/MLP target scaling is likewise training-only and predictions are returned to published-index units. The target-independent acquisition/waveform reference audit preserves both original cycle-1 reference files and denominators exactly.
-
-| Model | MAE: L1S11 -> L1S12 | MAE: L1S12 -> L1S11 |
+| Model | MAE L1S11 → L1S12 | MAE L1S12 → L1S11 |
 |---|---:|---:|
-| LinearRegression | **0.050532** | 0.029357 |
-| DecisionTreeRegressor | 0.105158 | 0.045803 |
-| RBF SVR | 0.111193 | 0.056257 |
-| Small MLP, median across five seeds | 0.078193 | **0.020942** |
-| Log-cycle OLS | 0.090299 | 0.092013 |
-| Training-mean Dummy | 0.107731 | 0.083110 |
+| LinearRegression | 0.0505 | 0.0294 |
+| DecisionTreeRegressor (depth 2) | 0.1052 | 0.0458 |
+| RBF SVR | 0.1112 | 0.0563 |
+| MLP (3 tanh units), median of 5 seeds | 0.0782 | 0.0209 |
+| log-cycle OLS (control) | 0.0903 | 0.0920 |
+| training-mean Dummy (control) | 0.1077 | 0.0831 |
 
-MLP MAE ranges across the fixed seeds are 0.074266--0.078196 and 0.020936--0.021264 respectively. No seed was selected and no convergence warnings occurred. There is no overall winner across directions. Full training/evaluation MAE, RMSE and R², seed-specific results, plots and timing evidence are in [comparison results](results/model_comparison/README.md) and [interpretation](results/model_comparison/INTERPRETATION.md).
+**Protocol v2 validation (`results/protocol_v2/validation/`).** The multi-path input lowered the
+worst-direction MAE of the tree (0.1052 to 0.0907) and SVR (0.1112 to 0.0963), raised it for linear
+regression and the MLP, and no multi-path candidate came close to single-path linear regression.
+The predeclared rule (lowest worst-direction MAE) selected **LinearRegression on path 1→7**
+(0.0505). The single-path scores were already known from
+v1 when that rule was written.
 
-Raw-workflow profiling and unprofiled serial/prefetch measurements are separate commands:
+**Held-out test on L2S11, scored once (`results/protocol_v2/test_L2S11/`).**
+
+| Model | L2S11 MAE | Note |
+|---|---:|---|
+| Frozen LinearRegression, path 1→7 | 0.0374 | every prediction below its observation; R² −2.27 |
+| log-cycle OLS (control) | 0.0946 | predeclared reference point |
+| training-mean Dummy (control) | 0.1015 | predeclared reference point |
+| predict zero (post hoc) | 0.0362 | not predeclared; shows the controls' bias |
+
+All 16 non-reference L2S11 checkpoints lie outside the training feature hull. The unlabelled L1S11
+sanity check (125k–227k cycles) **fails** criterion C1. A post hoc diagnostic links the failure to
+a jump at 177k cycles that appears on all 36 paths at once. This is consistent with a coupling
+or mounting change, but that cause is not confirmed (`results/protocol_v2/sanity_L1S11/`).
+
+**Recommendations.** Use features that isolate the transmitted wave (S0-mode windowing, time of
+flight, ΔPSD as in Saxena et al. 2011), add more labelled specimens, or calibrate per specimen.
+
+## Repository structure
+
+| Path | Contents |
+|---|---|
+| `scripts/` | All code: one module per workflow, plus `common.py` (shared checks and I/O) |
+| `tests/` | Unit and reproduction tests, run with pytest |
+| `config/` | Frozen settings: `experiment_v1.json`, `model_comparison.json`, `protocol_v2.json` |
+| `docs/protocol_v2.md`, `docs/model_comparison_protocol.md` | Protocols written before their scores |
+| `docs/methodology.md`, `docs/dataset.md` | Methods; dataset provenance, label definition, sampling rate, units |
+| `docs/progress.md` | Dated log of every working session |
+| `docs/html/` | Generated API documentation (pdoc) |
+| `results/baseline/` | First experiment (v1 OLS), recorded |
+| `results/repeat_sensitivity/` | Median / first / last repeat sensitivity |
+| `results/model_comparison/` | v1 six-model comparison, coverage, timing, profiling |
+| `results/protocol_v2_audit/` | Label-blind acquisition audit behind protocol v2 |
+| `results/protocol_v2/` | v2 validation, frozen selection, L2S11 test, sanity check, post hoc notes |
+| `results/dataset_facts/` | Label links, strain-file contents and FFT sampling-rate check |
+| `results/reproduction_check/`, `results/test_report/` | Reproduction reports and pytest reports |
+| `archive/` | Earlier exploratory scripts and the label audit (`archive/audit/ASSESSMENT.md`) |
+| `data/README.md` | Where the raw data must be placed; the raw download is git-ignored |
+| `data/audit_stiffness/`, `data/pzt_feasibility/` | Historical, unmaintained: derived label-audit and feasibility tables, figures and notebooks (raw and third-party material untracked; see [docs/dataset.md](docs/dataset.md)) |
+
+## Setup
+
+Requires Python 3.13; the results were produced with CPython 3.13.3 on Windows 11.
 
 ```powershell
-.\.venv\Scripts\python.exe scripts/profile_raw_workflow.py --data-root "data/2.+Composites/2. Composites"
-.\.venv\Scripts\python.exe scripts/benchmark_raw_workflow.py --data-root "data/2.+Composites/2. Composites"
+py -3.13 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-lock.txt
 ```
 
-MAT parsing was the measured bottleneck. A bounded ordered prefetch option is available as `--workers 4` on `scripts/exploratory_regression.py`; default `--workers 1` preserves serial execution. All original hash/selection checks remain enabled. Timing results are local observations, not general hardware benchmarks.
+`requirements-lock.txt` pins the exact versions that produced the recorded results.
+`requirements.txt` (runtime) and `requirements-dev.txt` (pytest, pytest-html, pdoc) give compatible
+ranges. On Linux or macOS use `python3 -m venv .venv` and `.venv/bin/python`.
+
+## Data download
+
+1. Download `https://phm-datasets.s3.amazonaws.com/NASA/2.+Composites.zip`, the link listed on the
+   [NASA PCoE Data Set Repository](https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/)
+   (checked 2026-10-11).
+2. Extract it so that `data/2.+Composites/2. Composites/` contains `Layup1`, `Layup2` and
+   `Layup3`. Any other location works if you pass it as `--data-root`.
+3. Do not modify or commit the files. `.gitignore` excludes them, and the workflows check that. Raw
+   and third-party material once committed by the early audit was untracked on 2026-10-12 but
+   remains in earlier commits; see [docs/dataset.md](docs/dataset.md).
+
+The no-data replay and most tests need no download.
+
+## Reproduce
+
+Run everything from the repository root with the project environment's interpreter. The examples
+use PowerShell. On Linux or macOS, replace `.\.venv\Scripts\python.exe` with `.venv/bin/python`,
+and `$D` with `"$D"` after `D="data/2.+Composites/2. Composites"`.
+
+```powershell
+$D = "data/2.+Composites/2. Composites"
+$py = ".\.venv\Scripts\python.exe"
+```
+
+**What may be overwritten.** Recorded results (`results/baseline`, `repeat_sensitivity`,
+`model_comparison`, `protocol_v2`, `protocol_v2_audit`, `reproduction_check`, `dataset_facts`,
+`test_report`) are never written by any workflow script. Every output option refuses them, and the
+defaults are under the git-ignored `results/rebuilt/` (or `results/reproduced/`). Rerunning a
+command overwrites its own folder under `results/rebuilt/`. `verify_reproduction.py` deletes and
+recreates only its `--work` folder, which must lie strictly inside `results/rebuilt/`, and
+`protocol_v2_validation.py --replay` deletes and recreates only `results/rebuilt/protocol_v2_replay/`.
+Two documented
+commands deliberately refresh tracked files: the pytest-report command (`results/test_report/`) and
+the docs build (`docs/html/`).
+
+### (a) Verify the recorded v1 results
+
+```powershell
+& $py scripts/reproduce_results.py                                # no raw data needed
+& $py scripts/verify_reproduction.py --data-root $D
+```
+
+- **`reproduce_results.py`.** Refits the recorded baseline features with an independent QR solver
+  and writes `results/reproduced/`.
+- **`verify_reproduction.py`.** Reruns the baseline extraction, repeat sensitivity, six-model
+  comparison and coverage into `results/rebuilt/verification/`. It compares every recorded file and
+  writes a report to `results/rebuilt/reproduction_check/report.json`. It fails if any
+  deterministic output differs. Timing samples are not compared.
+- **Earlier reports.** The recorded reports from earlier runs are in `results/reproduction_check/`.
+
+### (b) Regenerate individual outputs safely
+
+| Workflow | Command | Writes to |
+|---|---|---|
+| v1 extraction and OLS | `& $py scripts/exploratory_regression.py --data-root $D` | `results/rebuilt/` |
+| Repeat sensitivity | `& $py scripts/repeat_sensitivity.py --data-root $D` | `results/rebuilt/repeat_sensitivity/` |
+| v1 six-model comparison (with timings) | `& $py scripts/model_comparison.py --data-root $D` | `results/rebuilt/model_comparison/` |
+| Coverage diagnostic | `& $py scripts/feature_coverage.py` | `results/rebuilt/coverage/` |
+| cProfile of the raw workflow | `& $py scripts/profile_raw_workflow.py --data-root $D` | `results/rebuilt/raw_profile/` |
+| Serial vs prefetch benchmark | `& $py scripts/benchmark_raw_workflow.py --data-root $D` | `results/rebuilt/raw_benchmark/` |
+| Protocol v2 acquisition audit | `& $py scripts/audit_acquisition_v2.py --data-root $D` | `results/rebuilt/protocol_v2_audit/` |
+| Dataset facts (label links, sampling-rate check) | `& $py scripts/dataset_facts.py --data-root $D` | `results/rebuilt/dataset_facts/` |
+| Post hoc L2S11 summary (reads saved outputs only) | `& $py scripts/post_hoc_step4.py` | `results/rebuilt/post_hoc_step4/` |
+| Post hoc L1S11 logbook diagnostic | `& $py scripts/post_hoc_logbook_l1s11.py --data-root $D` | `results/rebuilt/post_hoc_step4/` |
+
+- **Comparing with the record.** Each output can be compared by hand with its recorded
+  counterpart. The audit, dataset facts and both post hoc outputs matched their recorded copies in
+  content on 2026-10-12.
+- **Timings are not reproducible numbers.** Profiling, benchmark and model-timing outputs are local
+  measurements that change with machine load and caches. The recorded 12.77 s → 7.77 s comparison
+  was measured once on the author's machine. A later rerun gave different absolute times; only the
+  byte-identical outputs of the two modes are a reproducible claim.
+
+### (c) The one-time protocol v2 scripts
+
+`protocol_v2_validation.py` and `protocol_v2_test.py` were each run exactly once, from a clean
+commit, to produce `results/protocol_v2/` (receipts in `validation/receipt.json` and
+`test_L2S11/receipt.json`). Without extra options both refuse to run while their outputs exist,
+and both refuse uncommitted code. Do not delete or edit `results/protocol_v2/`.
+
+**Validation (L1S11 ↔ L1S12): replay it.**
+
+```powershell
+& $py scripts/protocol_v2_validation.py --data-root $D --replay
+```
+
+- **What it does.** Repeats the whole validation, including the v1 reproduction gate and the
+  selection rule. It reads only L1S11 and L1S12.
+- **Where it writes.** It deletes and recreates `results/rebuilt/protocol_v2_replay/` (validated
+  first, like `--work`) and writes the validation outputs and `selection.json` there.
+- **How it checks.** It compares every recorded file in `results/protocol_v2/validation/` and
+  `selection.json` with its replayed copy, writes `comparison.json`, and fails if any differs.
+- **Not compared.** `receipt.json` (the run's own commit, time and versions) and the hand-written
+  `README.md` are not compared. In `selection.json`, only `decided_utc` and
+  `validation_git_commit` may differ.
+- **No clean tree needed.** The replay does not need a clean tree, because it decides nothing.
+
+**L2S11 test: not rerun.** `protocol_v2_test.py` has no replay mode on purpose. The protocol
+scores L2S11 once, and rerunning the script would score it again. To check the recorded test,
+inspect `results/protocol_v2/test_L2S11/`:
+
+- the predictions were saved before the labels were read
+  (`predictions_before_labels.csv` and its SHA-256);
+- the receipt gives the commit and the protocol hashes;
+- the metrics can be recomputed from the saved predictions.
+
+The once-only guard is local. It checks for existing output folders and a clean tree, so a clone
+with those folders removed and the removal committed would run again. That is how the guard works;
+it is not a reproduction route.
+
+## Tests, documentation and checks
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest                       # all tests
+.\.venv\Scripts\python.exe -m pytest --junitxml=results/test_report/junit.xml --html=results/test_report/report.html --self-contained-html
+.\.venv\Scripts\python.exe scripts/build_docs.py           # HTML API docs into docs/html
+.\.venv\Scripts\python.exe -m black --check scripts tests    # formatting (settings in pyproject.toml)
+.\.venv\Scripts\python.exe -m pyflakes scripts tests         # static checks
+```
+
+All tools (pytest, pytest-html, pdoc, black, pyflakes) come from `requirements-dev.txt` and are
+pinned in `requirements-lock.txt`; nothing relies on a global installation.
+
+- **What the tests cover.**
+  - Features on known signals, and the label-blind reference.
+  - Each v1 and v2 eligibility rule, including the v2 sampling-rate, signal-length and L2S11
+    load-window bounds. v1's flag-only handling of invalid signals is pinned as historical.
+  - The multi-path aggregation order, with pairs and repeats that differ.
+  - Leakage: changing evaluation or reference targets cannot change predictions.
+  - Training-only scaling and the selection rule.
+  - The one-to-one v2 reproduction gate, with duplicate, missing and changed rows.
+  - The L2S11 once-only guard and the order "predictions written before labels read". These use
+    mocked, synthetic data only.
+  - The scratch-folder and recorded-output guards, integrity checks under `python -O`, and
+    agreement of recorded results with independent recalculation.
+- **Saved reports.** The latest reports are in `results/test_report/`.
+- **Reproduction check.** Recorded runs found every deterministic v1 output byte-identical or
+  equal in content (`results/reproduction_check/`).
+- **Fresh-clone verification.** A fresh clone with a new virtual environment from
+  `requirements-lock.txt` passed all tests and the reproduction check against the original raw
+  data; see `docs/progress.md`.
 
 ## Limitations
 
-- Only two labelled specimens in the primary experiment; no broad validation across layups, remaining-useful-life prediction or verified failure-time model.
-- A nominal 150 kHz signal produces a roughly 15 kHz FFT peak using the stored 1.2 MHz rate. Physical timing is unresolved. Current features use sample indices and do not claim a physical time-of-flight.
-- L1S11 uses gain/excitation settings 33/65; L1S12 uses 35/50. Reference ratios remove only constant multiplicative effects under that assumption, not all acquisition differences.
-- The L1S12 20,000-cycle label is missing. A label jump after 10,000 cycles is retained and flagged. Targets have not been independently reconstructed from calibrated force-strain data.
-- Features and models were explored interactively. This is a development experiment, not a sealed final benchmark. Future model selection should disclose this exploration.
-- Checking finite/nonconstant signals does not establish complete waveform quality or absence of clipping.
+- **Specimens.** Three labelled specimens exist in the whole dataset, so two development
+  specimens and one cross-layup test cannot establish general performance. L2S11's labels were
+  seen in an earlier audit, so it is "held out from model development", not untouched.
+- **Labels.** The index is copied from hand-typed tables and cannot be recomputed from the
+  download, because the strain files hold no load. Its definition is inferred.
+- **Feature behaviour.** Path 1→7 has a fixed early, crosstalk-like peak, and it barely responds
+  on L2S11. The 177k jump on all 36 L1S11 paths is consistent with a coupling or mounting change.
+  Both are hypotheses, not tested causes. The amplitude-to-index mapping differed between the
+  development specimens, but these data cannot separate specimen effects from feature choice.
+- **Repeat order.** The first/last repeat-sensitivity variants pick endpoints by logged timestamp,
+  but the chronology is unresolved. The logbook dates go backwards in places, and at L1S11
+  80,000 cycles `L1S11_80000_1_2.mat` is dated before `_1_1`
+  (`results/repeat_sensitivity/selection_provenance.csv`).
+- **Pre-registration gap.** A "no damage" (predict-zero) baseline should have been predeclared
+  alongside the training-mean Dummy.
 
-## Reproducibility and attribution
+## Attribution, licence and AI use
 
-Numerical replay and tests were checked with Python 3.12.14, NumPy 2.3.5, SciPy 1.17.0 and Matplotlib 3.10.8. `requirements.txt` gives compatible ranges, not an exact environment lock. Automated checks are local; a GitHub-hosted CI run is not claimed.
-
-Dataset source: [NASA PCoE Data Set Repository](https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/). The local technical report, README files and logbooks control file-level interpretation. See [data/README.md](data/README.md) and [AI assistance](docs/ai-use.md).
-
-The MIT licence covers original project code and documentation; third-party dataset material and underlying data rights are not relicensed. Raw MAT files, experimental workbooks and source papers are excluded from this repository.
+- **Citation.** Abhinav Saxena, Kai Goebel, Cecilia C. Larrosa, and Fu-Kuo Chang, "CFRP
+  Composites Data Set", NASA Prognostics Data Repository, NASA Ames Research Center, Moffett
+  Field, CA. The dataset's README cites further papers [3]–[5]; see
+  [docs/dataset.md](docs/dataset.md).
+- **Dataset terms.** The repository names no licence. It asks users to acknowledge it and the
+  data donors, and states that the data are used at the user's own risk.
+- **Code licence.** The MIT licence ([LICENSE](LICENSE)) covers this project's code and
+  documentation only. It does not cover the dataset or the papers.
+- **AI use.** ChatGPT/Codex and Claude (Claude Code in VS Code and claude.ai) contributed
+  substantially to code, analysis and documentation. The full AI-use reflection is drafted
+  separately (plan step 8).

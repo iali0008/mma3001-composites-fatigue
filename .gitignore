@@ -52,3 +52,14 @@ results/sensitivity/
 site/
 htmlcov/
 .coverage
+
+# Course material kept locally, never committed.
+MMA3001_2026_Project_Brief.pdf
+
+# Third-party and raw material from the early audit/feasibility work (untracked 2026-10-12,
+# review finding C2/R3). Local copies are kept; earlier commits still contain them.
+/data/audit_stiffness/deps/
+/data/audit_stiffness/*.pdf.txt
+/data/audit_stiffness/logbooks.txt
+/data/audit_stiffness/schemas.txt
+/data/pzt_feasibility/selected_signals.npz

@@ -1,0 +1,5 @@
+pytest>=8,<10
+pytest-html>=4,<5
+pdoc>=14,<17
+black>=26,<27
+pyflakes>=3,<5

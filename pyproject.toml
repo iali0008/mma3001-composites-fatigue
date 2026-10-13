@@ -1,0 +1,8 @@
+# Tool configuration only; the project is run as scripts (see README).
+[tool.black]
+line-length = 100
+skip-string-normalization = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
