@@ -129,6 +129,8 @@ def main(argv=None):
     rows = logbook_rows(data_root / LOGBOOK)
     window = [r for r in rows if isinstance(r['cycles'], (int, float)) and r['cycles'] >= 100000]
     stamps = [r['timestamp'] for r in rows if r['timestamp']]
+    # Rows whose logged timestamp is earlier than the previous row's: evidence that
+    # the date column cannot establish acquisition order.
     backwards = [
         dict(row=rows[i]['row'], previous=stamps[i - 1], current=stamps[i])
         for i in range(1, len(stamps))
@@ -165,6 +167,8 @@ def main(argv=None):
             for r in ratios
             if r['specimen'] == 'L1S11' and (int(r['actuator']), int(r['sensor'])) == pair
         }
+        # If all 36 paths jump together while the excitation is unchanged, a global
+        # cause (coupling, mounting) is more consistent with the data than local damage.
         change[f'{pair[0]}->{pair[1]}'] = get[177000] / get[175000]
     values = np.array(list(change.values()))
     keywords = (

@@ -63,9 +63,13 @@ def triangle_membership(training, queries, tolerance=TOLERANCE):
     for indices in combinations(range(len(training)), 3):
         a, b, c = training[list(indices)]
         edges = np.column_stack((b - a, c - a))
+        # Skip degenerate (collinear) triangles; they enclose no area.
         if abs(np.linalg.det(edges)) <= np.finfo(float).eps * max(1, np.linalg.norm(edges) ** 2):
             continue
         valid_triangles += 1
+        # Barycentric test: a point is in the hull if it lies in any training triangle.
+        # Brute force over all triangles is fine for about 13 points and is independent
+        # of the ConvexHull code it cross-checks.
         weights = np.linalg.solve(edges, (queries - a).T).T
         third = 1 - weights.sum(axis=1)
         inside |= (weights >= -tolerance).all(axis=1) & (third >= -tolerance)
@@ -111,11 +115,14 @@ def diagnose(training, evaluation, tolerance=TOLERANCE):
         'Expected two features',
     )
     require(np.isfinite(training).all() and np.isfinite(evaluation).all(), 'Nonfinite features')
+    # Standardise with training statistics only, matching the models' preprocessing.
     scaler = StandardScaler().fit(training)
     require(np.all(scaler.var_ > 0), 'Constant training feature')
     z_train, z_eval = scaler.transform(training), scaler.transform(evaluation)
     hull = ConvexHull(z_train)
     queries = np.vstack((z_train, z_eval))
+    # Inside or on the hull when every facet's signed distance is <= tolerance;
+    # boundary points count as inside. Membership only, not a distance.
     signed_halfspaces = queries @ hull.equations[:, :-1].T + hull.equations[:, -1]
     inside = (signed_halfspaces <= tolerance).all(axis=1)
     independent = triangle_membership(z_train, queries, tolerance)
@@ -128,6 +135,7 @@ def diagnose(training, evaluation, tolerance=TOLERANCE):
     raw_independent = triangle_membership(training, np.vstack((training, evaluation)), tolerance)
     require(np.array_equal(inside, raw_independent), 'Raw/scaled hull classifications disagree')
     sweeps = []
+    # The classification must not hinge on the tolerance choice.
     for tol in (1e-12, 1e-10, 1e-8):
         primary = (signed_halfspaces <= tol).all(axis=1)
         secondary = triangle_membership(z_train, queries, tol)
@@ -312,6 +320,7 @@ def main(argv=None):
             and [r['cycles'] for r in evaluation_rows] == recorded['evaluation_cycles'],
             'Comparison membership changed',
         )
+        # The diagnostic must use exactly the scaler the recorded models used.
         np.testing.assert_array_equal(scaler.mean_, recorded['input_mean'])
         np.testing.assert_array_equal(scaler.scale_, recorded['input_scale'])
         require(int(scaler.n_samples_seen_) == recorded['input_n'], 'Scaler training count changed')

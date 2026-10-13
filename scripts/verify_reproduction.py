@@ -163,11 +163,14 @@ def classify(new, recorded, same_plot_environment):
         new_json, old_json = load_json(new), load_json(recorded)
         if strip_volatile(new_json) == strip_volatile(old_json):
             return 'equal_content'
+        # Second pass: also ignore fields that depend on where the data and checkout live.
         same = strip_volatile(new_json, ENVIRONMENT_KEYS) == strip_volatile(
             old_json, ENVIRONMENT_KEYS
         )
         return 'equal_except_environment' if same else 'DIFFERENT'
     if new.suffix in ('.csv', '.txt', '.md'):
+        # Line endings follow the checkout (CRLF on Windows), so text is compared with
+        # them normalised.
         a = new.read_text(encoding='utf-8').replace('\r\n', '\n')
         b = recorded.read_text(encoding='utf-8').replace('\r\n', '\n')
         return 'equal_content' if a == b else 'DIFFERENT'
@@ -196,6 +199,7 @@ def compare_folder(new_dir, recorded_dir, same_plot_environment, overrides=None,
     """
     overrides = overrides or {}
     status = {}
+    # Walk the record, not the new folder, so a missing regenerated file is DIFFERENT.
     for recorded in sorted(p for p in recorded_dir.rglob('*') if p.is_file()):
         rel = recorded.relative_to(recorded_dir).as_posix()
         if rel.split('/')[0] in exclude or rel in exclude:
@@ -257,6 +261,7 @@ def main(argv=None):
     work.mkdir(parents=True)
     data = str(args.data_root)
     recorded_env = load_json(RESULTS / 'model_comparison' / 'environment.json')
+    # PNG bytes depend on the Matplotlib version; plots are compared only when it matches.
     same_plots = matplotlib.__version__ == recorded_env['matplotlib']
 
     run('exploratory_regression.py', '--data-root', data, '--output', str(work / 'baseline'))

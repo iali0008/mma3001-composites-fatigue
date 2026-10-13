@@ -41,6 +41,8 @@ def local_path_forms(root):
     """
     posix = root.as_posix()
     windows = posix.replace('/', '\\')
+    # pdoc embeds absolute source paths; scrub every spelling so the pages do not
+    # reveal the local folder layout.
     forms = {posix, windows, windows.replace('\\', '\\\\')}
     return sorted(forms, key=len, reverse=True)
 

@@ -165,3 +165,48 @@ committed before any v2 score. Results and their write-ups are under `results/pr
   training-mean Dummy. A control can look beatable merely because it carries another specimen's
   target level.
 
+
+## Computational cost: FLOPs, arithmetic intensity and memory (2026-10-13)
+
+Brief section 6 asks for FLOP and arithmetic-intensity estimates where appropriate. They are
+rough order-of-magnitude estimates. Their purpose is to show where the time goes, not to
+optimise arithmetic.
+
+- **Feature extraction (v1).** Each of the 254 development MAT files contributes one 2,000-sample
+  receiver signal (path 1→7, 150 kHz).
+  - Mean-centred RMS costs about 4 FLOP per sample (mean, subtract, square, sum), and
+    peak-to-peak about 2 comparisons per sample.
+  - The finite and constant checks on both channels add about 8 operations per sample.
+  - Total: roughly 2×10⁴ operations per file, or about 5×10⁶ for the whole run.
+- **Feature extraction (v2).** The same work is done on all 36 pairs, with both channels checked,
+  so about 7×10⁵ operations per file, or about 2×10⁸ for the 254 development files.
+- **Model fits.**
+  - **OLS.** With n ≤ 25 rows and p ≤ 3 columns, a Householder QR costs about 2np², fewer than
+    500 FLOP per fit. The profile records all six v1 `lstsq` calls together at 0.009 s,
+    mostly call overhead.
+  - **Other families.** The MLP (3 hidden units) and the SVR on 12–25 rows stay below about
+    10⁶ FLOP per fit.
+- **Arithmetic intensity.**
+  - The 254 development files total 672.7 MB on disk (2.64–2.66 MB each;
+    `results/repeat_sensitivity/source_inventory.json`).
+  - v1 therefore does about 5×10⁶ / 6.7×10⁸ ≈ 0.01 FLOP per byte read, and v2 about 0.3.
+  - Both are two to three orders of magnitude below the roughly 10 FLOP/byte needed to keep a
+    modern CPU's arithmetic units busy.
+  - Neither workflow can be compute-bound. Speeding up the arithmetic (vectorisation, BLAS
+    threads, compiled code) cannot help.
+- **What the profiler shows.** `results/model_comparison/raw_profile/tottime.txt` matches this
+  prediction. Of 16.778 s instrumented time:
+  - MAT decoding (`scipy.io.matlab._mio5.read_var_array`, 254 calls) takes 7.745 s of self time;
+  - raw file reads take 1.260 s;
+  - SHA-256 integrity hashing takes 1.160 s.
+- **What the optimisation targets.** The workflow is bound by I/O and MAT decoding. The chosen
+  optimisation therefore overlaps file reading and decoding (`raw_loading.iter_coupons`,
+  prefetch), not arithmetic. The serial median of 12.77 s fell to a prefetch median of 7.77 s,
+  with byte-identical outputs (`results/model_comparison/raw_benchmark/summary.json`). These
+  timings were measured once on one machine and are not reproducible numbers.
+- **Memory.** Memory was not measured.
+  - By construction, the serial loader holds one decoded file at a time. The prefetch loader
+    holds at most `workers` pending files plus the one being processed.
+  - Only per-recording summaries are kept after decoding.
+  - Peak memory therefore scales with a few decoded files, not with the dataset size, but no
+    measured figure is reported.

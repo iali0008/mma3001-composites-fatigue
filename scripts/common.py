@@ -59,6 +59,8 @@ def require(condition, message):
     ...
     ValueError: stop here
     """
+    # An explicit raise, not `assert`: asserts are stripped under `python -O`,
+    # which would silently disable every integrity check in the workflows.
     if not condition:
         raise ValueError(message)
 
@@ -92,6 +94,8 @@ def require_not_recorded(path, root=ROOT):
     root = Path(root).resolve()
     for name in RECORDED_RESULTS:
         folder = root / 'results' / name
+        # Refuse all three overlaps: the folder itself, anything inside it, and any
+        # ancestor (writing or deleting an ancestor would also replace the record).
         overlap = path == folder or folder in path.parents or path in folder.parents
         require(not overlap, f'Recorded results are immutable; refusing to write to {path}')
     return path
@@ -110,6 +114,7 @@ def digest(path):
     str
         64-character lowercase hexadecimal digest.
     """
+    # Hash raw bytes so a CRLF/LF checkout difference shows up as a different digest.
     with Path(path).open('rb') as stream:
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
@@ -152,6 +157,7 @@ def read_csv(path):
     list of dict
         One dictionary per data row; all values are strings.
     """
+    # utf-8-sig tolerates a byte-order mark from files edited on Windows.
     with Path(path).open(encoding='utf-8-sig', newline='') as stream:
         return list(csv.DictReader(stream))
 
@@ -258,6 +264,8 @@ def scalar(value):
     (4.0, None, None, None, None)
     """
     a = np.asarray(value)
+    # MATLAB placeholders arrive as empty or multi-element arrays; they mean
+    # 'missing' and must stay None rather than be coerced to a number.
     if a.size != 1 or not np.issubdtype(a.dtype, np.number):
         return None
     v = float(a.ravel()[0])
@@ -293,4 +301,6 @@ def waveform_features(x):
     (2.12132, 6.0)
     """
     x = np.asarray(x, dtype=float)
+    # RMS is mean-centred so a DC offset does not count as signal energy; PTP is
+    # set by the single largest swing, so it can track an early crosstalk burst.
     return float(np.sqrt(np.mean((x - x.mean()) ** 2))), float(np.ptp(x))

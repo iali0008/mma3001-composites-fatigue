@@ -51,6 +51,7 @@ def load_protocol(path=PROTOCOL_PATH):
     protocol = load_json(path)
     require(protocol['protocol_version'] == 2, 'Not a protocol v2 configuration')
     v1 = load_json(ROOT / 'config' / 'model_comparison.json')
+    # Protocol v2 may add inputs but not retune models; enforce v1 settings here.
     for name, params in v1['models'].items():
         require(protocol['models'][name] == params, f'Model settings differ from v1: {name}')
     require(protocol['models']['mlp_seeds'] == v1['mlp_seeds'], 'MLP seeds differ from v1')
@@ -99,12 +100,16 @@ def summarise_file(coupon, specimen, filename, protocol, read_labels):
         pair passes; ``bad_pairs`` lists pairs with invalid signals.
     """
     if not read_labels:
+        # Drop the label field before anything else touches the structure, so a held-out
+        # specimen's label cannot leak into features or eligibility by accident.
         coupon.pop('straingage_data', None)
     rules = protocol['eligibility']
     records = coupon.get('path_data', [])
     records = [records] if isinstance(records, dict) else list(records)
     counts, settings, rms, ptp, bad = Counter(), {}, {}, {}, []
     for p in records:
+        # Select records by their stored fields, never by array position: path order
+        # differs between files.
         if scalar(p.get('frequency', [])) != rules['frequency_khz']:
             continue
         pair = (scalar(p.get('actuator', [])), scalar(p.get('sensor', [])))
@@ -118,6 +123,8 @@ def summarise_file(coupon, specimen, filename, protocol, read_labels):
         x = np.asarray(p.get('signal_sensor', []), dtype=float).ravel()
         ok = all(
             len(s) == rules['signal_length_samples'] and np.isfinite(s).all() and np.ptp(s) > 0
+            # Both channels must be full-length, finite and non-constant; a failing pair
+            # is listed in bad_pairs and makes the whole recording ineligible.
             for s in (a, x)
         )
         if ok:
@@ -202,6 +209,8 @@ def eligibility_reasons(summary, specimen_rules, modal_vector, protocol):
         summary['settings'].get(p, (None,) * 3)[2] != rules['stored_sampling_rate'] for p in grid
     ):
         reasons.append('stored sampling rate mismatch')
+    # Any gain/amplitude change on any pair would change amplitude ratios without
+    # damage, so recordings must match the specimen's most common settings.
     if setting_vector(summary, protocol) != modal_vector:
         reasons.append('setting vector differs from specimen modal vector')
     if any(p in summary['bad_pairs'] or p not in summary['rms'] for p in grid):
@@ -240,6 +249,8 @@ def extract_specimen(data_root, specimen, protocol, read_labels, workers=1):
     for path, digest_value, coupon in iter_coupons(files, workers):
         hashes[path.relative_to(data_root).as_posix()] = digest_value
         summaries.append(summarise_file(coupon, specimen, path.name, protocol, read_labels))
+    # The modal settings vector is taken over the whole specimen's metadata
+    # (retrospective, label-free), as declared in the protocol.
     modal = Counter(setting_vector(s, protocol) for s in summaries).most_common(1)[0][0]
     for s in summaries:
         reasons = eligibility_reasons(s, rules, modal, protocol)
@@ -288,6 +299,8 @@ def build_checkpoints(summaries, protocol):
     )
     medians = {}
     for cycle, group in groups.items():
+        # Step 1 of the declared order: per pair, take the median over the repeats at
+        # this checkpoint.
         medians[cycle] = {
             p: (
                 float(np.median([s['rms'][p] for s in group])),
@@ -310,6 +323,8 @@ def build_checkpoints(summaries, protocol):
         group = groups[cycle]
         labels = {s['published_index'] for s in group if s['published_index'] is not None}
         require(len(labels) <= 1, f'Conflicting published labels: {specimen}, {cycle}')
+        # Step 2: normalise each pair by its own reference, before any aggregation
+        # across pairs, so pairs with large raw amplitudes do not dominate.
         rms_ratio = {p: medians[cycle][p][0] / ref[p][0] for p in grid}
         ptp_ratio = {p: medians[cycle][p][1] / ref[p][1] for p in grid}
         checkpoints.append(
@@ -327,6 +342,8 @@ def build_checkpoints(summaries, protocol):
                 peak_to_peak=medians[cycle][base][1],
                 relative_rms=medians[cycle][base][0] / ref[base][0],
                 relative_ptp=medians[cycle][base][1] / ref[base][1],
+                # Step 3: the multi-path feature is the median of the 36 per-pair ratios
+                # (median of ratios, not the ratio of medians).
                 mp_relative_rms=float(np.median(list(rms_ratio.values()))),
                 mp_relative_ptp=float(np.median(list(ptp_ratio.values()))),
                 log10_cycles=float(np.log10(cycle)),
@@ -404,6 +421,8 @@ def select_final(candidates, protocol):
     )
     best = min(c['worst_direction_MAE'] for c in candidates)
     order_m, order_i = rule['tie_break_order']['model'], rule['tie_break_order']['input_set']
+    # Candidates within the tolerance count as tied; the predeclared order then
+    # prefers the simpler model and the single-path input.
     tied = sorted(
         [c for c in candidates if c['worst_direction_MAE'] - best <= rule['tie_tolerance_mae']],
         key=lambda c: (order_m.index(c['model']), order_i.index(c['input_set'])),
@@ -433,6 +452,8 @@ def read_published_labels(data_root, specimen, protocol, workers=1):
     dict
         ``{filename: (cycles, label)}``; ``label`` is ``None`` when missing.
     """
+    # Labels only: this is called after the held-out predictions are on disk, so it
+    # returns nothing that could change features or the frozen model.
     folder = protocol['specimens'][specimen]['folder']
     files = sorted((data_root / folder / 'PZT-data').glob(specimen + '_*.mat'))
     return {
@@ -468,6 +489,8 @@ def attach_labels(checkpoints, labels):
     for cp in checkpoints:
         names = cp['filenames'].split('; ')
         require(all(n in labels for n in names), f"Unknown file at cycle {cp['cycles']}")
+        # A checkpoint takes the label of its eligible files only; disagreement is an
+        # error rather than something to average away.
         found = {labels[n][1] for n in names if labels[n][1] is not None}
         require(len(found) <= 1, f"Conflicting published labels at cycle {cp['cycles']}")
         out.append(dict(cp, published_index=found.pop() if found else None))
@@ -504,6 +527,8 @@ def sanity_criteria(late_predictions, prediction_at_100k, training_targets, prot
     late = [float(v) for v in late_predictions]
     low, high = min(training_targets), max(training_targets)
     width = high - low
+    # C3: allow half a training range of extrapolation either side; beyond that a
+    # linear model is extrapolating too far to be plausible.
     bounds = (low - 0.5 * width, high + 0.5 * width)
     c1 = dict(
         mean_late_prediction=float(np.mean(late)),

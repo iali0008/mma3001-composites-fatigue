@@ -76,6 +76,8 @@ def verify_git_exclusions(source_paths, source_scope, archive):
     if not source_scope.is_relative_to(ROOT):
         return {'status': 'External dataset is outside this repository'}
     paths = [p.relative_to(ROOT).as_posix() for p in source_paths]
+    # Ask git itself whether every raw file is ignored, rather than trusting the
+    # .gitignore patterns to be right.
     ignored = subprocess.run(
         ['git', 'check-ignore', '--stdin', '-z'],
         cwd=ROOT,
@@ -126,6 +128,7 @@ def compare_tables(actual, expected, keys, fields):
     """
     a = {tuple(r[k] for k in keys): r for r in actual}
     b = {tuple(r[k] for k in keys): r for r in expected}
+    # Unique keys and equal key sets first, so a duplicate cannot hide a missing row.
     require(len(a) == len(actual) and len(b) == len(expected), 'Duplicate table keys')
     require(a.keys() == b.keys(), f'Table membership differs: {keys}')
     for key in a:
@@ -178,6 +181,7 @@ def load_logs(data_root):
                 if not filename.endswith('.mat'):
                     continue
                 acquired = ''
+                # Date and time sit in separate cells; no timezone is recorded.
                 if isinstance(values[0], datetime) and isinstance(values[1], time):
                     acquired = datetime.combine(values[0].date(), values[1]).isoformat(' ')
                 key = (specimen, filename)
@@ -233,10 +237,14 @@ def order_repeats(repeats, logs):
                 'Logbook condition mismatch',
             )
     stamps = [log['acquired_at'] if log else '' for log in evidence]
+    # Unique logged timestamps give an order, but not verified chronology: the
+    # logbook dates go backwards in places (e.g. L1S11 80,000 cycles), so first/last
+    # means 'by logged timestamp, chronology unresolved'.
     if all(stamps) and len(set(stamps)) == len(stamps):
         ordered = sorted(repeats, key=lambda r: logs[(r['specimen'], r['filename'])]['acquired_at'])
         return ordered, 'logbook_timestamp', ''
     reason = 'Missing logbook timestamp' if not all(stamps) else 'Tied logbook timestamps'
+    # Fallback is labelled filename_ordered, never presented as chronology.
     return sorted(repeats, key=lambda r: r['filename']), 'filename_ordered', reason
 
 
@@ -315,6 +323,8 @@ def build_variants(recordings, baseline_rows, references, logs):
             )
         for variant in variants:
             cp = copy.deepcopy(baseline)
+            # Only the repeat selection changes between variants; targets, references and
+            # models stay fixed, so any MAE change is due to the repeat choice alone.
             selected = (
                 repeats if variant == 'median' else [ordered[0 if variant == 'first' else -1]]
             )
@@ -429,6 +439,8 @@ def main(argv=None):
         check=True,
     )
     rebuilt = output / 'median_rebuild'
+    # If the median rebuild does not reproduce the recorded baseline, comparing
+    # variants against it would be meaningless.
     # Gate all variant fitting on complete baseline reproduction.
     for name, keys in [
         ('recordings.csv', ('specimen', 'filename')),
@@ -473,6 +485,7 @@ def main(argv=None):
             row[f'{metric}_change'] = row[metric] - ref[metric]
             row[f'{metric}_change_percent'] = 100 * (row[metric] / ref[metric] - 1)
         if row['model'] == 'log10_cycles':
+            # The cycle-only model uses no PZT feature, so it must not change at all.
             require(row['MAE_change'] == row['RMSE_change'] == 0, 'Cycle baseline changed')
     for name, rows in [
         ('metrics.csv', all_metrics),

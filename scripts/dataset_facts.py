@@ -52,6 +52,7 @@ def peak_bin(x):
     >>> peak_bin(np.sin(2 * np.pi * 25 * np.arange(n) / n))
     25
     """
+    # Skip bin 0 (DC) below; the strongest remaining bin gives samples per period.
     spectrum = np.abs(np.fft.rfft(np.asarray(x, float) - np.mean(x)))
     return int(np.argmax(spectrum[1:]) + 1)
 
@@ -72,6 +73,7 @@ def burst_span(x, fraction=0.05):
         Span in samples (0 if nothing exceeds the threshold).
     """
     d = np.abs(np.asarray(x, float) - np.median(x))
+    # Burst span: first to last sample above 5% of the peak deviation.
     idx = np.flatnonzero(d > fraction * d.max())
     return int(idx[-1] - idx[0] + 1) if len(idx) else 0
 
@@ -134,6 +136,8 @@ def main(argv=None):
             modal_peak_bin=k,
             samples_per_period=n / k,
             peak_frequency_if_stored_rate_hz=k * 1.2e6 / n,
+            # If the burst really is at the nominal frequency, n/k samples per period imply
+            # this rate; it disagrees with the stored 1.2e6 by a factor of about 10.
             implied_sampling_rate_hz=freq * 1e3 * n / k,
             median_burst_span_samples=float(np.median([r[2] for r in rows])),
         )

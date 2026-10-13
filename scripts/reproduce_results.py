@@ -76,6 +76,8 @@ def read_checkpoints(path: Path) -> list[dict]:
         refs = [r for r in local if r['is_reference']]
         if len(refs) != 1 or refs[0]['cycles'] != min(r['cycles'] for r in local):
             raise ValueError('Each specimen must have one earliest-checkpoint reference.')
+        # A reference divided by itself must give exactly 1; anything else means the
+        # table and the reference rule disagree.
         if not np.allclose([refs[0]['relative_rms'], refs[0]['relative_ptp']], 1):
             raise ValueError('Reference feature ratios must equal one.')
         if not np.allclose(
@@ -122,6 +124,8 @@ def evaluate(rows: list[dict]) -> tuple[list[dict], list[dict], list[dict]]:
             center, scale = x.mean(axis=0), x.std(axis=0)
             if (scale == 0).any():
                 raise ValueError(f'Constant training feature: {model}')
+            # Centre and scale before QR for numerical stability; slopes are mapped back to
+            # raw feature units below. Independent of the lstsq solver used originally.
             z = (x - center) / scale
             if np.linalg.matrix_rank(z) != len(fields):
                 raise ValueError(f'Rank-deficient training features: {model}')

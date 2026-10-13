@@ -60,6 +60,7 @@ def main(argv=None):
         l2s11_scored_n=len(obs),
         l2s11_observed_range=[float(obs.min()), float(obs.max())],
         l2s11_observed_mean=float(obs.mean()),
+        # Post hoc 'no damage' baseline: predicting 0 everywhere has MAE = mean |index|.
         constant_zero_predictor_MAE=float(np.mean(np.abs(obs))),
         frozen_MAE=float(np.mean(np.abs(pred - obs))),
         frozen_prediction_range=[float(pred.min()), float(pred.max())],

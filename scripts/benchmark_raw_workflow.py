@@ -43,6 +43,8 @@ def main(argv=None):
     )
     out.mkdir(parents=True, exist_ok=True)
     # Declared before timings: one warm-up per mode, then three alternating pairs.
+    # Alternate the order of serial and prefetch runs so slow drift (caches, thermal
+    # state) does not favour one mode. Unprofiled: cProfile overhead would distort it.
     plan = [(1, -1), (4, -1), (1, 0), (4, 0), (4, 1), (1, 1), (1, 2), (4, 2)]
     rows = []
     for workers, repeat in plan:

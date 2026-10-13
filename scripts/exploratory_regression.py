@@ -109,6 +109,8 @@ def assess_recording(coupon, specimen, filename, experiment):
     settings = experiment['specimens'][specimen]
     path_rule = experiment['path']
     cycle, load = scalar(coupon.get('cycles', [])), scalar(coupon.get('load', []))
+    # The label is read only to report it and to add LABEL_REASON; no acquisition
+    # rule below looks at it.
     label = scalar(coupon.get('straingage_data', {}).get('stiffness_degradation', []))
     r = dict(
         specimen=specimen,
@@ -154,11 +156,15 @@ def assess_recording(coupon, specimen, filename, experiment):
         for field in ('signal_actuator', 'signal_sensor'):
             x = np.asarray(p.get(field, []), dtype=float).ravel()
             r[field + '_length'] = len(x)
+            # Historical v1 behaviour: these flags are recorded but are not exclusion
+            # reasons (protocol v2 excludes such signals). Kept so the baseline reproduces.
             r[field + '_nonfinite'] = bool(not np.isfinite(x).all())
             r[field + '_constant'] = bool(len(x) and np.isfinite(x).all() and np.all(x == x[0]))
             if len(x) != experiment['signal_length']:
                 reasons.append(f"{field} length != {experiment['signal_length']}")
         sensor = np.asarray(p.get('signal_sensor', []), dtype=float).ravel()
+    # Acquisition eligibility ignores the label rule, so an unlabelled recording can
+    # still serve as the reference.
     acquisition_ok = not [s for s in reasons if s != LABEL_REASON]
     r['_acquisition_eligible'] = acquisition_ok
     r['_rms'] = r['_ptp'] = None
@@ -215,6 +221,9 @@ def select_reference(rows):
     Only ``_acquisition_eligible``, ``cycles`` and the private features are read,
     so an earlier unlabelled checkpoint would be chosen over a labelled one.
     """
+    # Label-blind reference: choose from acquisition-eligible recordings whether or
+    # not they are labelled; picking from labelled checkpoints would let the label
+    # table decide the denominator.
     candidates = [r for r in rows if r['_acquisition_eligible'] and r['_rms'] is not None]
     require(bool(candidates), 'No acquisition-eligible reference recording')
     first = min(r['cycles'] for r in candidates)
@@ -222,6 +231,7 @@ def select_reference(rows):
     reference = dict(
         cycles=int(first),
         filenames='; '.join(r['filename'] for r in group),
+        # Median over the reference repeats, matching how every checkpoint is summarised.
         rms_denominator=float(np.median([r['_rms'] for r in group])),
         ptp_denominator=float(np.median([r['_ptp'] for r in group])),
     )
@@ -275,6 +285,8 @@ def summarise_checkpoint(specimen, cycle, repeats, experiment):
         published_jump_flag=any(r['published_jump_flag'] for r in repeats),
     )
     for feature in FEATURES:
+        # One value per checkpoint: the median over its repeats. Repeats are not
+        # independent labels, so they are never used as extra rows.
         values = [r[feature] for r in repeats if r[feature] is not None]
         cp[feature] = float(np.median(values)) if values else None
         cp[feature + '_valid_repeats'] = len(values)
@@ -316,6 +328,8 @@ def build_checkpoints(specimen, rows, experiment):
     require(bool(cps), f'No eligible checkpoints: {specimen}')
     ref = select_reference(rows)
     reference = dict(specimen=specimen, **ref)
+    # The reference checkpoint may carry no label, in which case it is not among
+    # the eligible (labelled) checkpoints and is added back for normalisation only.
     if not any(cp['cycles'] == ref['cycles'] for cp in cps):
         # Unlabelled reference: keep its features for normalisation, never for scoring.
         group = [r for r in rows if r['_acquisition_eligible'] and r['cycles'] == ref['cycles']]
@@ -336,6 +350,8 @@ def build_checkpoints(specimen, rows, experiment):
         )
         cp['is_reference'] = cp['cycles'] == ref['cycles']
         cp['reference_cycles'] = ref['cycles']
+        # Dividing by the specimen's own reference cancels a constant gain factor and
+        # makes the features dimensionless.
         cp['relative_rms'] = cp['mean_centred_rms'] / ref['rms_denominator']
         cp['relative_ptp'] = cp['peak_to_peak'] / ref['ptp_denominator']
         cp['log10_cycles'] = float(np.log10(cp['cycles']))
@@ -375,6 +391,8 @@ def fit_ols(train, test, fields):
     beta, _, rank, singular = np.linalg.lstsq(X, y, rcond=None)
     require(rank == X.shape[1], 'Rank-deficient design')
     q, upper = np.linalg.qr(X, mode='reduced')
+    # Cross-check the least-squares solution with an independent QR solve
+    # (np.testing raises even under -O, unlike a bare assert).
     np.testing.assert_allclose(beta, np.linalg.solve(upper, q.T @ y), rtol=1e-9, atol=1e-10)
     return beta, Xtest @ beta, float(singular[0] / singular[-1])
 
@@ -396,8 +414,12 @@ def evaluate_transfer(checkpoints, experiment):
         coefficients. Reference and unlabelled checkpoints are never used.
     """
     predictions, metrics, coefficients = [], [], []
+    # References are excluded from fitting and scoring (their ratio is 1 by
+    # construction), and missing labels stay missing rather than being interpolated.
     usable = [r for r in checkpoints if not r['is_reference'] and r['published_index'] is not None]
     for train_name, test_name in experiment['directions']:
+        # Split by specimen, never by recording: a random split would put correlated
+        # checkpoints of the same coupon on both sides.
         train = [r for r in usable if r['specimen'] == train_name]
         test = [r for r in usable if r['specimen'] == test_name]
         for model, fields in MODELS.items():
@@ -767,6 +789,7 @@ def main(argv=None):
     )
     predictions, metrics, coefficients = evaluate_transfer(checkpoints, experiment)
     check_integrity(recordings, checkpoints, references, predictions, experiment)
+    # Re-hash every source after the run to prove the raw data was not modified.
     for file, source_digest in hashes.items():
         require(
             hashlib.sha256((data_root / file).read_bytes()).hexdigest() == source_digest,

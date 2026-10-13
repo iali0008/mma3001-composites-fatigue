@@ -83,6 +83,8 @@ def main(argv=None):
         '--output',
         str(out / 'rebuilt'),
     ]
+    # Profile in a subprocess so the profiler sees the unmodified script exactly as
+    # users run it; its outputs are then checked against the baseline.
     with (out / 'stdout.txt').open('w', encoding='utf-8') as log:
         subprocess.run(command, check=True, stdout=log)
     check_output(out / 'rebuilt')

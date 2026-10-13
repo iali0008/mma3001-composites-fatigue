@@ -82,6 +82,8 @@ def git_state():
         ``commit`` (hex) and ``clean`` (bool; ignored files do not count).
     """
     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+    # --porcelain ignores git-ignored files, so scratch output under results/rebuilt/
+    # does not count as an uncommitted change.
     status = subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT, text=True)
     return dict(commit=commit, clean=not status.strip())
 
@@ -132,6 +134,8 @@ def fit_predict(model, seed, input_set, train, evaluation, protocol):
     convergence_warnings : int
         Number of ``ConvergenceWarning`` raised during the fit.
     """
+    # Fit on the training specimen's targets only; evaluation targets are used
+    # solely for scoring, after prediction.
     estimator = build_model(model, seed)
     y = np.array([r['published_index'] for r in train])
     with warnings.catch_warnings(record=True) as caught:
@@ -366,6 +370,7 @@ def main(argv=None):
         out, selection_path = OUT, SELECTION
     out.mkdir(parents=True)
     development = [s for s, v in protocol['specimens'].items() if v['role'] == 'development']
+    # L2S11 is never in this list, so the validation cannot open the held-out specimen.
     require(development == ['L1S11', 'L1S12'], 'Validation uses exactly L1S11 and L1S12')
     save_json(
         out / 'receipt.json',
@@ -398,6 +403,7 @@ def main(argv=None):
         ratios += pair_rows
         references.append(reference)
         hashes.update(local_hashes)
+    # Re-hash every source after extraction: the raw files must be unchanged.
     for file, value in hashes.items():
         require(digest(data_root / file) == value, f'Source file changed: {file}')
 
@@ -414,6 +420,7 @@ def main(argv=None):
 
     seeds = protocol['models']['mlp_seeds']
     predictions, metrics, convergence = [], [], 0
+    # One BLAS thread, as in v1, so MLP and SVR fits are bit-reproducible.
     with threadpool_limits(limits=protocol['models']['threads']):
         for train_name, evaluation_name in protocol['validation']['directions']:
             train, evaluation = usable[train_name], usable[evaluation_name]
@@ -454,6 +461,9 @@ def main(argv=None):
                                     )
                                 )
 
+    # Reproduction gate, before any multi-path score is written: if the single-path
+    # rows (controls included; v1 recorded them in the same run) do not reproduce
+    # the v1 predictions exactly, nothing new is reported.
     gate_rows = [
         dict(p, input_set='single_path_1_7')
         for p in predictions
@@ -487,6 +497,7 @@ def main(argv=None):
                     )
                     for field in ('MAE', 'RMSE', 'R2', 'mean_residual'):
                         values = [g[field] for g in group]
+                        # MLP: median over the five seeds per direction; no seed is selected.
                         row[field], row[field + '_min'], row[field + '_max'] = (
                             float(np.median(values)),
                             min(values),

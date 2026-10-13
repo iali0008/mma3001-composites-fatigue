@@ -21,6 +21,8 @@ def load_one(path):
     tuple
         ``(path, sha256_hex, coupon_dict)``.
     """
+    # Hash the exact bytes that are decoded, so the recorded hash proves which file
+    # produced each feature.
     sha256 = hashlib.sha256(path.read_bytes()).hexdigest()
     coupon = loadmat(path, simplify_cells=True)['coupon']
     return path, sha256, coupon
@@ -55,6 +57,9 @@ def iter_coupons(paths, workers=1):
     if workers < 1:
         raise ValueError('workers must be positive')
     iterator = iter(paths)
+    # Prefetch: keep `workers` reads in flight but yield results strictly in input
+    # order, so downstream code (and every output) is identical to the serial loop.
+    # The gain comes from overlapping file I/O and MAT decoding, not from reordering.
     with ThreadPoolExecutor(max_workers=workers) as executor:
         pending = deque()
         for _ in range(workers):
@@ -62,6 +67,7 @@ def iter_coupons(paths, workers=1):
             if path is not None:
                 pending.append(executor.submit(load_one, path))
         while pending:
+            # popleft() waits for the oldest request first: this is what preserves order.
             result = pending.popleft().result()
             yield result
             path = next(iterator, None)

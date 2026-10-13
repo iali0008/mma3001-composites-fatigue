@@ -61,6 +61,8 @@ def horizontal_offset(actuator, sensor):
     >>> horizontal_offset(6, 7), horizontal_offset(1, 7)
     (0, 5)
     """
+    # Strip geometry: actuator a faces sensor 13 - a, so this counts how many
+    # positions a path is offset from straight across.
     return abs(13 - actuator - sensor)
 
 
@@ -90,6 +92,8 @@ def path_summary(path):
         if field == 'signal_sensor' and out[field + '_finite']:
             out['rms'] = float(np.sqrt(np.mean((x - x.mean()) ** 2)))
             out['ptp'] = float(np.ptp(x))
+            # Where the largest swing occurs; a fixed early peak suggests crosstalk rather
+            # than a wave that travelled through the coupon.
             out['peak_index'] = int(np.argmax(np.abs(x - x.mean())))
     return out
 
@@ -130,6 +134,8 @@ def audit(data_root, workers=1):
                 )
                 for p in records
             ]
+            # A short signature of the stored path order, to detect files whose records are
+            # arranged differently (the reason paths are matched by ID, not position).
             order = hashlib.sha256(repr(triples).encode()).hexdigest()[:12]
             at150 = [path_summary(p) for p, t in zip(records, triples) if t[2] == FREQUENCY_KHZ]
             pairs = Counter((s['actuator'], s['sensor']) for s in at150)
@@ -266,6 +272,8 @@ def geometry_consistency(paths, recordings):
             pair: float(np.median([p['rms'] for p in rows if (p['actuator'], p['sensor']) == pair]))
             for pair in pair_list
         }
+        # Compare amplitude patterns on a log scale so specimens with different gain
+        # settings can be ranked against each other.
         patterns[specimen] = np.log([med[pair] for pair in pair_list])
         peaks[specimen] = np.array(
             [
@@ -317,6 +325,7 @@ def per_pair_setting_changes(paths):
             per_pair[(p['actuator'], p['sensor'])].add((p['gain'], p['amplitude']))
             vectors[p['filename']][(p['actuator'], p['sensor'])] = (p['gain'], p['amplitude'])
         frozen = {f: tuple(sorted(v.items())) for f, v in vectors.items()}
+        # The most common full-grid settings vector; recordings that differ are listed.
         modal = Counter(frozen.values()).most_common(1)[0][0]
         out[specimen] = dict(
             pairs_with_multiple_settings=sum(len(v) > 1 for v in per_pair.values()),
@@ -351,6 +360,8 @@ def fatigue_load_stats(recordings, specimen, window):
         and r['cycles'] > 0
         and r['condition'].casefold() == 'loaded'
     ]
+    # The L2S11 window comes from this metadata alone (its fatigue mean load is
+    # higher than Layup 1's), never from labels or scores.
     inside = [r for r in loaded if window[0] <= r['load_kips'] <= window[1]]
     return dict(
         window_kips=list(window),

@@ -113,6 +113,8 @@ def select_reference_candidates(recordings):
     ValueError
         If a specimen has no acquisition-eligible recording.
     """
+    # Label-blind audit: candidates come from acquisition rules alone, so a match
+    # with the baseline shows the recorded references did not depend on labels.
     candidates = [r for r in recordings if acquisition_eligible(r)]
     references = {}
     for specimen in EXPERIMENT['specimens']:
@@ -263,10 +265,14 @@ def build_model(name, seed=None):
         require(seed in CONFIG['mlp_seeds'], 'Use only predeclared MLP seeds')
         params['hidden_layer_sizes'] = tuple(params['hidden_layer_sizes'])
         params['random_state'] = seed
+    # Trees and the mean predictor are scale-invariant. For the others the scaler is
+    # a pipeline step, so it is fitted on the training specimen only.
     scale = (
         'passthrough' if name in ('DecisionTreeRegressor', 'DummyRegressor') else StandardScaler()
     )
     pipeline = Pipeline([('scale', scale), ('model', classes[name](**params))])
+    # SVR and MLP also see a standardised target (fitted on training targets only);
+    # predictions are transformed back to published-index units.
     return (
         TransformedTargetRegressor(regressor=pipeline, transformer=StandardScaler())
         if name in ('SVR', 'MLPRegressor')
@@ -298,6 +304,7 @@ def split_rows(rows, train_name, evaluation_name):
     require(train_name != evaluation_name, 'Training and evaluation specimens must differ')
     specimens = EXPERIMENT['specimens']
     require({r['specimen'] for r in rows} == set(specimens), 'Unexpected specimen set')
+    # A whole specimen on each side; reference checkpoints never enter fit or score.
     train = [r for r in rows if r['specimen'] == train_name and not r['is_reference']]
     evaluation = [r for r in rows if r['specimen'] == evaluation_name and not r['is_reference']]
     require(
@@ -464,6 +471,8 @@ def benchmark(name, seed, train, evaluation, info):
     y = np.array([r['published_index'] for r in train])
     samples, notices = [], []
     timing = CONFIG['timing']
+    # Negative repetitions are untimed warm-ups (imports, caches). Every repetition
+    # fits a fresh estimator so no state carries over between samples.
     for rep in range(-timing['warmups'], timing['repetitions']):
         estimator = build_model(name, seed)
         with warnings.catch_warnings(record=True) as caught:
@@ -472,6 +481,7 @@ def benchmark(name, seed, train, evaluation, info):
             estimator.fit(x, y)
             fit_ms = 1000 * (time.perf_counter() - start)
             start = time.perf_counter()
+            # A single predict on about 12 rows is near timer resolution; average many calls.
             for _ in range(timing['prediction_calls_per_repeat']):
                 estimator.predict(xt)
             predict_ms = (
@@ -610,6 +620,8 @@ def main(argv=None):
     )
     out.mkdir(parents=True, exist_ok=True)
     protected = [p for directory in recorded for p in directory.rglob('*') if p.is_file()]
+    # Hash every recorded file now and again at the end: the run must leave the
+    # record untouched.
     preserved = {p.relative_to(ROOT).as_posix(): digest(p) for p in protected}
     scope = data_root.parent
     source_paths = sorted(p for p in scope.rglob('*') if p.is_file())
@@ -648,6 +660,8 @@ def main(argv=None):
         [],
     )
     resolved = {}
+    # One numerical-library thread: fits are reproducible and timings do not depend
+    # on the core count.
     with threadpool_limits(limits=CONFIG['timing']['threads']):
         environment = dict(
             python=platform.python_version(),
@@ -729,6 +743,8 @@ def main(argv=None):
                                     residual=float(p - r['published_index']),
                                 )
                             )
+                    # sklearn OLS must reproduce the baseline's own OLS predictions exactly before
+                    # the other model families are trusted on the same inputs.
                     if name in ('LinearRegression', 'log_cycle_OLS'):
                         old_name = (
                             'relative_rms_and_ptp' if name == 'LinearRegression' else 'log10_cycles'

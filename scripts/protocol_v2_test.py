@@ -231,6 +231,9 @@ def main(argv=None):
     args = parser.parse_args(argv)
     data_root = args.data_root.resolve()
 
+    # Once-only guard: either output folder blocks a rerun, even after a crash, and a
+    # dirty tree is refused so the receipt names the exact code. The guard is local:
+    # it cannot stop a run in another clone with these folders removed.
     # 1. Guards and receipt, before anything is read.
     require(
         not TEST.exists() and not SANITY.exists(),
@@ -241,6 +244,8 @@ def main(argv=None):
     protocol = load_protocol()
     selection = load_json(SELECTION)
     model, input_set = selection['selected']['model'], selection['selected']['input_set']
+    # Create both folders before any data is read, so an interrupted run still arms
+    # the guard.
     TEST.mkdir(parents=True)
     SANITY.mkdir(parents=True)
     save_json(
@@ -273,12 +278,15 @@ def main(argv=None):
     fitted = {}
     with threadpool_limits(limits=protocol['models']['threads']):
         for name in (model,) + CONTROLS:
+            # The selected model was LinearRegression; refuse rather than improvise the
+            # undeclared MLP seed handling for the pooled fit.
             require(name != 'MLPRegressor', 'MLP handling is not needed for this selection')
             estimator = build_model(name)
             estimator.fit(matrix(train_rows, name, input_set, protocol), y_train)
             fitted[name] = estimator
 
     # 3. L2S11 features without labels; predictions written before labels are read.
+    # read_labels=False: the label field is removed from each L2S11 structure on load.
     summaries, hashes = extract_specimen(data_root, 'L2S11', protocol, False, args.workers)
     l2, _, reference = build_checkpoints(summaries, protocol)
     require(
@@ -299,6 +307,7 @@ def main(argv=None):
                     predicted=float(value),
                 )
             )
+    # The file and its hash fix every L2S11 prediction before the labels are in memory.
     write_rows(TEST / 'predictions_before_labels.csv', blind)
     save_json(
         TEST / 'predictions_before_labels.sha256.json',
@@ -309,6 +318,7 @@ def main(argv=None):
     )
 
     # 4. Labels, then scoring.
+    # The first and only read of L2S11 labels in the whole workflow.
     labels = read_published_labels(data_root, 'L2S11', protocol, args.workers)
     for file, value in hashes.items():
         require(digest(data_root / file) == value, f'Source file changed: {file}')
@@ -347,6 +357,7 @@ def main(argv=None):
             )
     cycle_one = sorted({lab for cyc, lab in labels.values() if cyc == 1 and lab is not None})
     frozen = next(m for m in metrics if m['role'] == 'frozen')
+    # Predeclared wording rule: 'beats a control' means a lower L2S11 MAE, no more.
     beats = {m['model']: frozen['MAE'] < m['MAE'] for m in metrics if m['role'] != 'frozen'}
     # Persist the scores immediately, so nothing after this point can lose the single run.
     write_rows(TEST / 'checkpoint_features.csv', l2)
@@ -428,6 +439,7 @@ def main(argv=None):
     late = [l1[c] for c in late_cycles]
     late_pred = fitted[model].predict(matrix(late, model, input_set, protocol))
     at_100k = float(fitted[model].predict(matrix([l1[100000]], model, input_set, protocol))[0])
+    # Plausibility only: these late L1S11 checkpoints are unlabelled.
     criteria = sanity_criteria(late_pred, at_100k, y_train, protocol)
     slope = float(np.polyfit(late_cycles, late_pred, 1)[0])
     ranges = {
