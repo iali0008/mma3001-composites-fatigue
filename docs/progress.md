@@ -210,3 +210,6 @@ Newest entries last. Every Claude session (Claude Code in VS Code or claude.ai) 
   RMS-only slope numbers also have no repo output (review pack R3), so they are marked "verify
   before citing". Next: Sans reviews `review-fixes`, merges to `main` and pushes; then step 7
   (report draft).
+- 2026-10-13 (Claude Code, VS Code): Sans approved the `protocol_v2_validation.py --replay` mode
+  (added in `223a76d`). Its recorded mode and guards are unchanged. `review-fixes` was merged to
+  `main` by Sans (`78e5675`, PR #1). Step 7 (report draft) starts on branch `report-draft`.
