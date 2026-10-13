@@ -159,7 +159,9 @@ $py = ".\.venv\Scripts\python.exe"
 `test_report`) are never written by any workflow script. Every output option refuses them, and the
 defaults are under the git-ignored `results/rebuilt/` (or `results/reproduced/`). Rerunning a
 command overwrites its own folder under `results/rebuilt/`. `verify_reproduction.py` deletes and
-recreates only its `--work` folder, which must lie strictly inside `results/rebuilt/`. Two documented
+recreates only its `--work` folder, which must lie strictly inside `results/rebuilt/`, and
+`protocol_v2_validation.py --replay` deletes and recreates only `results/rebuilt/protocol_v2_replay/`.
+Two documented
 commands deliberately refresh tracked files: the pytest-report command (`results/test_report/`) and
 the docs build (`docs/html/`).
 
@@ -203,15 +205,40 @@ the docs build (`docs/html/`).
 
 ### (c) The one-time protocol v2 scripts
 
-`protocol_v2_validation.py` and `protocol_v2_test.py` were run exactly once to produce
-`results/protocol_v2/`. Both refuse to run while their outputs exist, and the L2S11 test also
-refuses uncommitted code. A supported way to re-execute or replay them has not been added yet.
-Until then:
+`protocol_v2_validation.py` and `protocol_v2_test.py` were each run exactly once, from a clean
+commit, to produce `results/protocol_v2/` (receipts in `validation/receipt.json` and
+`test_L2S11/receipt.json`). Without extra options both refuse to run while their outputs exist,
+and both refuse uncommitted code. Do not delete or edit `results/protocol_v2/`.
 
-- **Inspect the record.** Their committed receipts record the commit and protocol hashes.
-- **Check consistency.** Their saved predictions can be checked against their metrics, which the
-  test suite does for the v1 comparison.
-- **Do not rerun them in the recorded repository.** Do not delete or edit `results/protocol_v2/`.
+**Validation (L1S11 ↔ L1S12): replay it.**
+
+```powershell
+& $py scripts/protocol_v2_validation.py --data-root $D --replay
+```
+
+- **What it does.** Repeats the whole validation, including the v1 reproduction gate and the
+  selection rule. It reads only L1S11 and L1S12.
+- **Where it writes.** It deletes and recreates `results/rebuilt/protocol_v2_replay/` (validated
+  first, like `--work`) and writes the validation outputs and `selection.json` there.
+- **How it checks.** It compares every recorded file in `results/protocol_v2/validation/` and
+  `selection.json` with its replayed copy, writes `comparison.json`, and fails if any differs.
+- **Not compared.** `receipt.json` (the run's own commit, time and versions) and the hand-written
+  `README.md` are not compared. In `selection.json`, only `decided_utc` and
+  `validation_git_commit` may differ.
+- **No clean tree needed.** The replay does not need a clean tree, because it decides nothing.
+
+**L2S11 test: not rerun.** `protocol_v2_test.py` has no replay mode on purpose. The protocol
+scores L2S11 once, and rerunning the script would score it again. To check the recorded test,
+inspect `results/protocol_v2/test_L2S11/`:
+
+- the predictions were saved before the labels were read
+  (`predictions_before_labels.csv` and its SHA-256);
+- the receipt gives the commit and the protocol hashes;
+- the metrics can be recomputed from the saved predictions.
+
+The once-only guard is local. It checks for existing output folders and a clean tree, so a clone
+with those folders removed and the removal committed would run again. That is how the guard works;
+it is not a reproduction route.
 
 ## Tests, documentation and checks
 

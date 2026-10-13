@@ -12,9 +12,15 @@ opened by this script. The workflow follows ``docs/protocol_v2.md``:
 5. apply the predeclared worst-direction-MAE selection rule and write
    ``results/protocol_v2/selection.json``.
 
-Example
--------
+The recorded run happened once (commit ``6ccee92``). ``--replay`` repeats the
+same computation into ``results/rebuilt/protocol_v2_replay/`` and compares every
+output with the record, which it never writes; it needs no clean tree.
+
+Examples
+--------
 ``python scripts/protocol_v2_validation.py --data-root "data/2.+Composites/2. Composites"``
+
+``python scripts/protocol_v2_validation.py --data-root "..." --replay``
 """
 
 from __future__ import annotations
@@ -24,6 +30,7 @@ from datetime import datetime, timezone
 import json
 from pathlib import Path
 import platform
+import shutil
 import subprocess
 import warnings
 
@@ -36,7 +43,7 @@ import sklearn
 from sklearn.exceptions import ConvergenceWarning
 from threadpoolctl import threadpool_limits
 
-from common import ROOT, digest, read_csv, require, save_json, write_csv
+from common import ROOT, digest, load_json, read_csv, require, save_json, write_csv
 from model_comparison import build_model
 from protocol_v2 import (
     CONTROLS,
@@ -50,9 +57,17 @@ from protocol_v2 import (
     load_protocol,
     select_final,
 )
+from verify_reproduction import check_work_folder, compare_folder, strip_volatile
 
 OUT = ROOT / 'results' / 'protocol_v2' / 'validation'
 SELECTION = ROOT / 'results' / 'protocol_v2' / 'selection.json'
+REPLAY = ROOT / 'results' / 'rebuilt' / 'protocol_v2_replay'
+REPLAY_NOT_COMPARED = {
+    'README.md': 'hand-written notes',
+    'receipt.json': 'provenance of the run (commit, time, versions), not a computed output',
+}
+SELECTION_RUN_KEYS = frozenset({'decided_utc', 'validation_git_commit'})
+"""Fields of ``selection.json`` that identify the run rather than the decision."""
 V1_PREDICTIONS = ROOT / 'results' / 'model_comparison' / 'predictions.csv'
 COLOURS = {'single_path_1_7': '#2a78d6', 'multi_path_36': '#eb6834', 'control': '#6b6b6b'}
 MARKERS = {'single_path_1_7': 'o', 'multi_path_36': '^', 'control': 's'}
@@ -254,8 +269,44 @@ def plot_direction(predictions, train_name, evaluation_name, path):
     plt.close(fig)
 
 
+def compare_replay(replay_root, recorded_out=OUT, recorded_selection=SELECTION):
+    """Compare a replayed validation with the recorded one, without writing the record.
+
+    Parameters
+    ----------
+    replay_root : pathlib.Path
+        Replay folder holding ``validation/`` and ``selection.json``.
+    recorded_out, recorded_selection : pathlib.Path, optional
+        Recorded validation folder and selection file (temporary copies in tests).
+
+    Returns
+    -------
+    dict
+        ``{'files': {name: status}, 'counts': {status: n}, 'not_compared': {...}}``,
+        with statuses as in :func:`verify_reproduction.classify`.
+    """
+    recorded_env = load_json(ROOT / 'results' / 'model_comparison' / 'environment.json')
+    same_plots = matplotlib.__version__ == recorded_env['matplotlib']
+    files = {
+        'validation/' + k: v
+        for k, v in compare_folder(
+            replay_root / 'validation', recorded_out, same_plots, exclude=REPLAY_NOT_COMPARED
+        ).items()
+    }
+    # The decision must match exactly; only the run's own time and commit may differ.
+    new_selection = replay_root / 'selection.json'
+    same = new_selection.is_file() and strip_volatile(
+        load_json(new_selection), SELECTION_RUN_KEYS
+    ) == strip_volatile(load_json(recorded_selection), SELECTION_RUN_KEYS)
+    files['selection.json'] = 'equal_content' if same else 'DIFFERENT'
+    counts = {}
+    for value in files.values():
+        counts[value] = counts.get(value, 0) + 1
+    return dict(files=files, counts=counts, not_compared=REPLAY_NOT_COMPARED)
+
+
 def main(argv=None):
-    """Run protocol v2 validation and write the frozen selection.
+    """Run protocol v2 validation and write the frozen selection (or replay it).
 
     Parameters
     ----------
@@ -265,26 +316,42 @@ def main(argv=None):
     Raises
     ------
     ValueError
-        If the tree is dirty, outputs already exist, an integrity check fails or
-        the reproduction gate fails.
+        If the tree is dirty (recorded run only), outputs already exist, an
+        integrity check fails, the reproduction gate fails, or a replayed
+        output differs from the record.
     """
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument('--data-root', required=True, type=Path)
     parser.add_argument('--workers', type=int, choices=(1, 4), default=4)
+    parser.add_argument(
+        '--replay',
+        action='store_true',
+        help='Recompute into results/rebuilt/protocol_v2_replay/ and compare with the record.',
+    )
     args = parser.parse_args(argv)
     data_root = args.data_root.resolve()
     protocol = load_protocol()
     state = git_state()
-    require(state['clean'], 'Commit all changes first so the receipt identifies the code')
-    require(
-        not OUT.exists() and not SELECTION.exists(),
-        'Protocol v2 validation outputs already exist; they are not overwritten',
-    )
-    OUT.mkdir(parents=True)
+    if args.replay:
+        # A replay is a check, not a decision: it may run on a dirty tree, and it
+        # replaces only its own scratch folder, validated before deletion.
+        replay_root = check_work_folder(REPLAY, data_root)
+        if replay_root.exists():
+            shutil.rmtree(replay_root)
+        out, selection_path = replay_root / 'validation', replay_root / 'selection.json'
+    else:
+        # The recorded run must identify its code by a clean commit and may run once.
+        require(state['clean'], 'Commit all changes first so the receipt identifies the code')
+        require(
+            not OUT.exists() and not SELECTION.exists(),
+            'Protocol v2 validation outputs already exist; they are not overwritten',
+        )
+        out, selection_path = OUT, SELECTION
+    out.mkdir(parents=True)
     development = [s for s, v in protocol['specimens'].items() if v['role'] == 'development']
     require(development == ['L1S11', 'L1S12'], 'Validation uses exactly L1S11 and L1S12')
     save_json(
-        OUT / 'receipt.json',
+        out / 'receipt.json',
         dict(
             started_utc=datetime.now(timezone.utc).isoformat(),
             git=state,
@@ -292,6 +359,7 @@ def main(argv=None):
             protocol_doc_sha256=digest(PROTOCOL_DOC),
             specimens_read=development,
             held_out_specimen_read=False,
+            replay=args.replay,
             python=platform.python_version(),
             numpy=np.__version__,
             sklearn=sklearn.__version__,
@@ -375,7 +443,7 @@ def main(argv=None):
         if p['input_set'] in ('single_path_1_7', 'none')
     ]
     gate = reproduction_gate(gate_rows)
-    save_json(OUT / 'reproduction_gate.json', gate)
+    save_json(out / 'reproduction_gate.json', gate)
     for p in predictions:  # plotting label: controls drawn once
         p['input_set'] = 'single_path_1_7' if p['input_set'] == 'none' else p['input_set']
 
@@ -449,14 +517,14 @@ def main(argv=None):
         ('predictions.csv', predictions),
         ('candidates.csv', candidates),
     ]:
-        write_csv(OUT / name, rows, list(dict.fromkeys(k for r in rows for k in r)))
-    save_json(OUT / 'source_hashes.json', hashes)
+        write_csv(out / name, rows, list(dict.fromkeys(k for r in rows for k in r)))
+    save_json(out / 'source_hashes.json', hashes)
     for train_name, evaluation_name in protocol['validation']['directions']:
         plot_direction(
             predictions,
             train_name,
             evaluation_name,
-            OUT / f'predictions_{train_name}_to_{evaluation_name}.png',
+            out / f'predictions_{train_name}_to_{evaluation_name}.png',
         )
     selection = dict(
         rule=protocol['selection_rule'],
@@ -473,7 +541,7 @@ def main(argv=None):
         decided_utc=datetime.now(timezone.utc).isoformat(),
         status='frozen: L2S11 has not been opened; commit this file before step 4',
     )
-    save_json(SELECTION, selection)
+    save_json(selection_path, selection)
     print(
         json.dumps(
             dict(
@@ -485,6 +553,14 @@ def main(argv=None):
             indent=2,
         )
     )
+    if args.replay:
+        comparison = compare_replay(replay_root)
+        save_json(replay_root / 'comparison.json', comparison)
+        print(json.dumps(dict(counts=comparison['counts']), indent=2))
+        require(
+            'DIFFERENT' not in comparison['counts'],
+            f'Replay differs from the record: see {replay_root / "comparison.json"}',
+        )
 
 
 if __name__ == '__main__':
