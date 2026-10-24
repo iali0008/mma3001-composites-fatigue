@@ -36,16 +36,21 @@ def recorded_rows():
 
 
 class ReproductionGateTests(unittest.TestCase):
+    """The v1 reproduction gate must match the recorded predictions one-to-one."""
+
     def setUp(self):
+        """Load the recorded v1 predictions."""
         self.rows = recorded_rows()
 
     def test_exact_record_passes(self):
+        """Known answer: the record itself passes with zero difference and the summary keys."""
         gate = v2v.reproduction_gate(self.rows)
         self.assertEqual(gate['compared_predictions'], len(self.rows))
         self.assertEqual(gate['max_abs_difference'], 0.0)
         self.assertEqual(set(gate), {'compared_predictions', 'max_abs_difference', 'rtol', 'atol'})
 
     def test_recorded_v2_run_passes_the_stricter_gate(self):
+        """The saved v2 single-path rows pass the gate and give the recorded gate summary."""
         # The saved v2 single-path rows (controls are relabelled single_path_1_7 there)
         # must satisfy the one-to-one gate and give the recorded gate summary.
         with (v2v.OUT / 'predictions.csv').open(newline='', encoding='utf-8') as stream:
@@ -56,26 +61,31 @@ class ReproductionGateTests(unittest.TestCase):
         self.assertEqual(v2v.reproduction_gate(rows), recorded)
 
     def test_duplicate_row_replacing_another_fails(self):
+        """Guard: a duplicate row standing in for a missing one fails instead of being counted."""
         rows = self.rows[:-1] + [dict(self.rows[0])]
         with self.assertRaisesRegex(ValueError, 'Duplicate prediction row'):
             v2v.reproduction_gate(rows)
 
     def test_missing_row_fails(self):
+        """Guard: a missing recorded prediction fails the gate."""
         with self.assertRaisesRegex(ValueError, 'not reproduced'):
             v2v.reproduction_gate(self.rows[:-1])
 
     def test_extra_row_fails(self):
+        """Guard: a prediction with no recorded counterpart fails the gate."""
         extra = dict(self.rows[0], cycles=123456789)
         with self.assertRaisesRegex(ValueError, 'No recorded v1 prediction'):
             v2v.reproduction_gate(self.rows + [extra])
 
     def test_changed_target_fails(self):
+        """Guard: a changed observed value fails the gate."""
         rows = [dict(r) for r in self.rows]
         rows[5]['observed'] = 999.0
         with self.assertRaisesRegex(ValueError, 'observed'):
             v2v.reproduction_gate(rows)
 
     def test_changed_specimen_fails(self):
+        """Guard: a changed specimen field fails the gate."""
         for field in ('evaluation_specimen', 'specimen'):
             rows = [dict(r) for r in self.rows]
             rows[3][field] = 'L2S11'
@@ -83,6 +93,7 @@ class ReproductionGateTests(unittest.TestCase):
                 v2v.reproduction_gate(rows)
 
     def test_changed_prediction_fails(self):
+        """Guard: a prediction changed by 1e-6 fails the gate."""
         rows = [dict(r) for r in self.rows]
         rows[7]['predicted'] += 1e-6
         with self.assertRaisesRegex(ValueError, 'predicted'):
@@ -117,7 +128,10 @@ def synthetic_checkpoints():
 
 
 class OnceOnlyGuardTests(unittest.TestCase):
+    """The L2S11 scorer stops before reading anything if it ran before or the tree is dirty."""
+
     def setUp(self):
+        """Point both output folders at a temporary directory and mock data and label reading."""
         self.temp = tempfile.TemporaryDirectory()
         base = Path(self.temp.name)
         self.test_dir, self.sanity_dir = base / 'test_L2S11', base / 'sanity_L1S11'
@@ -131,10 +145,12 @@ class OnceOnlyGuardTests(unittest.TestCase):
         self.labels = mock.patch.object(pt, 'read_published_labels').start()
 
     def tearDown(self):
+        """Stop all patches and remove the temporary directory."""
         mock.patch.stopall()
         self.temp.cleanup()
 
     def test_refuses_when_either_output_folder_exists(self):
+        """Guard: an existing output folder stops the run before git, extraction or labels."""
         for folder in (self.test_dir, self.sanity_dir):
             folder.mkdir()
             git = mock.patch.object(pt, 'git_state').start()
@@ -147,6 +163,7 @@ class OnceOnlyGuardTests(unittest.TestCase):
         self.labels.assert_not_called()
 
     def test_refuses_dirty_tree_before_creating_or_reading_anything(self):
+        """Guard: uncommitted changes stop the run before any folder is created or data read."""
         mock.patch.object(pt, 'git_state', return_value=dict(commit='x', clean=False)).start()
         with self.assertRaisesRegex(ValueError, 'Commit all changes'):
             pt.main(['--data-root', self.temp.name])
@@ -159,6 +176,13 @@ class LabelOrderTests(unittest.TestCase):
     """Run the whole scorer on synthetic data and check when labels are read."""
 
     def test_predictions_are_written_before_labels_are_read(self):
+        """Leakage: L2S11 is extracted label-blind; labels are read once, after blind predictions.
+
+        Notes
+        -----
+        Extraction, checkpoint building and label reading are replaced by the nested
+        helpers below, which record the call order. The cycle-1 label is reported, not scored.
+        """
         cps = synthetic_checkpoints()
         events = []
         with tempfile.TemporaryDirectory() as temp:
@@ -172,14 +196,17 @@ class LabelOrderTests(unittest.TestCase):
             blind = test_dir / 'predictions_before_labels.csv'
 
             def extract(data_root, specimen, protocol, read_labels, workers):
+                """Record the call and return one placeholder summary."""
                 events.append(('extract', specimen, read_labels))
                 return [dict(specimen=specimen)], {}
 
             def build(summaries, protocol):
+                """Return the synthetic checkpoints of the summary's specimen."""
                 rows = [dict(c) for c in cps[summaries[0]['specimen']]]
                 return rows, [], next(r for r in rows if r['is_reference'])
 
             def read_labels(data_root, specimen, protocol, workers):
+                """Record the call, check the blind files exist, and return synthetic labels."""
                 # The blind predictions and their hash must already be on disk.
                 events.append(('labels', specimen, blind.is_file()))
                 self.assertTrue((test_dir / 'predictions_before_labels.sha256.json').is_file())
@@ -187,6 +214,7 @@ class LabelOrderTests(unittest.TestCase):
                 return {f'L2S11_{c}.mat': (c, v) for c, v in values.items()}
 
             def attach(rows, labels):
+                """Attach labels to checkpoints by cycle."""
                 by_cycle = {c: lab for c, lab in labels.values()}
                 return [dict(r, published_index=by_cycle.get(r['cycles'])) for r in rows]
 

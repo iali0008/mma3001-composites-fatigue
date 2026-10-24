@@ -29,6 +29,7 @@ RECORDED_RESULTS = (
     'reproduction_check',
     'dataset_facts',
     'test_report',
+    'memory_profile',
 )
 """Recorded folders under ``results/``; workflows must never write into them.
 

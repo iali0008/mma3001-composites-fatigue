@@ -241,6 +241,11 @@ def extract_specimen(data_root, specimen, protocol, read_labels, workers=1):
         One summary per file with ``eligible`` and ``exclusion_reasons`` added.
     hashes : dict
         SHA-256 per file, keyed relative to ``data_root``.
+
+    Raises
+    ------
+    ValueError
+        If the specimen folder holds no PZT files.
     """
     rules = protocol['specimens'][specimen]
     files = sorted((data_root / rules['folder'] / 'PZT-data').glob(specimen + '_*.mat'))

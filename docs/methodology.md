@@ -204,9 +204,17 @@ optimise arithmetic.
   prefetch), not arithmetic. The serial median of 12.77 s fell to a prefetch median of 7.77 s,
   with byte-identical outputs (`results/model_comparison/raw_benchmark/summary.json`). These
   timings were measured once on one machine and are not reproducible numbers.
-- **Memory.** Memory was not measured.
-  - By construction, the serial loader holds one decoded file at a time. The prefetch loader
-    holds at most `workers` pending files plus the one being processed.
-  - Only per-recording summaries are kept after decoding.
-  - Peak memory therefore scales with a few decoded files, not with the dataset size, but no
-    measured figure is reported.
+- **Memory (measured 2026-10-24, `results/memory_profile/`).**
+  - **What is reported.** Peak traced allocations, including allocations registered with
+    `tracemalloc`; not total process RAM, and not necessarily all native-library allocations.
+  - **How.** Each workload ran three times, each in a fresh process (`scripts/memory_profile.py`).
+    Imports, and for fit+predict the saved features, were loaded before tracing started.
+  - **Medians.**
+    - v1 extraction, serial: 9,967,517 bytes (9.51 MiB).
+    - Selected LinearRegression fit+predict, both directions, training-only scaling included:
+      84,535 bytes.
+    - All six v1 comparators: 185,865 bytes.
+  - **Why it stays small.** The serial loader holds one decoded file at a time. The prefetch
+    loader holds at most `workers` pending files plus the one being processed, and only
+    per-recording summaries are kept, so peak memory scales with a few decoded files rather than
+    with the dataset size. The prefetch mode was not measured.

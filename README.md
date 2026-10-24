@@ -19,13 +19,16 @@ specimen, so this does not show that amplitude features cannot transfer in gener
 
 1. [Engineering problem, inputs and outputs](#engineering-problem-inputs-and-outputs)
 2. [Results at a glance](#results-at-a-glance)
-3. [Repository structure](#repository-structure)
-4. [Setup](#setup)
-5. [Data download](#data-download)
-6. [Reproduce](#reproduce)
-7. [Tests, documentation and checks](#tests-documentation-and-checks)
-8. [Limitations](#limitations)
-9. [Attribution, licence and AI use](#attribution-licence-and-ai-use)
+3. [Pipeline (protocol v2)](#pipeline-protocol-v2)
+4. [Repository structure](#repository-structure)
+5. [Setup](#setup)
+6. [Data download](#data-download)
+7. [Reproduce](#reproduce)
+8. [Tests and checks](#tests-and-checks)
+9. [Documentation](#documentation)
+10. [Limitations](#limitations)
+11. [Attribution and licence](#attribution-and-licence)
+12. [AI use and reflection](#ai-use-and-reflection)
 
 ## Engineering problem, inputs and outputs
 
@@ -98,6 +101,42 @@ or mounting change, but that cause is not confirmed (`results/protocol_v2/sanity
 **Recommendations.** Use features that isolate the transmitted wave (S0-mode windowing, time of
 flight, ΔPSD as in Saxena et al. 2011), add more labelled specimens, or calibrate per specimen.
 
+## Pipeline (protocol v2)
+
+Function names are from `scripts/`; each box gives a step's main output. The model was selected
+using L1S11 ↔ L1S12 validation only. `selection.json` was committed before `protocol_v2_test.py`
+ran, and the L2S11 scores are never used to choose a model.
+
+```mermaid
+flowchart TD
+    subgraph VAL["1 · Validation and model selection: protocol_v2_validation.py (L1S11, L1S12 only)"]
+        A["MAT file<br/>PZT-data/*.mat"] -->|"file path"| B["raw_loading.load_one<br/>out: path, SHA-256, coupon dict"]
+        B -->|"coupon dict"| C["summarise_file<br/>out: per-file summary: cycles, load, condition,<br/>settings, RMS/PTP of the 36 pairs at 150 kHz"]
+        C -->|"summary + specimen's modal settings"| D["eligibility_reasons<br/>out: exclusion reasons, eligible flag"]
+        D -->|"eligible summaries"| E["build_checkpoints<br/>out: per-checkpoint relative RMS/PTP, path 1→7<br/>and 36-path median; label-blind reference"]
+        E -->|"train on one specimen, evaluate on the other,<br/>both directions"| F["build_model / fit_predict<br/>out: predictions of 4 families × 2 input sets<br/>(+ log-cycle and Dummy controls)"]
+        F -->|"predictions + targets"| G["scores<br/>out: MAE, RMSE, R² per direction"]
+        G -->|"worst-direction MAE per candidate"| H["select_final<br/>out: frozen model and input set"]
+    end
+    H --> R1[("results/protocol_v2/validation/<br/>results/protocol_v2/selection.json")]
+
+    subgraph FIN["2 · Pooled refit and final evaluation: protocol_v2_test.py (run once)"]
+        P["build_model + fit<br/>selected model refit on the 25 pooled<br/>L1S11 + L1S12 checkpoints"]
+        T["L2S11 MAT files"] -->|"load_one → summarise_file → eligibility_reasons<br/>→ build_checkpoints, labels not read"| U["L2S11 checkpoint features<br/>(reference: cycle 3)"]
+        P --> V["predict L2S11<br/>out: predictions_before_labels.csv + SHA-256"]
+        U --> V
+        V -->|"then read_published_labels + attach_labels"| W["scores<br/>out: L2S11 MAE, frozen model vs<br/>fixed log-cycle and Dummy references"]
+        P --> S["sanity_criteria<br/>out: C1–C3 on unlabelled L1S11 125k–227k"]
+    end
+    R1 -->|"frozen choice (read only)"| P
+    W --> R2[("results/protocol_v2/test_L2S11/")]
+    S --> R3[("results/protocol_v2/sanity_L1S11/")]
+```
+
+Stage 2 only reads `selection.json`; nothing flows back from stage 2 to stage 1. The v1 workflows
+(`exploratory_regression.py`, `model_comparison.py`) follow the same extract → checkpoint → fit →
+score pattern on path 1→7 alone.
+
 ## Repository structure
 
 | Path | Contents |
@@ -116,6 +155,7 @@ flight, ΔPSD as in Saxena et al. 2011), add more labelled specimens, or calibra
 | `results/protocol_v2/` | v2 validation, frozen selection, L2S11 test, sanity check, post hoc notes |
 | `results/dataset_facts/` | Label links, strain-file contents and FFT sampling-rate check |
 | `results/reproduction_check/`, `results/test_report/` | Reproduction reports and pytest reports |
+| `results/memory_profile/` | Peak traced memory (tracemalloc) of extraction and fit+predict |
 | `archive/` | Earlier exploratory scripts and the label audit (`archive/audit/ASSESSMENT.md`) |
 | `data/README.md` | Where the raw data must be placed; the raw download is git-ignored |
 | `data/audit_stiffness/`, `data/pzt_feasibility/` | Historical, unmaintained: derived label-audit and feasibility tables, figures and notebooks (raw and third-party material untracked; see [docs/dataset.md](docs/dataset.md)) |
@@ -159,7 +199,7 @@ $py = ".\.venv\Scripts\python.exe"
 
 **What may be overwritten.** Recorded results (`results/baseline`, `repeat_sensitivity`,
 `model_comparison`, `protocol_v2`, `protocol_v2_audit`, `reproduction_check`, `dataset_facts`,
-`test_report`) are never written by any workflow script. Every output option refuses them, and the
+`test_report`, `memory_profile`) are never written by any workflow script. Every output option refuses them, and the
 defaults are under the git-ignored `results/rebuilt/` (or `results/reproduced/`). Rerunning a
 command overwrites its own folder under `results/rebuilt/`. `verify_reproduction.py` deletes and
 recreates only its `--work` folder, which must lie strictly inside `results/rebuilt/`, and
@@ -243,12 +283,11 @@ The once-only guard is local. It checks for existing output folders and a clean 
 with those folders removed and the removal committed would run again. That is how the guard works;
 it is not a reproduction route.
 
-## Tests, documentation and checks
+## Tests and checks
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest                       # all tests
 .\.venv\Scripts\python.exe -m pytest --junitxml=results/test_report/junit.xml --html=results/test_report/report.html --self-contained-html
-.\.venv\Scripts\python.exe scripts/build_docs.py           # HTML API docs into docs/html
 .\.venv\Scripts\python.exe -m black --check scripts tests    # formatting (settings in pyproject.toml)
 .\.venv\Scripts\python.exe -m pyflakes scripts tests         # static checks
 ```
@@ -268,12 +307,34 @@ pinned in `requirements-lock.txt`; nothing relies on a global installation.
     mocked, synthetic data only.
   - The scratch-folder and recorded-output guards, integrity checks under `python -O`, and
     agreement of recorded results with independent recalculation.
+- **Docstrings.** Every test class and test method has a docstring stating the property it
+  checks: leakage, a guard, or a known answer.
 - **Saved reports.** The latest reports are in `results/test_report/`.
 - **Reproduction check.** Recorded runs found every deterministic v1 output byte-identical or
   equal in content (`results/reproduction_check/`).
 - **Fresh-clone verification.** A fresh clone with a new virtual environment from
   `requirements-lock.txt` passed all tests and the reproduction check against the original raw
   data; see `docs/progress.md`.
+- **Peak memory.** `scripts/memory_profile.py --data-root $D` measures peak traced allocations
+  (tracemalloc) in fresh processes. It writes `results/rebuilt/memory_profile/`; the recorded run
+  is in `results/memory_profile/`. The figures include allocations registered with tracemalloc;
+  they are not total process RAM, and not necessarily all native-library allocations.
+
+## Documentation
+
+- **HTML API docs.** Open `docs/html/index.html`. There is one page per module in `scripts/`;
+  `tests/` is not rendered.
+- **Rebuilding.** `.\.venv\Scripts\python.exe scripts/build_docs.py` runs pdoc on every module
+  in `scripts/`, writes `docs/html/` and replaces local paths with `<repository>`.
+- **Docstring style.** All docstrings use NumPy style (Parameters, Returns, Raises, Examples).
+- **Test report.** `results/test_report/report.html` (pytest-html) and
+  `results/test_report/junit.xml`, produced by the pytest-report command in
+  [Tests and checks](#tests-and-checks).
+- **Written documents.** Methods: [docs/methodology.md](docs/methodology.md). Dataset:
+  [docs/dataset.md](docs/dataset.md). Protocols: [docs/protocol_v2.md](docs/protocol_v2.md) and
+  [docs/model_comparison_protocol.md](docs/model_comparison_protocol.md). Session log:
+  [docs/progress.md](docs/progress.md).
+- Project report: docs/report/<name>.pdf (added at submission)
 
 ## Limitations
 
@@ -293,7 +354,7 @@ pinned in `requirements-lock.txt`; nothing relies on a global installation.
 - **Pre-registration gap.** A "no damage" (predict-zero) baseline should have been predeclared
   alongside the training-mean Dummy.
 
-## Attribution, licence and AI use
+## Attribution and licence
 
 - **Citation.** Abhinav Saxena, Kai Goebel, Cecilia C. Larrosa, and Fu-Kuo Chang, "CFRP
   Composites Data Set", NASA Prognostics Data Repository, NASA Ames Research Center, Moffett
@@ -303,6 +364,16 @@ pinned in `requirements-lock.txt`; nothing relies on a global installation.
   data donors, and states that the data are used at the user's own risk.
 - **Code licence.** The MIT licence ([LICENSE](LICENSE)) covers this project's code and
   documentation only. It does not cover the dataset or the papers.
-- **AI use.** ChatGPT/Codex and Claude (Claude Code in VS Code and claude.ai) contributed
-  substantially to code, analysis and documentation. The full AI-use reflection is drafted
-  separately (plan step 8).
+
+## AI use and reflection
+
+ChatGPT/Codex and Claude (Claude Code in VS Code and claude.ai) contributed substantially to the
+code, analysis and documentation in this repository. The dated session log in
+[docs/progress.md](docs/progress.md) records what each session did.
+
+- **What AI tools were used for.** _[Placeholder: Sans to complete.]_
+- **What I verified myself, and how.** _[Placeholder: Sans to complete.]_
+- **Where AI output was wrong or had to be corrected.** _[Placeholder: Sans to complete.]_
+- **How protocol pre-declaration guarded against AI-assisted p-hacking.** _[Placeholder: Sans
+  to complete.]_
+- **My own reflection.** _[Placeholder: Sans to complete.]_
