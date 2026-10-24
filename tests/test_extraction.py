@@ -86,6 +86,7 @@ def coupon(
 
 
 def assess(name='x.mat', specimen='L1S11', **kwargs):
+    """Assess one synthetic recording with the v1 rules; keyword arguments go to `coupon`."""
     return assess_recording(coupon(**kwargs), specimen, name, EXPERIMENT)
 
 
@@ -99,11 +100,13 @@ class HistoricalV1ScreeningTests(unittest.TestCase):
     """
 
     def assess_with(self, field, values):
+        """Assess the default coupon with one field of path 1 -> 7 replaced by ``values``."""
         c = coupon()
         c['path_data'][0][field] = values
         return assess_recording(c, 'L1S11', 'x.mat', EXPERIMENT)
 
     def test_nonfinite_or_constant_actuator_is_flagged_but_eligible(self):
+        """A bad actuator signal is flagged but stays eligible, as in the recorded v1 baseline."""
         for name, values in (('nonfinite', np.full(2000, np.nan)), ('constant', np.ones(2000))):
             with self.subTest(name=name):
                 r = self.assess_with('signal_actuator', values)
@@ -112,18 +115,21 @@ class HistoricalV1ScreeningTests(unittest.TestCase):
                 self.assertIsNotNone(r['mean_centred_rms'])
 
     def test_constant_sensor_is_flagged_but_eligible_with_zero_features(self):
+        """A constant receiver is flagged but eligible, with zero RMS and PTP (historical v1)."""
         r = self.assess_with('signal_sensor', np.full(2000, 3.0))
         self.assertTrue(r['signal_sensor_constant'])
         self.assertTrue(r['eligible'])
         self.assertEqual((r['mean_centred_rms'], r['peak_to_peak']), (0.0, 0.0))
 
     def test_nonfinite_sensor_is_flagged_but_eligible_without_features(self):
+        """A nonfinite receiver is flagged, stays eligible and has no features (historical v1)."""
         r = self.assess_with('signal_sensor', np.full(2000, np.nan))
         self.assertTrue(r['signal_sensor_nonfinite'])
         self.assertTrue(r['eligible'])
         self.assertIsNone(r['mean_centred_rms'])
 
     def test_no_recorded_eligible_v1_recording_is_flagged(self):
+        """No eligible v1 recording (51) is flagged, so flag-only screening changed no result."""
         import csv
 
         with (ROOT / 'results' / 'baseline' / 'recordings.csv').open(encoding='utf-8') as stream:
@@ -135,25 +141,33 @@ class HistoricalV1ScreeningTests(unittest.TestCase):
 
 
 class FeatureTests(unittest.TestCase):
+    """Known-answer checks for RMS, peak-to-peak and missing-value handling."""
+
     def test_sine_rms_and_peak_to_peak(self):
+        """Known answer: a sine of amplitude A has RMS A/sqrt(2) and peak-to-peak 2A."""
         for amplitude in (0.5, 3.0, 250.0):
             rms, ptp = waveform_features(sine(amplitude))
             self.assertAlmostEqual(rms, amplitude / np.sqrt(2), places=9)
             self.assertAlmostEqual(ptp, 2 * amplitude, places=9)
 
     def test_features_ignore_constant_offset(self):
+        """Features are mean-centred, so a constant offset in the receiver cannot change them."""
         np.testing.assert_allclose(
             waveform_features(sine(2.0, offset=40.0)), waveform_features(sine(2.0)), rtol=1e-12
         )
 
     def test_scalar_keeps_missing_values_missing(self):
+        """Empty, zero-filled, text and nonfinite labels become None, never a number."""
         self.assertEqual(scalar(0.25), 0.25)
         for missing in ([], [0.0, 0.0], 'Loaded', float('nan'), float('inf'), None):
             self.assertIsNone(scalar(missing))
 
 
 class EligibilityTests(unittest.TestCase):
+    """v1 acquisition rules: each rule excludes on its own, and labels do not affect acquisition."""
+
     def test_valid_recording_is_eligible_with_features(self):
+        """A recording that meets every rule is eligible and has the known sine features."""
         r = assess()
         self.assertTrue(r['eligible'] and r['_acquisition_eligible'])
         self.assertEqual(r['exclusion_reasons'], '')
@@ -161,6 +175,7 @@ class EligibilityTests(unittest.TestCase):
         self.assertAlmostEqual(r['peak_to_peak'], 200.0, places=9)
 
     def test_each_acquisition_rule_excludes(self):
+        """Each acquisition rule alone excludes a recording and names its reason."""
         cases = {
             'not a positive-cycle checkpoint': dict(cycles=0.0),
             'condition is not Loaded': dict(condition='Clamped'),
@@ -178,10 +193,12 @@ class EligibilityTests(unittest.TestCase):
                 self.assertIsNone(r['mean_centred_rms'])
 
     def test_condition_text_is_normalised_and_load_bounds_inclusive(self):
+        """Condition text ignores case and spaces; the 3.95 and 4.05 kip bounds are inclusive."""
         for kwargs in (dict(condition='  loaded '), dict(load=3.95), dict(load=4.05)):
             self.assertTrue(assess(**kwargs)['eligible'], kwargs)
 
     def test_missing_or_ambiguous_path_excludes(self):
+        """A missing or duplicated 1 -> 7 path excludes the recording instead of picking one."""
         base = coupon()['path_data']
         for paths in ([base[1]], [base[0], copy.deepcopy(base[0])]):
             r = assessment = assess_recording(coupon(paths=paths), 'L1S11', 'p.mat', EXPERIMENT)
@@ -189,6 +206,7 @@ class EligibilityTests(unittest.TestCase):
             self.assertFalse(r['_acquisition_eligible'])
 
     def test_missing_label_is_not_filled_and_does_not_affect_acquisition(self):
+        """Leakage: a missing label stays None and changes neither eligibility nor raw features."""
         unlabelled, labelled = assess(label=None), assess(label=0.2)
         self.assertIsNone(unlabelled['published_index'])
         self.assertEqual(unlabelled['exclusion_reasons'], LABEL_REASON)
@@ -200,12 +218,16 @@ class EligibilityTests(unittest.TestCase):
         )
 
     def test_specimen_specific_settings_come_from_config(self):
+        """Gain and excitation rules are per specimen and come from config (L1S12 uses 35/50)."""
         self.assertTrue(assess(specimen='L1S12', gain=35, amplitude=50)['eligible'])
         self.assertFalse(assess(specimen='L1S12', gain=33, amplitude=65)['eligible'])
 
 
 class ReferenceTests(unittest.TestCase):
+    """Label-blind reference selection, checkpoint building and label handling."""
+
     def rows(self, earliest_label=None):
+        """Synthetic recordings; the first has label ``earliest_label``, the last is ineligible."""
         return [
             assess('a.mat', cycles=1.0, label=earliest_label, receiver_amplitude=50.0),
             assess('b.mat', cycles=10.0, label=0.05, receiver_amplitude=40.0),
@@ -215,11 +237,13 @@ class ReferenceTests(unittest.TestCase):
         ]
 
     def test_earliest_unlabelled_eligible_checkpoint_is_reference(self):
+        """Leakage: the earliest eligible checkpoint is the reference, labelled or not."""
         ref = select_reference(self.rows(earliest_label=None))
         self.assertEqual((ref['cycles'], ref['filenames']), (1, 'a.mat'))
         self.assertAlmostEqual(ref['ptp_denominator'], 100.0, places=9)
 
     def test_labels_cannot_change_reference(self):
+        """Leakage: adding or changing labels cannot change the reference or its denominators."""
         self.assertEqual(select_reference(self.rows(None)), select_reference(self.rows(0.3)))
         relabelled = self.rows(None)
         for r in relabelled:
@@ -227,18 +251,21 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(select_reference(relabelled), select_reference(self.rows(None)))
 
     def test_reference_uses_median_over_repeats(self):
+        """Known answer: the reference denominator is the repeat median (PTP 84 from 80 and 88)."""
         rows = [r for r in self.rows() if r['filename'] in ('b.mat', 'c.mat', 'd.mat')]
         ref = select_reference(rows)
         self.assertEqual((ref['cycles'], ref['filenames']), (10, 'b.mat; c.mat'))
         self.assertAlmostEqual(ref['ptp_denominator'], 84.0, places=9)
 
     def test_no_eligible_reference_or_zero_denominator_fails(self):
+        """Guard: no eligible reference, or a zero denominator, raises instead of dividing."""
         with self.assertRaisesRegex(ValueError, 'No acquisition-eligible'):
             select_reference([assess(condition='Clamped')])
         with self.assertRaisesRegex(ValueError, 'Invalid reference denominator'):
             select_reference([assess(receiver_amplitude=0.0)])
 
     def test_unlabelled_reference_is_kept_but_never_scored(self):
+        """The unlabelled reference is kept with ratio 1; later ratios use its denominator."""
         cps, ref = build_checkpoints('L1S11', self.rows(None), EXPERIMENT)
         self.assertEqual([c['cycles'] for c in cps], [1, 10, 100])
         self.assertTrue(cps[0]['is_reference'])
@@ -248,11 +275,13 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(ref['specimen'], 'L1S11')
 
     def test_unlabelled_non_reference_checkpoint_stays_missing(self):
+        """An unlabelled non-reference checkpoint is dropped, never given an interpolated label."""
         rows = self.rows(0.01) + [assess('f.mat', cycles=50.0, label=None)]
         cps, _ = build_checkpoints('L1S11', rows, EXPERIMENT)
         self.assertNotIn(50, [c['cycles'] for c in cps])
 
     def test_conflicting_labels_are_rejected(self):
+        """Guard: repeats at one checkpoint with different labels raise an error."""
         rows = [
             assess('a.mat', cycles=1.0, label=0.0),
             assess('b.mat', cycles=10.0, label=0.05),
@@ -262,6 +291,7 @@ class ReferenceTests(unittest.TestCase):
             build_checkpoints('L1S11', rows, EXPERIMENT)
 
     def test_transfer_ignores_references_and_unlabelled_rows(self):
+        """Transfer fits and scores only labelled non-reference checkpoints (4 per specimen)."""
         checkpoints = []
         for specimen, gain, amp, scale in (('L1S11', 33, 65, 1.0), ('L1S12', 35, 50, 1.3)):
             rows = [
@@ -292,43 +322,55 @@ class ReferenceTests(unittest.TestCase):
 
 
 class IntegrityTests(unittest.TestCase):
+    """``check_integrity`` raises on a filled label, a lost label jump or a scored reference."""
+
     def setUp(self):
+        """Build minimal tables that pass every integrity check."""
         self.recordings = [dict(specimen='L1S12', cycles=20000.0, published_index=None)]
         self.checkpoints = [dict(specimen='L1S12', cycles=30000, published_index=0.233175942)]
         self.references = [dict(specimen='L1S11', cycles=1), dict(specimen='L1S12', cycles=1)]
         self.predictions = [dict(test_specimen='L1S12', cycles=30000)]
 
     def run_check(self):
+        """Run ``check_integrity`` on the current tables."""
         check_integrity(
             self.recordings, self.checkpoints, self.references, self.predictions, EXPERIMENT
         )
 
     def test_valid_tables_pass(self):
+        """The minimal tables pass, so each failure below comes from its single change."""
         self.run_check()
 
     def test_filled_missing_label_fails(self):
+        """Guard: filling the missing L1S12 20,000-cycle label is detected."""
         self.recordings[0]['published_index'] = 0.1
         with self.assertRaisesRegex(ValueError, 'gained a label'):
             self.run_check()
 
     def test_dropped_or_changed_jump_fails(self):
+        """Guard: changing the retained L1S12 label jump at 30,000 cycles is detected."""
         self.checkpoints[0]['published_index'] = 0.2
         with self.assertRaisesRegex(ValueError, 'jump not retained'):
             self.run_check()
 
     def test_scored_reference_fails(self):
+        """Guard: a prediction at a reference checkpoint is detected."""
         self.predictions.append(dict(test_specimen='L1S11', cycles=1))
         with self.assertRaisesRegex(ValueError, 'reference checkpoint was scored'):
             self.run_check()
 
 
 class GuardTests(unittest.TestCase):
+    """``require``, frozen v1 constants, recorded-output refusal and import side effects."""
+
     def test_require_raises_value_error(self):
+        """``require`` passes on True and raises ValueError with its message on False."""
         require(True, 'unused')
         with self.assertRaisesRegex(ValueError, 'boom'):
             require(False, 'boom')
 
     def test_require_survives_optimised_python(self):
+        """Guard: ``require`` still fires under ``python -O``, where asserts are removed."""
         code = (
             'import sys; sys.path.insert(0, sys.argv[1]); from common import require; '
             "require(False, 'still checked')"
@@ -342,6 +384,7 @@ class GuardTests(unittest.TestCase):
         self.assertIn('still checked', result.stderr)
 
     def test_historical_constants_unchanged(self):
+        """The v1 config still holds the constants that produced the recorded baseline."""
         s = EXPERIMENT['specimens']
         self.assertEqual((s['L1S11']['gain'], s['L1S11']['amplitude']), (33, 65))
         self.assertEqual((s['L1S12']['gain'], s['L1S12']['amplitude']), (35, 50))
@@ -354,6 +397,7 @@ class GuardTests(unittest.TestCase):
         self.assertEqual(EXPERIMENT['coverage_reported_outside'], {'L1S11': 12, 'L1S12': 11})
 
     def test_scripts_refuse_to_overwrite_recorded_results(self):
+        """Guard: model comparison and repeat sensitivity refuse recorded folders as output."""
         import model_comparison
         import repeat_sensitivity
 
@@ -381,6 +425,7 @@ class GuardTests(unittest.TestCase):
                 )
 
     def test_importing_extractor_has_no_side_effects(self):
+        """Importing ``exploratory_regression`` runs and prints nothing (code fix b)."""
         result = subprocess.run(
             [sys.executable, '-c', 'import exploratory_regression'],
             cwd=ROOT / 'scripts',

@@ -97,6 +97,11 @@ def path_features(path, pair):
     -------
     dict
         ``receiver_rms``, ``receiver_ptp``, ``actuator_rms``, ``actuator_ptp``.
+
+    Raises
+    ------
+    ValueError
+        If the file does not hold exactly one record for ``pair`` at 150 kHz.
     """
     coupon = loadmat(path, simplify_cells=True)['coupon']
     match = [

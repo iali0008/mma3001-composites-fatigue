@@ -1,0 +1,18 @@
+{
+  "measure": "peak traced allocations (tracemalloc), per fresh process",
+  "caveat": "Includes allocations registered with tracemalloc; not total process RAM, and not necessarily all native-library allocations.",
+  "excluded": "Module imports and, for fit+predict, reading checkpoint_features.csv happen before tracemalloc.start().",
+  "preprocessing_in_fit_predict": "Included: rows to arrays and training-only scaling inside the model pipeline.",
+  "extraction_outputs_match_baseline": true,
+  "median_peak_bytes": {
+    "extraction": 9967517,
+    "fit_predict_selected": 84535,
+    "fit_predict_v1_all": 185865
+  },
+  "repeats": 3,
+  "python": "3.13.3",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "numpy": "2.3.0",
+  "scipy": "1.17.1",
+  "scikit_learn": "1.9.0"
+}

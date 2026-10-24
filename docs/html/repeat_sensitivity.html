@@ -992,22 +992,22 @@ Columns compared exactly or within rtol 1e-9, atol 1e-10.</li>
 
     </div>
     <a class="headerlink" href="#digest"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="digest-105"><a href="#digest-105"><span class="linenos">105</span></a><span class="k">def</span><span class="w"> </span><span class="nf">digest</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-</span><span id="digest-106"><a href="#digest-106"><span class="linenos">106</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the SHA-256 hex digest of a file&#39;s bytes.</span>
-</span><span id="digest-107"><a href="#digest-107"><span class="linenos">107</span></a>
-</span><span id="digest-108"><a href="#digest-108"><span class="linenos">108</span></a><span class="sd">    Parameters</span>
-</span><span id="digest-109"><a href="#digest-109"><span class="linenos">109</span></a><span class="sd">    ----------</span>
-</span><span id="digest-110"><a href="#digest-110"><span class="linenos">110</span></a><span class="sd">    path : pathlib.Path</span>
-</span><span id="digest-111"><a href="#digest-111"><span class="linenos">111</span></a><span class="sd">        File to hash.</span>
-</span><span id="digest-112"><a href="#digest-112"><span class="linenos">112</span></a>
-</span><span id="digest-113"><a href="#digest-113"><span class="linenos">113</span></a><span class="sd">    Returns</span>
-</span><span id="digest-114"><a href="#digest-114"><span class="linenos">114</span></a><span class="sd">    -------</span>
-</span><span id="digest-115"><a href="#digest-115"><span class="linenos">115</span></a><span class="sd">    str</span>
-</span><span id="digest-116"><a href="#digest-116"><span class="linenos">116</span></a><span class="sd">        64-character lowercase hexadecimal digest.</span>
-</span><span id="digest-117"><a href="#digest-117"><span class="linenos">117</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="digest-118"><a href="#digest-118"><span class="linenos">118</span></a>    <span class="c1"># Hash raw bytes so a CRLF/LF checkout difference shows up as a different digest.</span>
-</span><span id="digest-119"><a href="#digest-119"><span class="linenos">119</span></a>    <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
-</span><span id="digest-120"><a href="#digest-120"><span class="linenos">120</span></a>        <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">file_digest</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="s1">&#39;sha256&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="digest-106"><a href="#digest-106"><span class="linenos">106</span></a><span class="k">def</span><span class="w"> </span><span class="nf">digest</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+</span><span id="digest-107"><a href="#digest-107"><span class="linenos">107</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the SHA-256 hex digest of a file&#39;s bytes.</span>
+</span><span id="digest-108"><a href="#digest-108"><span class="linenos">108</span></a>
+</span><span id="digest-109"><a href="#digest-109"><span class="linenos">109</span></a><span class="sd">    Parameters</span>
+</span><span id="digest-110"><a href="#digest-110"><span class="linenos">110</span></a><span class="sd">    ----------</span>
+</span><span id="digest-111"><a href="#digest-111"><span class="linenos">111</span></a><span class="sd">    path : pathlib.Path</span>
+</span><span id="digest-112"><a href="#digest-112"><span class="linenos">112</span></a><span class="sd">        File to hash.</span>
+</span><span id="digest-113"><a href="#digest-113"><span class="linenos">113</span></a>
+</span><span id="digest-114"><a href="#digest-114"><span class="linenos">114</span></a><span class="sd">    Returns</span>
+</span><span id="digest-115"><a href="#digest-115"><span class="linenos">115</span></a><span class="sd">    -------</span>
+</span><span id="digest-116"><a href="#digest-116"><span class="linenos">116</span></a><span class="sd">    str</span>
+</span><span id="digest-117"><a href="#digest-117"><span class="linenos">117</span></a><span class="sd">        64-character lowercase hexadecimal digest.</span>
+</span><span id="digest-118"><a href="#digest-118"><span class="linenos">118</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="digest-119"><a href="#digest-119"><span class="linenos">119</span></a>    <span class="c1"># Hash raw bytes so a CRLF/LF checkout difference shows up as a different digest.</span>
+</span><span id="digest-120"><a href="#digest-120"><span class="linenos">120</span></a>    <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+</span><span id="digest-121"><a href="#digest-121"><span class="linenos">121</span></a>        <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">file_digest</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="s1">&#39;sha256&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -1234,22 +1234,22 @@ Why the fallback was used (empty otherwise).</li>
 
     </div>
     <a class="headerlink" href="#read_csv"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="read_csv-148"><a href="#read_csv-148"><span class="linenos">148</span></a><span class="k">def</span><span class="w"> </span><span class="nf">read_csv</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-</span><span id="read_csv-149"><a href="#read_csv-149"><span class="linenos">149</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Read a CSV file into a list of string-valued dictionaries.</span>
-</span><span id="read_csv-150"><a href="#read_csv-150"><span class="linenos">150</span></a>
-</span><span id="read_csv-151"><a href="#read_csv-151"><span class="linenos">151</span></a><span class="sd">    Parameters</span>
-</span><span id="read_csv-152"><a href="#read_csv-152"><span class="linenos">152</span></a><span class="sd">    ----------</span>
-</span><span id="read_csv-153"><a href="#read_csv-153"><span class="linenos">153</span></a><span class="sd">    path : pathlib.Path</span>
-</span><span id="read_csv-154"><a href="#read_csv-154"><span class="linenos">154</span></a><span class="sd">        CSV file with a header row. A UTF-8 byte-order mark is tolerated.</span>
-</span><span id="read_csv-155"><a href="#read_csv-155"><span class="linenos">155</span></a>
-</span><span id="read_csv-156"><a href="#read_csv-156"><span class="linenos">156</span></a><span class="sd">    Returns</span>
-</span><span id="read_csv-157"><a href="#read_csv-157"><span class="linenos">157</span></a><span class="sd">    -------</span>
-</span><span id="read_csv-158"><a href="#read_csv-158"><span class="linenos">158</span></a><span class="sd">    list of dict</span>
-</span><span id="read_csv-159"><a href="#read_csv-159"><span class="linenos">159</span></a><span class="sd">        One dictionary per data row; all values are strings.</span>
-</span><span id="read_csv-160"><a href="#read_csv-160"><span class="linenos">160</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="read_csv-161"><a href="#read_csv-161"><span class="linenos">161</span></a>    <span class="c1"># utf-8-sig tolerates a byte-order mark from files edited on Windows.</span>
-</span><span id="read_csv-162"><a href="#read_csv-162"><span class="linenos">162</span></a>    <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
-</span><span id="read_csv-163"><a href="#read_csv-163"><span class="linenos">163</span></a>        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">stream</span><span class="p">))</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="read_csv-149"><a href="#read_csv-149"><span class="linenos">149</span></a><span class="k">def</span><span class="w"> </span><span class="nf">read_csv</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+</span><span id="read_csv-150"><a href="#read_csv-150"><span class="linenos">150</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Read a CSV file into a list of string-valued dictionaries.</span>
+</span><span id="read_csv-151"><a href="#read_csv-151"><span class="linenos">151</span></a>
+</span><span id="read_csv-152"><a href="#read_csv-152"><span class="linenos">152</span></a><span class="sd">    Parameters</span>
+</span><span id="read_csv-153"><a href="#read_csv-153"><span class="linenos">153</span></a><span class="sd">    ----------</span>
+</span><span id="read_csv-154"><a href="#read_csv-154"><span class="linenos">154</span></a><span class="sd">    path : pathlib.Path</span>
+</span><span id="read_csv-155"><a href="#read_csv-155"><span class="linenos">155</span></a><span class="sd">        CSV file with a header row. A UTF-8 byte-order mark is tolerated.</span>
+</span><span id="read_csv-156"><a href="#read_csv-156"><span class="linenos">156</span></a>
+</span><span id="read_csv-157"><a href="#read_csv-157"><span class="linenos">157</span></a><span class="sd">    Returns</span>
+</span><span id="read_csv-158"><a href="#read_csv-158"><span class="linenos">158</span></a><span class="sd">    -------</span>
+</span><span id="read_csv-159"><a href="#read_csv-159"><span class="linenos">159</span></a><span class="sd">    list of dict</span>
+</span><span id="read_csv-160"><a href="#read_csv-160"><span class="linenos">160</span></a><span class="sd">        One dictionary per data row; all values are strings.</span>
+</span><span id="read_csv-161"><a href="#read_csv-161"><span class="linenos">161</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="read_csv-162"><a href="#read_csv-162"><span class="linenos">162</span></a>    <span class="c1"># utf-8-sig tolerates a byte-order mark from files edited on Windows.</span>
+</span><span id="read_csv-163"><a href="#read_csv-163"><span class="linenos">163</span></a>    <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+</span><span id="read_csv-164"><a href="#read_csv-164"><span class="linenos">164</span></a>        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">stream</span><span class="p">))</span>
 </span></pre></div>
 
 
@@ -1282,34 +1282,34 @@ CSV file with a header row. A UTF-8 byte-order mark is tolerated.</li>
 
     </div>
     <a class="headerlink" href="#require"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="require-39"><a href="#require-39"><span class="linenos">39</span></a><span class="k">def</span><span class="w"> </span><span class="nf">require</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
-</span><span id="require-40"><a href="#require-40"><span class="linenos">40</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise ``ValueError(message)`` unless ``condition`` is true.</span>
-</span><span id="require-41"><a href="#require-41"><span class="linenos">41</span></a>
-</span><span id="require-42"><a href="#require-42"><span class="linenos">42</span></a><span class="sd">    Parameters</span>
-</span><span id="require-43"><a href="#require-43"><span class="linenos">43</span></a><span class="sd">    ----------</span>
-</span><span id="require-44"><a href="#require-44"><span class="linenos">44</span></a><span class="sd">    condition : bool</span>
-</span><span id="require-45"><a href="#require-45"><span class="linenos">45</span></a><span class="sd">        Integrity condition that must hold.</span>
-</span><span id="require-46"><a href="#require-46"><span class="linenos">46</span></a><span class="sd">    message : str</span>
-</span><span id="require-47"><a href="#require-47"><span class="linenos">47</span></a><span class="sd">        Explanation used for the exception.</span>
-</span><span id="require-48"><a href="#require-48"><span class="linenos">48</span></a>
-</span><span id="require-49"><a href="#require-49"><span class="linenos">49</span></a><span class="sd">    Raises</span>
-</span><span id="require-50"><a href="#require-50"><span class="linenos">50</span></a><span class="sd">    ------</span>
-</span><span id="require-51"><a href="#require-51"><span class="linenos">51</span></a><span class="sd">    ValueError</span>
-</span><span id="require-52"><a href="#require-52"><span class="linenos">52</span></a><span class="sd">        If ``condition`` is false. Unlike ``assert``, this check is not removed</span>
-</span><span id="require-53"><a href="#require-53"><span class="linenos">53</span></a><span class="sd">        when Python runs with ``-O``.</span>
-</span><span id="require-54"><a href="#require-54"><span class="linenos">54</span></a>
-</span><span id="require-55"><a href="#require-55"><span class="linenos">55</span></a><span class="sd">    Examples</span>
-</span><span id="require-56"><a href="#require-56"><span class="linenos">56</span></a><span class="sd">    --------</span>
-</span><span id="require-57"><a href="#require-57"><span class="linenos">57</span></a><span class="sd">    &gt;&gt;&gt; require(1 + 1 == 2, &#39;arithmetic is broken&#39;)</span>
-</span><span id="require-58"><a href="#require-58"><span class="linenos">58</span></a><span class="sd">    &gt;&gt;&gt; require(False, &#39;stop here&#39;)</span>
-</span><span id="require-59"><a href="#require-59"><span class="linenos">59</span></a><span class="sd">    Traceback (most recent call last):</span>
-</span><span id="require-60"><a href="#require-60"><span class="linenos">60</span></a><span class="sd">    ...</span>
-</span><span id="require-61"><a href="#require-61"><span class="linenos">61</span></a><span class="sd">    ValueError: stop here</span>
-</span><span id="require-62"><a href="#require-62"><span class="linenos">62</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="require-63"><a href="#require-63"><span class="linenos">63</span></a>    <span class="c1"># An explicit raise, not `assert`: asserts are stripped under `python -O`,</span>
-</span><span id="require-64"><a href="#require-64"><span class="linenos">64</span></a>    <span class="c1"># which would silently disable every integrity check in the workflows.</span>
-</span><span id="require-65"><a href="#require-65"><span class="linenos">65</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">condition</span><span class="p">:</span>
-</span><span id="require-66"><a href="#require-66"><span class="linenos">66</span></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="require-40"><a href="#require-40"><span class="linenos">40</span></a><span class="k">def</span><span class="w"> </span><span class="nf">require</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+</span><span id="require-41"><a href="#require-41"><span class="linenos">41</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise ``ValueError(message)`` unless ``condition`` is true.</span>
+</span><span id="require-42"><a href="#require-42"><span class="linenos">42</span></a>
+</span><span id="require-43"><a href="#require-43"><span class="linenos">43</span></a><span class="sd">    Parameters</span>
+</span><span id="require-44"><a href="#require-44"><span class="linenos">44</span></a><span class="sd">    ----------</span>
+</span><span id="require-45"><a href="#require-45"><span class="linenos">45</span></a><span class="sd">    condition : bool</span>
+</span><span id="require-46"><a href="#require-46"><span class="linenos">46</span></a><span class="sd">        Integrity condition that must hold.</span>
+</span><span id="require-47"><a href="#require-47"><span class="linenos">47</span></a><span class="sd">    message : str</span>
+</span><span id="require-48"><a href="#require-48"><span class="linenos">48</span></a><span class="sd">        Explanation used for the exception.</span>
+</span><span id="require-49"><a href="#require-49"><span class="linenos">49</span></a>
+</span><span id="require-50"><a href="#require-50"><span class="linenos">50</span></a><span class="sd">    Raises</span>
+</span><span id="require-51"><a href="#require-51"><span class="linenos">51</span></a><span class="sd">    ------</span>
+</span><span id="require-52"><a href="#require-52"><span class="linenos">52</span></a><span class="sd">    ValueError</span>
+</span><span id="require-53"><a href="#require-53"><span class="linenos">53</span></a><span class="sd">        If ``condition`` is false. Unlike ``assert``, this check is not removed</span>
+</span><span id="require-54"><a href="#require-54"><span class="linenos">54</span></a><span class="sd">        when Python runs with ``-O``.</span>
+</span><span id="require-55"><a href="#require-55"><span class="linenos">55</span></a>
+</span><span id="require-56"><a href="#require-56"><span class="linenos">56</span></a><span class="sd">    Examples</span>
+</span><span id="require-57"><a href="#require-57"><span class="linenos">57</span></a><span class="sd">    --------</span>
+</span><span id="require-58"><a href="#require-58"><span class="linenos">58</span></a><span class="sd">    &gt;&gt;&gt; require(1 + 1 == 2, &#39;arithmetic is broken&#39;)</span>
+</span><span id="require-59"><a href="#require-59"><span class="linenos">59</span></a><span class="sd">    &gt;&gt;&gt; require(False, &#39;stop here&#39;)</span>
+</span><span id="require-60"><a href="#require-60"><span class="linenos">60</span></a><span class="sd">    Traceback (most recent call last):</span>
+</span><span id="require-61"><a href="#require-61"><span class="linenos">61</span></a><span class="sd">    ...</span>
+</span><span id="require-62"><a href="#require-62"><span class="linenos">62</span></a><span class="sd">    ValueError: stop here</span>
+</span><span id="require-63"><a href="#require-63"><span class="linenos">63</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="require-64"><a href="#require-64"><span class="linenos">64</span></a>    <span class="c1"># An explicit raise, not `assert`: asserts are stripped under `python -O`,</span>
+</span><span id="require-65"><a href="#require-65"><span class="linenos">65</span></a>    <span class="c1"># which would silently disable every integrity check in the workflows.</span>
+</span><span id="require-66"><a href="#require-66"><span class="linenos">66</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">condition</span><span class="p">:</span>
+</span><span id="require-67"><a href="#require-67"><span class="linenos">67</span></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -1356,29 +1356,29 @@ when Python runs with <code>-O</code>.</li>
 
     </div>
     <a class="headerlink" href="#snapshot"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="snapshot-123"><a href="#snapshot-123"><span class="linenos">123</span></a><span class="k">def</span><span class="w"> </span><span class="nf">snapshot</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">base</span><span class="p">):</span>
-</span><span id="snapshot-124"><a href="#snapshot-124"><span class="linenos">124</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Record size and modification time of files, keyed relative to ``base``.</span>
-</span><span id="snapshot-125"><a href="#snapshot-125"><span class="linenos">125</span></a>
-</span><span id="snapshot-126"><a href="#snapshot-126"><span class="linenos">126</span></a><span class="sd">    Parameters</span>
-</span><span id="snapshot-127"><a href="#snapshot-127"><span class="linenos">127</span></a><span class="sd">    ----------</span>
-</span><span id="snapshot-128"><a href="#snapshot-128"><span class="linenos">128</span></a><span class="sd">    paths : iterable of pathlib.Path</span>
-</span><span id="snapshot-129"><a href="#snapshot-129"><span class="linenos">129</span></a><span class="sd">        Files to record.</span>
-</span><span id="snapshot-130"><a href="#snapshot-130"><span class="linenos">130</span></a><span class="sd">    base : pathlib.Path</span>
-</span><span id="snapshot-131"><a href="#snapshot-131"><span class="linenos">131</span></a><span class="sd">        Directory the keys are made relative to.</span>
-</span><span id="snapshot-132"><a href="#snapshot-132"><span class="linenos">132</span></a>
-</span><span id="snapshot-133"><a href="#snapshot-133"><span class="linenos">133</span></a><span class="sd">    Returns</span>
-</span><span id="snapshot-134"><a href="#snapshot-134"><span class="linenos">134</span></a><span class="sd">    -------</span>
-</span><span id="snapshot-135"><a href="#snapshot-135"><span class="linenos">135</span></a><span class="sd">    dict</span>
-</span><span id="snapshot-136"><a href="#snapshot-136"><span class="linenos">136</span></a><span class="sd">        ``{relative_posix_path: {&#39;bytes&#39;: int, &#39;mtime_ns&#39;: int}}``. Comparing two</span>
-</span><span id="snapshot-137"><a href="#snapshot-137"><span class="linenos">137</span></a><span class="sd">        snapshots detects changed metadata; it is not a content hash.</span>
-</span><span id="snapshot-138"><a href="#snapshot-138"><span class="linenos">138</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="snapshot-139"><a href="#snapshot-139"><span class="linenos">139</span></a>    <span class="k">return</span> <span class="p">{</span>
-</span><span id="snapshot-140"><a href="#snapshot-140"><span class="linenos">140</span></a>        <span class="n">p</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">base</span><span class="p">)</span><span class="o">.</span><span class="n">as_posix</span><span class="p">():</span> <span class="p">{</span>
-</span><span id="snapshot-141"><a href="#snapshot-141"><span class="linenos">141</span></a>            <span class="s1">&#39;bytes&#39;</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span><span class="p">,</span>
-</span><span id="snapshot-142"><a href="#snapshot-142"><span class="linenos">142</span></a>            <span class="s1">&#39;mtime_ns&#39;</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime_ns</span><span class="p">,</span>
-</span><span id="snapshot-143"><a href="#snapshot-143"><span class="linenos">143</span></a>        <span class="p">}</span>
-</span><span id="snapshot-144"><a href="#snapshot-144"><span class="linenos">144</span></a>        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span>
-</span><span id="snapshot-145"><a href="#snapshot-145"><span class="linenos">145</span></a>    <span class="p">}</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="snapshot-124"><a href="#snapshot-124"><span class="linenos">124</span></a><span class="k">def</span><span class="w"> </span><span class="nf">snapshot</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">base</span><span class="p">):</span>
+</span><span id="snapshot-125"><a href="#snapshot-125"><span class="linenos">125</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Record size and modification time of files, keyed relative to ``base``.</span>
+</span><span id="snapshot-126"><a href="#snapshot-126"><span class="linenos">126</span></a>
+</span><span id="snapshot-127"><a href="#snapshot-127"><span class="linenos">127</span></a><span class="sd">    Parameters</span>
+</span><span id="snapshot-128"><a href="#snapshot-128"><span class="linenos">128</span></a><span class="sd">    ----------</span>
+</span><span id="snapshot-129"><a href="#snapshot-129"><span class="linenos">129</span></a><span class="sd">    paths : iterable of pathlib.Path</span>
+</span><span id="snapshot-130"><a href="#snapshot-130"><span class="linenos">130</span></a><span class="sd">        Files to record.</span>
+</span><span id="snapshot-131"><a href="#snapshot-131"><span class="linenos">131</span></a><span class="sd">    base : pathlib.Path</span>
+</span><span id="snapshot-132"><a href="#snapshot-132"><span class="linenos">132</span></a><span class="sd">        Directory the keys are made relative to.</span>
+</span><span id="snapshot-133"><a href="#snapshot-133"><span class="linenos">133</span></a>
+</span><span id="snapshot-134"><a href="#snapshot-134"><span class="linenos">134</span></a><span class="sd">    Returns</span>
+</span><span id="snapshot-135"><a href="#snapshot-135"><span class="linenos">135</span></a><span class="sd">    -------</span>
+</span><span id="snapshot-136"><a href="#snapshot-136"><span class="linenos">136</span></a><span class="sd">    dict</span>
+</span><span id="snapshot-137"><a href="#snapshot-137"><span class="linenos">137</span></a><span class="sd">        ``{relative_posix_path: {&#39;bytes&#39;: int, &#39;mtime_ns&#39;: int}}``. Comparing two</span>
+</span><span id="snapshot-138"><a href="#snapshot-138"><span class="linenos">138</span></a><span class="sd">        snapshots detects changed metadata; it is not a content hash.</span>
+</span><span id="snapshot-139"><a href="#snapshot-139"><span class="linenos">139</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="snapshot-140"><a href="#snapshot-140"><span class="linenos">140</span></a>    <span class="k">return</span> <span class="p">{</span>
+</span><span id="snapshot-141"><a href="#snapshot-141"><span class="linenos">141</span></a>        <span class="n">p</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">base</span><span class="p">)</span><span class="o">.</span><span class="n">as_posix</span><span class="p">():</span> <span class="p">{</span>
+</span><span id="snapshot-142"><a href="#snapshot-142"><span class="linenos">142</span></a>            <span class="s1">&#39;bytes&#39;</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span><span class="p">,</span>
+</span><span id="snapshot-143"><a href="#snapshot-143"><span class="linenos">143</span></a>            <span class="s1">&#39;mtime_ns&#39;</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime_ns</span><span class="p">,</span>
+</span><span id="snapshot-144"><a href="#snapshot-144"><span class="linenos">144</span></a>        <span class="p">}</span>
+</span><span id="snapshot-145"><a href="#snapshot-145"><span class="linenos">145</span></a>        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span>
+</span><span id="snapshot-146"><a href="#snapshot-146"><span class="linenos">146</span></a>    <span class="p">}</span>
 </span></pre></div>
 
 

@@ -116,6 +116,11 @@ def audit(data_root, workers=1):
         One row per recording and 150 kHz actuator-sensor pair.
     hashes : dict
         SHA-256 of every file read, keyed by path relative to ``data_root``.
+
+    Raises
+    ------
+    ValueError
+        If a specimen folder holds no PZT files.
     """
     recordings, paths, hashes = [], [], {}
     for specimen, folder in SPECIMENS.items():
@@ -402,6 +407,12 @@ def main(argv=None):
     ----------
     argv : list of str, optional
         Command-line arguments; defaults to ``sys.argv[1:]``.
+
+    Raises
+    ------
+    ValueError
+        If the output folder is a recorded results folder or lies inside the
+        dataset, or if a specimen has no PZT files.
     """
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument('--data-root', required=True, type=Path)

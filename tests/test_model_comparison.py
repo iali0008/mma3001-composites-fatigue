@@ -29,16 +29,21 @@ OUT = ROOT / 'results/model_comparison'
 
 
 class ModelComparisonTests(unittest.TestCase):
+    """Specimen separation, training-only preprocessing and agreement with recorded v1 outputs."""
+
     @classmethod
     def setUpClass(cls):
+        """Load the recorded baseline checkpoints and limit BLAS to one thread."""
         cls.rows = read_checkpoints(BASE / 'checkpoint_features.csv')
         cls.threads = threadpool_limits(limits=1)
 
     @classmethod
     def tearDownClass(cls):
+        """Restore the original BLAS thread limits."""
         cls.threads.restore_original_limits()
 
     def test_specimen_separation_and_reference_exclusion(self):
+        """Leakage: train and evaluation sets are different specimens and exclude the reference."""
         for train_name, eval_name in CONFIG['directions']:
             train, evaluation = split_rows(self.rows, train_name, eval_name)
             self.assertEqual({r['specimen'] for r in train}, {train_name})
@@ -49,6 +54,7 @@ class ModelComparisonTests(unittest.TestCase):
             split_rows(self.rows, 'L1S11', 'L1S11')
 
     def test_training_only_input_and_target_scaling(self):
+        """Leakage: scalers are fitted on training rows only; predictions return in index units."""
         for train_name, eval_name in CONFIG['directions']:
             for name in MODEL_NAMES:
                 seed = CONFIG['mlp_seeds'][0] if name == 'MLPRegressor' else None
@@ -73,6 +79,7 @@ class ModelComparisonTests(unittest.TestCase):
                     np.testing.assert_allclose(model.predict(matrix(train, name)), manual)
 
     def test_evaluation_targets_and_reference_targets_cannot_change_predictions(self):
+        """Leakage: changing evaluation or reference targets changes no model's predictions."""
         for train_name, eval_name in CONFIG['directions']:
             changed = copy.deepcopy(self.rows)
             for row in changed:
@@ -87,6 +94,7 @@ class ModelComparisonTests(unittest.TestCase):
                     np.testing.assert_array_equal(before[4], after[4])
 
     def test_evaluation_features_do_not_enter_fitted_scalers(self):
+        """Leakage: shifted evaluation features change neither training predictions nor scalers."""
         changed = copy.deepcopy(self.rows)
         for row in changed:
             if row['specimen'] == 'L1S12':
@@ -103,6 +111,7 @@ class ModelComparisonTests(unittest.TestCase):
             )
 
     def test_sklearn_linear_predictions_match_existing_ols(self):
+        """Known answer: sklearn linear and log-cycle predictions match the recorded v1 OLS."""
         expected = read_csv(BASE / 'predictions.csv')
         for train_name, eval_name in CONFIG['directions']:
             for name, old_name in [
@@ -120,6 +129,7 @@ class ModelComparisonTests(unittest.TestCase):
                 )
 
     def test_reference_selection_does_not_read_targets(self):
+        """Leakage: dropping label fields keeps the reference; an earlier unlabelled file wins."""
         records = read_csv(BASE / 'recordings.csv')
         original, _ = select_reference_candidates(records)
         altered = copy.deepcopy(records)
@@ -145,6 +155,7 @@ class ModelComparisonTests(unittest.TestCase):
         self.assertEqual(selected['L1S11'][0]['filename'], 'unlabelled_earlier.mat')
 
     def test_all_declared_seeds_no_internal_split_and_saved_metrics(self):
+        """All MLP seeds ran without early stopping; saved metrics and hashes recompute."""
         metrics = read_csv(OUT / 'metrics.csv')
         predicted = read_csv(OUT / 'predictions.csv')
         for seed in CONFIG['mlp_seeds']:

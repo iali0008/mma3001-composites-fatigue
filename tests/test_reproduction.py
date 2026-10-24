@@ -17,7 +17,10 @@ BASELINE = ROOT / 'results/baseline'
 
 
 class ReproductionTests(unittest.TestCase):
+    """Recorded v1 baseline results and their leakage boundaries."""
+
     def test_reproduces_recorded_metrics_and_predictions(self):
+        """Known answer: refitting reproduces the 6 recorded metrics and 75 predictions."""
         metrics, predictions, _ = evaluate(read_checkpoints(BASELINE / 'checkpoint_features.csv'))
         with (BASELINE / 'metrics.csv').open(newline='') as f:
             expected = {(r['train_specimen'], r['model']): r for r in csv.DictReader(f)}
@@ -44,6 +47,7 @@ class ReproductionTests(unittest.TestCase):
             self.assertAlmostEqual(actual['predicted_index'], expected_p[key], places=10)
 
     def test_reference_targets_do_not_affect_fit_or_scores(self):
+        """Leakage: changing reference targets changes no fit, prediction or score."""
         rows = read_checkpoints(BASELINE / 'checkpoint_features.csv')
         original = evaluate(rows)
         changed = copy.deepcopy(rows)
@@ -53,6 +57,7 @@ class ReproductionTests(unittest.TestCase):
         self.assertEqual(evaluate(changed), original)
 
     def test_test_targets_do_not_affect_predictions(self):
+        """Leakage: changing the test specimen's targets leaves its predictions unchanged."""
         for test_specimen in ('L1S11', 'L1S12'):
             with self.subTest(test_specimen=test_specimen):
                 rows = read_checkpoints(BASELINE / 'checkpoint_features.csv')
@@ -71,6 +76,7 @@ class ReproductionTests(unittest.TestCase):
                 np.testing.assert_array_equal(before, after)
 
     def test_duplicate_checkpoint_rejected(self):
+        """Guard: a duplicated checkpoint row in the features file raises an error."""
         with (BASELINE / 'checkpoint_features.csv').open(newline='') as f:
             reader = csv.DictReader(f)
             fields, rows = reader.fieldnames, list(reader)

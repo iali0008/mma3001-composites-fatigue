@@ -30,11 +30,11 @@ This is a consolidated record of work reported in the project conversation and u
 
 - [ ] Review the already imported audit/feasibility code for portability and bundled dependencies before relying on those historical workflows. Their reference conventions differ from this regression.
 - [ ] Record the exact source download URL/version and check required data attribution.
-- [ ] Confirm the scoped alternative project with the teaching team if not already approved; approval is not established by this repository.
+- [x] Teaching-staff approval received in person from Keenan Granland.
 - [ ] Investigate the physical sampling-rate discrepancy if adding spectral features or time-of-flight.
 - [ ] Write the student's interpretation, limitations and AI reflection; align final deliverables with the actual project brief.
 - [ ] Obtain additional independent specimens for a future frozen-model validation; neither current specimen is an untouched final test set.
-- [ ] Measure peak memory or cross-hardware performance only if a concrete implementation requirement needs it; this task measured runtime and profiled CPU call costs, not memory.
+- [x] Peak traced memory measured on 2026-10-24 (`results/memory_profile/`); cross-hardware performance remains unmeasured.
 
 ## Working conventions
 
@@ -212,4 +212,59 @@ Newest entries last. Every Claude session (Claude Code in VS Code or claude.ai) 
   (report draft).
 - 2026-10-13 (Claude Code, VS Code): Sans approved the `protocol_v2_validation.py --replay` mode
   (added in `223a76d`). Its recorded mode and guards are unchanged. `review-fixes` was merged to
-  `main` by Sans (`78e5675`, PR #1). Step 7 (report draft) starts on branch `report-draft`.
+  `main` by Sans (`78e5675`, PR #1).
+- 2026-10-24 (Claude Code, VS Code): Documentation polish on branch `docs-polish`, created from
+  `main` at `c2c48d5`. `main` was clean and level with `origin/main`. No experiment was
+  rerun, nothing under `config/` changed, and `protocol_v2_test.py` was not run. The only
+  results written were `results/test_report/` and the new `results/memory_profile/`.
+  - **Test docstrings.** Added NumPy-style docstrings to all 145 test classes, methods, helpers,
+    setUp/tearDown and nested mock helpers that lacked one, each stating the checked property
+    (leakage, guard or known answer). Notes sections were added for three tests. For every file,
+    the syntax tree with docstrings removed is identical to the original, so test logic is
+    unchanged. black and pyflakes pass.
+  - **Script docstrings.** An AST scan of public functions for missing Parameters, Returns or
+    Raises sections found six real gaps, all now fixed. Raises (ValueError from `require`) was
+    added to `audit_acquisition_v2.audit` and `.main`, `post_hoc_logbook_l1s11.path_features`,
+    `profile_raw_workflow.main` (also `CalledProcessError`) and `protocol_v2.extract_specimen`.
+    The `extra` parameter is now documented in `verify_reproduction.strip_volatile`. Other hits
+    were combined entries (`train, test : ...`), which are valid. The syntax trees of the edited
+    scripts are unchanged apart from docstrings.
+  - **Docs.** Rebuilt with `scripts/build_docs.py`: 19 module pages, including the new
+    `memory_profile`. `tests/` was not added, because `build_docs.py` only renders `scripts/`
+    modules, and adding tests would need changes to the script and its import path.
+  - **Peak memory.** New `scripts/memory_profile.py`. Each of three repetitions per workload
+    ran in a fresh process. Imports, and for fit+predict the saved baseline features, were
+    loaded before `tracemalloc.start()`. Extraction ran into a temporary folder and its outputs
+    matched `results/baseline`. Fit+predict used the fixed v1 settings and thread limit,
+    included training-only in-pipeline scaling, and excluded reading the CSV. No L2S11 file was
+    read. Peaks in bytes (three runs; median):
+    - extraction: 9,968,630 / 9,967,517 / 9,963,917; median 9,967,517 (9.51 MiB);
+    - selected LinearRegression fit+predict, both directions: 84,535 / 84,307 / 84,590; median
+      84,535;
+    - all six v1 comparators: 185,865 / 185,993 / 182,152; median 185,865.
+
+    These are peak traced allocations, including allocations registered with tracemalloc; not
+    total process RAM, and not necessarily all native-library allocations. The run went to
+    `results/rebuilt/memory_profile/` and was copied to `results/memory_profile/` (with a
+    README). `memory_profile` was added to `common.RECORDED_RESULTS` so that workflows refuse
+    to overwrite it; the tracked-folder guard test needs this. The memory paragraph in
+    `docs/methodology.md` now cites these figures instead of "not measured".
+  - **README.**
+    - Mermaid flow chart of the v2 pipeline, checked against the code: validation and model
+      selection (`load_one` → `summarise_file` → `eligibility_reasons` → `build_checkpoints` →
+      `build_model`/`fit_predict` → `scores` → `select_final` → `selection.json`) are drawn
+      separately from the once-only pooled refit, L2S11 evaluation and sanity check. No arrow
+      runs from the test scores back to selection.
+    - New Documentation section (HTML docs location and rebuild, NumPy style, test report,
+      report placeholder).
+    - New AI use and reflection section at the bottom, with placeholders for Sans.
+    - `memory_profile` added to the structure table and the list of recorded folders.
+  - **Remaining.** Teaching-staff approval recorded as received in person from Keenan Granland
+    (no date recorded). The memory item is marked done.
+  - **Tests.** README pytest-report command, run once: 100 passed (junit `tests="178"` = 100
+    tests + 78 subtests). The previous report had 75 subtests; the three new ones come from
+    the extra `RECORDED_RESULTS` entry in `test_require_not_recorded` (2) and
+    `test_refuses_data_and_every_recorded_results_folder` (1). Test names are identical to the
+    previous report.
+  - Not committed or pushed. Next: Sans reviews `docs-polish`; fill in the AI reflection
+    placeholders; step 7 report draft.

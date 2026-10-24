@@ -18,7 +18,10 @@ RESULTS = ROOT / 'results/repeat_sensitivity'
 
 
 class OrderingTests(unittest.TestCase):
+    """Repeat ordering by logbook timestamp, with an explicit filename fallback."""
+
     def setUp(self):
+        """Two repeats whose timestamps run opposite to their filenames."""
         self.repeats = [
             dict(specimen='S', filename=name, cycles='10', condition='Loaded')
             for name in ('a.mat', 'z.mat')
@@ -29,11 +32,13 @@ class OrderingTests(unittest.TestCase):
         }
 
     def test_timestamp_order_overrides_filename(self):
+        """The logbook timestamp, not the filename, sets the repeat order."""
         ordered, basis, _ = order_repeats(self.repeats, self.logs)
         self.assertEqual([r['filename'] for r in ordered], ['z.mat', 'a.mat'])
         self.assertEqual(basis, 'logbook_timestamp')
 
     def test_missing_and_tied_timestamps_are_explicit_fallback(self):
+        """Missing or tied timestamps fall back to filename order and record why."""
         for logs in (
             {},
             {
@@ -47,20 +52,25 @@ class OrderingTests(unittest.TestCase):
             self.assertEqual(ordered[0]['filename'], 'a.mat')
 
     def test_logbook_cycle_conflict_fails(self):
+        """Guard: a logbook cycle that disagrees with the file raises an error."""
         self.logs[('S', 'a.mat')]['log_cycle'] = 20
         with self.assertRaisesRegex(ValueError, 'cycle mismatch'):
             order_repeats(self.repeats, self.logs)
 
 
 class SensitivityTests(unittest.TestCase):
+    """Median, first and last variants keep every experiment boundary of the baseline fixed."""
+
     @classmethod
     def setUpClass(cls):
+        """Build the three variants from the recorded baseline tables."""
         cls.baseline = read_checkpoints(BASELINE / 'checkpoint_features.csv')
         cls.recordings = read_csv(BASELINE / 'recordings.csv')
         cls.refs = read_csv(BASELINE / 'references.csv')
         cls.variants, cls.provenance = build_variants(cls.recordings, cls.baseline, cls.refs, {})
 
     def test_median_features_and_predictions_reproduce_baseline(self):
+        """Known answer: the median variant reproduces baseline features and predictions exactly."""
         compare_tables(
             self.variants['median'],
             self.baseline,
@@ -71,6 +81,7 @@ class SensitivityTests(unittest.TestCase):
             self.assertEqual(a, b)
 
     def test_membership_targets_references_and_cycle_model_fixed(self):
+        """Every variant keeps baseline checkpoints, targets, references and log-cycle fits."""
         fixed = ('specimen', 'cycles', 'published_index', 'is_reference', 'log10_cycles')
         expected_cycle = [r for r in evaluate(self.baseline)[0] if r['model'] == 'log10_cycles']
         for rows in self.variants.values():
@@ -96,6 +107,7 @@ class SensitivityTests(unittest.TestCase):
             )
 
     def test_membership_and_target_changes_rejected(self):
+        """Guard: a changed target or a dropped checkpoint makes variant building fail."""
         changed = copy.deepcopy(self.recordings)
         eligible = next(r for r in changed if r['eligible'] == 'True')
         eligible['published_index'] = '999'
@@ -110,6 +122,7 @@ class SensitivityTests(unittest.TestCase):
             build_variants(changed, self.baseline, self.refs, {})
 
     def test_no_reference_or_test_target_leakage_in_any_variant(self):
+        """Leakage: in every variant, reference and test targets cannot change test predictions."""
         for rows in self.variants.values():
             original = evaluate(rows)
             changed = copy.deepcopy(rows)
@@ -133,6 +146,13 @@ class SensitivityTests(unittest.TestCase):
                 np.testing.assert_array_equal(before, after)
 
     def test_saved_results_and_selection_provenance(self):
+        """Saved variant outputs recompute, and each first/last pick follows the recorded order.
+
+        Notes
+        -----
+        Also checks the saved verification: baseline reproduced, MAT hashes unchanged and no raw
+        file tracked or staged.
+        """
         self.assertTrue(
             (RESULTS / 'verification.json').is_file(), 'Run repeat_sensitivity.py first'
         )

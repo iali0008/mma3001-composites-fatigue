@@ -54,6 +54,14 @@ def main(argv=None):
     ----------
     argv : list of str, optional
         Command-line arguments; defaults to ``sys.argv[1:]``.
+
+    Raises
+    ------
+    ValueError
+        If the output folder is a recorded results folder, or if the profiled
+        outputs differ from the recorded baseline.
+    subprocess.CalledProcessError
+        If the profiled extraction exits with an error.
     """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--data-root', required=True, type=Path)

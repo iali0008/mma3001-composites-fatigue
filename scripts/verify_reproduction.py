@@ -118,6 +118,8 @@ def strip_volatile(value, extra=frozenset()):
     ----------
     value : object
         Decoded JSON.
+    extra : collection of str, optional
+        Further keys to remove, in addition to ``VOLATILE_KEYS``.
 
     Returns
     -------
