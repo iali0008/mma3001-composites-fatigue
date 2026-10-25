@@ -334,7 +334,7 @@ pinned in `requirements-lock.txt`; nothing relies on a global installation.
   [docs/dataset.md](docs/dataset.md). Protocols: [docs/protocol_v2.md](docs/protocol_v2.md) and
   [docs/model_comparison_protocol.md](docs/model_comparison_protocol.md). Session log:
   [docs/progress.md](docs/progress.md).
-- Project report: docs/report/<name>.pdf (added at submission)
+- Project report: [docs/report/MMA3001_Project_Report.pdf](docs/report/MMA3001_Project_Report.pdf)
 
 ## Limitations
 
